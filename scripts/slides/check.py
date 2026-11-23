@@ -8,6 +8,8 @@
   2. katex      ：殘留的 .katex-error
   3. pixel_cjk  ：像素字體（Press Start 2P / VT323）裡直接出現中文字（應包 .zh）
   4. empty      ：沒有標題（h1/h2）的頁面
+  5. fo_clip    ：SVG foreignObject（流程圖箭頭標籤）裡的內容超出框高被裁掉
+                 （war-explained 第一次渲染時 P.4「第 2 步」被裁掉，前四項都沒抓到）
 結果以 JSON 輸出；--shots 會存每頁截圖，供目視檢查（節點 N6 的人工部分）。
 
 需要：pip install playwright && python3 -m playwright install chromium
@@ -23,7 +25,7 @@ JS = r"""
   const sr = s.getBoundingClientRect();
   const pad = parseFloat(getComputedStyle(body).paddingBottom) * (sr.width / s.offsetWidth) * 0.5;
   const r = {bottom: sr.bottom - pad, right: sr.right - 4};
-  const out = {overflow: [], katex: 0, pixel_cjk: [], empty: false};
+  const out = {overflow: [], katex: 0, pixel_cjk: [], empty: false, fo_clip: []};
   body.querySelectorAll('*').forEach(e => {
     if (e.closest('svg') && !e.closest('foreignObject')) return;
     const q = e.getBoundingClientRect();
@@ -39,6 +41,15 @@ JS = r"""
       out.pixel_cjk.push(e.tagName + ': ' + n.textContent.trim().slice(0, 20));
   });
   out.empty = !s.querySelector('h1, h2');
+  s.querySelectorAll('foreignObject').forEach(fo => {
+    const fr = fo.getBoundingClientRect();
+    fo.querySelectorAll('*').forEach(e => {
+      const q = e.getBoundingClientRect();
+      if (q.height && (q.bottom > fr.bottom + 1 || q.right > fr.right + 1))
+        out.fo_clip.push((e.className || e.tagName) + ': ' + (e.textContent || '').trim().slice(0, 16) + ` (+${Math.round(Math.max(q.bottom - fr.bottom, q.right - fr.right))}px)`);
+    });
+  });
+  out.fo_clip = out.fo_clip.slice(0, 5);
   out.overflow = out.overflow.slice(0, 5);
   return out;
 }
@@ -61,7 +72,7 @@ async def main(deck, shots):
             await pg.evaluate(f"window.__show && window.__show({k})")
             await pg.wait_for_timeout(120)
             o = await pg.evaluate(JS)
-            bad = bool(o['overflow'] or o['katex'] or o['pixel_cjk'] or o['empty'])
+            bad = bool(o['overflow'] or o['katex'] or o['pixel_cjk'] or o['empty'] or o['fo_clip'])
             fails += bad
             report.append({'page': k + 1, 'ok': not bad, **{kk: v for kk, v in o.items() if v}})
             if shots:

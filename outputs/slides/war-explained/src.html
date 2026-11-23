@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WAR 是怎麼算出來的</title>
+<style>
+/*KATEX_CSS*/
+/*PIXEL_FONTS*/
+:root{
+  --night:#130f33; --ink:#1a1638; --muted:#5b5875; --paper:#f6efdf; --panel:#fffaf0; --line:#1a1638;
+  --pink:#ff3d8b; --cyan:#00c2d1; --yellow:#ffd93b; --phos:#7dffb2;
+  --woba:#2a55c9; --wraa:#0e8a84; --wrc:#3b8a1d; --wrcp:#d45d16; --br:#8a3fb8; --re:#55566b; --war:#b3263e;
+  --woba-bg:#e3ebff; --wraa-bg:#dcf5f2; --wrc-bg:#e6f5dc; --wrcp-bg:#ffe9da; --br-bg:#f1e4fa; --re-bg:#ebebf0; --war-bg:#fde3e7;
+  --sans:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Helvetica Neue",Arial,sans-serif;
+  --pixel:"Press Start 2P",var(--sans);
+  --term:"VT323",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--sans);color:var(--ink);
+  background:radial-gradient(1200px 700px at 50% 40%,#2a2170 0%,#130f33 60%,#0a0820 100%);}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:24px 24px}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+.deck{position:relative;width:1280px;height:720px;transform-origin:center center}
+
+/* ---------- slide window ---------- */
+.slide{position:absolute;inset:0;background:var(--paper);display:none;flex-direction:column;overflow:hidden;
+  border:3px solid var(--line);box-shadow:10px 10px 0 0 var(--pink),10px 10px 0 3px var(--line)}
+.slide.active{display:flex}
+.bar{height:38px;flex:0 0 38px;display:flex;align-items:center;gap:12px;padding:0 14px;border-bottom:3px solid var(--line);
+  background:linear-gradient(90deg,#2b1d7a 0%,#5b3fd1 45%,#c84fd0 75%,#ff6fae 100%);color:#fff}
+.bar .btns{display:flex;gap:6px}
+.bar .btns i{width:14px;height:14px;border:2px solid #fff;display:block;background:rgba(255,255,255,.15)}
+.bar .fname{font-family:var(--pixel);font-size:11px;letter-spacing:.06em;text-shadow:2px 2px 0 rgba(0,0,0,.35)}
+.bar .spark{margin-left:auto;font-size:14px;color:#fff;opacity:.9}
+.bar .pg{font-family:var(--pixel);font-size:11px;background:var(--ink);padding:5px 8px;border:2px solid #fff}
+.body{flex:1;padding:26px 60px 30px;display:flex;flex-direction:column;min-height:0}
+
+.kicker{font-family:var(--pixel);font-size:11px;letter-spacing:.08em;color:var(--pink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.kicker .zh,.ptag .zh{font-family:var(--sans);font-weight:800;letter-spacing:.02em}
+.kicker .zh{font-size:15px}.ptag .zh{font-size:12px}
+.kicker::before{content:"";width:10px;height:10px;background:var(--pink);box-shadow:3px 3px 0 var(--ink)}
+h1{font-size:54px;line-height:1.2;font-weight:900}
+h2{font-size:33px;line-height:1.25;font-weight:900;margin-bottom:16px;text-shadow:3px 3px 0 #ffd3e4}
+h3{font-size:20px;font-weight:800;margin-bottom:6px}
+p{font-size:19px;line-height:1.6}
+.small{font-size:16px;line-height:1.55}
+.tiny{font-size:14px;line-height:1.5}
+.muted{color:var(--muted)}
+b{font-weight:800}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.panel{background:var(--panel);border:2px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:14px 16px;position:relative}
+.panel .ptag{position:absolute;top:-11px;left:12px;font-family:var(--pixel);font-size:9px;letter-spacing:.06em;background:var(--ink);color:#fff;padding:4px 7px}
+.panel.pad-top{padding-top:20px}
+
+.tag{display:inline-block;font-weight:900;padding:1px 9px;border:2px solid currentColor;font-size:17px;background:#fff}
+.t-woba{color:var(--woba);background:var(--woba-bg)} .t-wraa{color:var(--wraa);background:var(--wraa-bg)}
+.t-wrc{color:var(--wrc);background:var(--wrc-bg)} .t-wrcp{color:var(--wrcp);background:var(--wrcp-bg)}
+.t-br{color:var(--br);background:var(--br-bg)} .t-re{color:var(--re);background:var(--re-bg)}
+
+table{border-collapse:collapse;width:100%;font-size:17px;background:var(--panel)}
+th,td{border:2px solid var(--line);padding:7px 10px;text-align:left;vertical-align:middle}
+th{font-size:14px;font-weight:800;background:#ece3cf}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center}
+.box-table{box-shadow:4px 4px 0 var(--line)}
+
+.formula{background:#fffdf6;border:2px solid var(--line);box-shadow:4px 4px 0 var(--accent,var(--woba));padding:12px 18px;margin:8px 0 12px;font-size:20px;position:relative;overflow-x:auto}
+.formula::before{content:"f(x)";position:absolute;top:0;left:0;font-family:var(--pixel);font-size:8px;background:var(--accent,var(--woba));color:#fff;padding:3px 5px}
+.formula .katex-display{margin:.4em 0}
+.def{border-left:6px solid var(--accent,var(--woba));background:#fff;padding:8px 14px;font-size:17px;line-height:1.55;margin-top:6px}
+.def b{color:var(--accent,var(--woba))}
+
+.note{border:2px dashed #8f88a8;background:#fbf7ee;padding:9px 14px;font-size:16px;line-height:1.55;margin-top:10px}
+.why{border:2px solid var(--line);background:#e8fbff;box-shadow:4px 4px 0 var(--cyan);padding:10px 14px;font-size:18px;line-height:1.55;margin-top:10px}
+.alert{border:3px solid var(--line);background:var(--yellow);box-shadow:5px 5px 0 var(--line);padding:12px 16px;display:flex;gap:14px;align-items:center;margin-top:14px}
+.alert .badge{font-family:var(--pixel);font-size:11px;background:#e5163f;color:#fff;padding:7px 8px;border:2px solid var(--line);white-space:nowrap}
+.alert p{font-size:20px;font-weight:800;line-height:1.5}
+
+.src{font-family:var(--term);font-size:19px;line-height:1;background:var(--ink);color:var(--phos);padding:2px 6px;white-space:nowrap;display:inline-block;vertical-align:middle}
+.src.k{color:#ffd93b}
+.chip{display:inline-block;border:2px solid var(--line);background:#fff;padding:2px 9px;font-size:14px;margin:3px 4px 3px 0;box-shadow:2px 2px 0 var(--line)}
+
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.lv{font-family:var(--pixel);font-size:12px;color:#fff;padding:6px 8px;border:2px solid var(--line);box-shadow:3px 3px 0 var(--line)}
+.mini-chain{display:flex;gap:4px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.mini-chain span{font-family:var(--sans);font-weight:700;font-size:14px;padding:3px 9px;border:2px solid #b8b0c9;color:#8a85a0;background:#fff}
+.mini-chain span.on{color:#fff;border-color:var(--line);box-shadow:2px 2px 0 var(--line)}
+.mini-chain i{color:#aaa;font-style:normal;font-size:14px}
+
+.big-num{font-family:var(--term);font-size:62px;line-height:1}
+.result-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.result-row .panel{text-align:center;padding:10px}
+.result-row .lab{font-family:var(--pixel);font-size:9px;color:var(--muted);margin-bottom:6px}
+.check{color:#1f7a2a;font-weight:800;font-size:15px}
+
+/* module tiles */
+.mods{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 34px;position:relative}
+.mod{background:var(--panel);border:2px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:14px 16px;position:relative;min-height:150px}
+.mod .no{font-family:var(--pixel);font-size:16px;color:var(--pink);display:block;margin-bottom:8px}
+.mod h3{font-size:21px;margin-bottom:4px}
+.mod p{font-size:16px;line-height:1.5;color:#3a3756}
+.mod .pp{position:absolute;right:8px;top:8px;font-family:var(--term);font-size:17px;color:var(--muted)}
+.mod.arrow::after{content:"▶";position:absolute;right:-26px;top:50%;transform:translateY(-50%);color:var(--pink);font-size:16px}
+
+/* title */
+.title-slide .body{padding:34px 56px;justify-content:center;gap:0}
+.crt{background:#0b1a14;border:3px solid var(--line);box-shadow:inset 0 0 60px rgba(0,0,0,.8),6px 6px 0 var(--line);padding:38px 44px;position:relative;overflow:hidden}
+.crt::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 2px,transparent 2px 4px)}
+.crt .boot{font-family:var(--term);color:var(--phos);font-size:22px;opacity:.85}
+.crt h1{color:#eafff3;text-shadow:0 0 12px rgba(125,255,178,.6),3px 3px 0 #0f5c3a;margin:14px 0 12px;font-size:56px}
+.crt .sub{color:#bdf5d6;font-size:20px}
+.crt .cursor{display:inline-block;width:14px;height:22px;background:var(--phos);vertical-align:-3px;animation:blink 1.2s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.chainline{display:flex;gap:10px;margin-top:22px;align-items:center}
+.chainline span{font-family:var(--pixel);font-size:14px;padding:9px 12px;border:2px solid #eafff3;color:#0b1a14}
+.chainline i{color:var(--phos);font-style:normal}
+.sparkle{position:absolute;color:var(--cyan);font-size:26px}
+
+#nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center;z-index:5}
+#nav button{font-family:var(--pixel);font-size:11px;background:var(--yellow);border:3px solid var(--line);box-shadow:3px 3px 0 var(--line);color:var(--ink);cursor:pointer;padding:7px 10px}
+#nav button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
+#nav span{font-family:var(--pixel);font-size:11px;color:#fff;background:var(--ink);border:3px solid #fff;padding:6px 10px}
+#progress{position:fixed;top:0;left:0;right:0;height:8px;display:flex;gap:3px;padding:0 3px;z-index:5}
+#progress i{flex:1;background:rgba(255,255,255,.12)}
+#progress i.on{background:var(--cyan)}
+
+@media print{
+  html,body{background:#fff} body::before{display:none}
+  #nav,#progress{display:none}
+  #stage{position:static;display:block}
+  .deck{transform:none!important;width:auto;height:auto}
+  .slide{position:relative;display:flex!important;width:1280px;height:720px;page-break-after:always;box-shadow:none}
+  @page{size:1280px 720px;margin:0}
+}
+</style>
+<style>
+:root{--bat:#2a55c9;--bat-bg:#e3ebff;--bsr:#8a3fb8;--bsr-bg:#f1e4fa;--fld:#0e8a84;--fld-bg:#dcf5f2;--pos:#3b8a1d;--pos-bg:#e6f5dc;--lgc:#55566b;--lgc-bg:#ebebf0;--rep:#d45d16;--rep-bg:#ffe9da;--warc:#b3263e;--warc-bg:#fde3e7;--pit:#1d6fa3;--pit-bg:#dff0fb}
+.htable th,.htable td{text-align:center;padding:6px 6px}
+.htable td.lab,.htable th.lab{text-align:left}
+.flow{display:flex;align-items:stretch;gap:8px;margin:10px 0}
+.flow .fb{flex:1;background:#fff;border:2px solid var(--line);box-shadow:3px 3px 0 var(--line);padding:8px 10px;font-size:16px;line-height:1.45;text-align:center}
+.flow .fb b{display:block;font-size:20px}
+.flow i{align-self:center;font-style:normal;color:var(--pink);font-size:16px}
+.sixgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 18px}
+.mods9{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 16px}
+.mods9 .panel{padding:10px 12px 8px}
+.mods9 .panel h3{font-size:17px;margin-bottom:2px}
+.mods9 .panel p{font-size:15px;line-height:1.45}
+.alert.blue{background:#cfefff}.alert.blue .badge{background:#1d6fa3}
+.alert.green{background:#d9f7c9}.alert.green .badge{background:#2f7d22}
+.alert.small p{font-size:17px}
+.mini-chain span.on.c-bat{background:var(--bat)}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="stage"><div class="deck" id="deck">
+
+
+<!-- P.1 -->
+<section class="slide title-slide" data-file="WAR.EXE">
+  <div class="body">
+    <div class="crt">
+      <span class="sparkle" style="right:46px;top:28px">✦</span>
+      <span class="sparkle" style="right:90px;top:70px;font-size:16px;color:var(--pink)">✧</span>
+      <div class="boot">SABERMETRICS PLAYER EVALUATION LAB · v1.0<br>&gt; LOADING WAR_ENGINE ... OK</div>
+      <h1>WAR 是怎麼算出來的</h1>
+      <p class="sub" style="font-size:24px;font-weight:800;margin-bottom:6px">從六個組成到一個勝場數</p>
+      <p class="sub">打擊、跑壘、守備、守位、聯盟、替補 → 加總成得分 → 換算成勝場</p>
+      <div class="chainline"><span style="background:#9db8ff">RUNS</span><i>▶</i><span style="background:#ffb98c">RAR</span><i>▶</i><span style="background:#ff9fb4">WAR</span></div>
+      <p class="boot" style="margin-top:22px;font-size:24px">PRESS ▶ OR SPACE TO START <span class="cursor"></span></p>
+    </div>
+    <p class="tiny" style="color:#5b5875;margin-top:14px">資料來源：FanGraphs Library（What is WAR?、WAR Misconceptions、WAR for Position Players、WAR for Pitchers、wRC and wRC+、Park Factors、UZR、DRS、FIP）、FanGraphs（Unifying Replacement Level、WAR Update: Catcher Framing、2024 FanGraphs WAR Update）；範例數據：Mike Trout FanGraphs 球員頁、FanGraphs 2012 排行榜</p>
+  </div>
+</section>
+
+<!-- P.2 -->
+<section class="slide" data-file="MENU.EXE">
+  <div class="body">
+    <div class="kicker">SELECT STAGE</div>
+    <h2>這份投影片的路線圖</h2>
+    <div class="why" style="margin:0 0 18px;font-size:19px"><b>核心問題：</b>「這位球員比隨手可得的替補球員，多替球隊贏了幾場？」先把每種貢獻換成<b>得分</b>，加總後再換成<b>勝場</b>。</div>
+    <div class="mods">
+      <div class="mod arrow"><span class="pp">P.3</span><span class="no">01</span><h3>WAR 是什麼</h3><p>它回答什麼問題、怎麼解讀數字</p></div>
+      <div class="mod arrow"><span class="pp">P.4</span><span class="no">02</span><h3>流程圖</h3><p>六個組成 → RAR → WAR 的全貌</p></div>
+      <div class="mod arrow"><span class="pp">P.5</span><span class="no">03</span><h3>替補水準</h3><p>為什麼基準不是「平均」</p></div>
+      <div class="mod"><span class="pp">P.6–12</span><span class="no">04</span><h3>逐項拆解</h3><p>打擊、跑壘、守備（UZR）、捕手與 DRS、守位、聯盟與替補、RPW</p></div>
+      <div class="mod arrow"><span class="pp">P.13–14</span><span class="no">05</span><h3>投手 WAR</h3><p>先認識 FIP，再看投手 WAR 的九個步驟</p></div>
+      <div class="mod arrow"><span class="pp">P.15</span><span class="no">06</span><h3>結論</h3><p>每個組成各補上什麼</p></div>
+      <div class="mod arrow"><span class="pp">P.16–18</span><span class="no">07</span><h3>實際範例</h3><p>Trout 原始數據 → 2012 拆解 → 2013 守位調整</p></div>
+      <div class="mod"><span class="pp">P.19</span><span class="no">08</span><h3>限制與誤解</h3><p>WAR 不能怎麼用</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- P.3 -->
+<section class="slide" data-file="WHAT_IS_WAR.TXT" style="--accent:var(--warc)">
+  <div class="body">
+    <div class="kicker">STAGE 01 · DEFINITION</div>
+    <h2>WAR 在回答什麼問題？</h2>
+    <div class="grid2" style="grid-template-columns:1.25fr 1fr">
+      <div>
+        <div class="def" style="font-size:19px;margin-top:0"><b>WAR（Wins Above Replacement）</b>：如果這位球員受傷，球隊只能找小聯盟或板凳邊緣球員（<b>替補球員</b>）頂上，球隊會少贏幾場？</div>
+        <div class="panel pad-top" style="margin-top:20px"><span class="ptag">UNIT = WINS</span><p class="small">單位是「勝場」：打擊、跑壘、守備、投球的貢獻都先換成得分，再換成勝場，所以強打一壘手和頂級守備游擊手可以放在同一把尺上比較。</p></div>
+        <div class="grid2" style="margin-top:20px;gap:16px">
+          <div class="panel pad-top"><span class="ptag">CAN</span><p class="small">可以跨年份、跨聯盟、跨球隊比較，因為已經做了球場與聯盟調整。</p></div>
+          <div class="panel pad-top"><span class="ptag">NEGATIVE</span><p class="small">可以是負值，代表表現比替補球員還差。</p></div>
+        </div>
+      </div>
+      <div>
+        <table class="box-table" style="font-size:17px">
+          <thead><tr><th>單季 WAR</th><th>等級（先發野手、先發投手）</th></tr></thead>
+          <tbody>
+            <tr><td class="num">0–1</td><td>邊緣球員</td></tr>
+            <tr><td class="num">1–2</td><td>角色球員</td></tr>
+            <tr><td class="num">2–3</td><td>穩定先發（平均約 2）</td></tr>
+            <tr><td class="num">3–4</td><td>好球員</td></tr>
+            <tr><td class="num">4–5</td><td>明星</td></tr>
+            <tr><td class="num">5–6</td><td>超級明星</td></tr>
+            <tr><td class="num">6+</td><td>MVP 等級</td></tr>
+          </tbody>
+        </table>
+        <p class="tiny muted" style="margin-top:8px">板凳球員 0–1 就算正常；後援投手超過 1 就很出色。<span class="src k">ART·WAR</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- P.4 -->
+<section class="slide" data-file="MAP.EXE">
+  <div class="body" style="padding-top:18px">
+    <div class="kicker">STAGE 02 · WORLD MAP</div>
+    <h2 style="margin-bottom:6px">推導流程圖</h2>
+    <svg viewBox="0 0 1160 505" width="1160" height="505" style="font-family:var(--sans);overflow:visible">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1638"/></marker></defs>
+      <g stroke="#1a1638" stroke-width="3" fill="none">
+        <line x1="246" y1="24" x2="290" y2="24"/><line x1="246" y1="82" x2="290" y2="82"/><line x1="246" y1="140" x2="290" y2="140"/>
+        <line x1="246" y1="198" x2="290" y2="198"/><line x1="246" y1="256" x2="290" y2="256"/><line x1="246" y1="314" x2="290" y2="314"/>
+        <line x1="290" y1="24" x2="290" y2="314"/>
+      </g>
+      <g stroke="#1a1638" stroke-width="3" fill="none" marker-end="url(#ar)">
+        <line x1="290" y1="169" x2="556" y2="169"/>
+        <line x1="756" y1="169" x2="952" y2="169"/>
+        <line x1="246" y1="448" x2="952" y2="448"/>
+      </g>
+      <g text-anchor="middle">
+        <rect x="4" y="2" width="242" height="46" fill="#e3ebff" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="22" font-size="17" font-weight="900" fill="#2a55c9">打擊 Batting</text><text x="125" y="40" font-size="12" fill="#2a55c9">wRAA ＋ 球場、聯盟調整</text>
+        <rect x="4" y="60" width="242" height="46" fill="#f1e4fa" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="80" font-size="17" font-weight="900" fill="#8a3fb8">跑壘 BsR</text><text x="125" y="98" font-size="12" fill="#8a3fb8">UBR ＋ wSB ＋ wGDP</text>
+        <rect x="4" y="118" width="242" height="46" fill="#dcf5f2" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="138" font-size="17" font-weight="900" fill="#0e8a84">守備 Fielding</text><text x="125" y="156" font-size="12" fill="#0e8a84">相對同守位平均</text>
+        <rect x="4" y="176" width="242" height="46" fill="#e6f5dc" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="196" font-size="17" font-weight="900" fill="#3b8a1d">守位 Positional</text><text x="125" y="214" font-size="12" fill="#3b8a1d">守位難度調整</text>
+        <rect x="4" y="234" width="242" height="46" fill="#ebebf0" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="254" font-size="17" font-weight="900" fill="#55566b">聯盟 League</text><text x="125" y="272" font-size="12" fill="#55566b">各聯盟總和歸零</text>
+        <rect x="4" y="292" width="242" height="46" fill="#ffe9da" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="312" font-size="17" font-weight="900" fill="#d45d16">替補 Replacement</text><text x="125" y="330" font-size="12" fill="#d45d16">基準從平均改成替補</text>
+        <rect x="560" y="134" width="196" height="70" fill="#fff3c4" stroke="#1a1638" stroke-width="2.5"/><rect x="564" y="204" width="196" height="4" fill="#1a1638"/><text x="658" y="166" font-size="26" font-weight="900" fill="#1a1638">RAR</text><text x="658" y="190" font-size="13" fill="#1a1638">得分 · 高於替補</text>
+        <rect x="956" y="134" width="200" height="70" fill="#fde3e7" stroke="#1a1638" stroke-width="2.5"/><rect x="960" y="204" width="200" height="4" fill="#1a1638"/><text x="1056" y="166" font-size="24" font-weight="900" fill="#b3263e">野手 WAR</text><text x="1056" y="190" font-size="13" fill="#b3263e">勝場</text>
+        <rect x="4" y="418" width="242" height="60" fill="#dff0fb" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="443" font-size="17" font-weight="900" fill="#1d6fa3">投手 ifFIP</text><text x="125" y="463" font-size="12" fill="#1d6fa3">FIP，內野高飛球算三振</text>
+        <rect x="956" y="418" width="200" height="60" fill="#fde3e7" stroke="#1a1638" stroke-width="2.5"/><text x="1056" y="444" font-size="22" font-weight="900" fill="#b3263e">投手 WAR</text><text x="1056" y="464" font-size="13" fill="#b3263e">勝場</text>
+      </g>
+      <foreignObject x="318" y="128" width="214" height="82"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 1 步</div><div class="ops"><span>Σ</span><span>六個組成相加</span><span>=</span><span>RAR（得分）</span></div></div></foreignObject>
+      <foreignObject x="766" y="132" width="180" height="80"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 2 步</div><div class="ops"><span>÷</span><span>RPW（每勝得分）</span></div></div></foreignObject>
+      <foreignObject x="490" y="372" width="230" height="130"><div xmlns="http://www.w3.org/1999/xhtml" class="flab br"><div class="fh">投手分支</div><div class="ops"><span>÷</span><span>球場係數</span><span>÷</span><span>動態 RPW</span><span>+</span><span>替補水準</span><span>×</span><span>IP ÷ 9</span></div></div></foreignObject>
+      <foreignObject x="560" y="232" width="596" height="110"><div xmlns="http://www.w3.org/1999/xhtml" class="legend">
+        <div><b style="color:#2a55c9">前五項</b>：以「平均」為 0，算出比平均多幾分</div>
+        <div><b style="color:#d45d16">第六項</b>：把基準從平均換成替補球員</div>
+        <div><b>所以 RAR</b> ＝ 比替補多幾分；再除以 RPW 換成勝場</div>
+      </div></foreignObject>
+    </svg>
+  </div>
+</section>
+<!-- P.5 -->
+<section class="slide" data-file="REPLACE.DAT" style="--accent:var(--rep)">
+  <div class="body">
+    <div class="kicker">STAGE 03 · BASELINE</div>
+    <h2>為什麼基準是「替補球員」，不是「平均球員」？</h2>
+    <div class="grid2" style="gap:18px">
+      <div class="panel pad-top"><span class="ptag">REASON 1</span><p class="small"><b>平均球員本身就有價值。</b>能穩定打出平均水準的球員並不好找，球隊要付出代價才能取得。</p></div>
+      <div class="panel pad-top"><span class="ptag">REASON 2</span><p class="small"><b>平均基準看不出上場量。</b>以平均為 0 時，打 600 打席的平均球員和打 1 打席的球員都是 0。</p></div>
+    </div>
+    <p class="small" style="margin-top:12px;font-weight:800">替補水準有多低？</p>
+    <div class="flow">
+      <div class="fb">每季 2,430 場<b>分配 1,000 WAR</b></div><i>▶</i>
+      <div class="fb">全替補球隊總勝場<b>2,430 − 1,000 ＝ 1,430</b></div><i>▶</i>
+      <div class="fb">每隊（<span class="zh">推論</span>）<b>1,430 ÷ 30 ≈ 47.7 勝</b></div><i>▶</i>
+      <div class="fb">替補勝率<b>47.7 ÷ 162 ≈ .294</b></div><i>▶</i>
+      <div class="fb">分配<b>野手 570／投手 430</b></div>
+    </div>
+    <div class="grid2" style="grid-template-columns:1.05fr 1fr;gap:18px;margin-top:6px">
+      <table class="box-table" style="font-size:15px">
+        <thead><tr><th>時期／網站</th><th class="num">替補勝率</th><th class="num">每隊勝場</th></tr></thead>
+        <tbody>
+          <tr><td>FanGraphs（2013 年以前）</td><td class="num">.265</td><td class="num">約 43</td></tr>
+          <tr><td>Baseball-Reference（2013 年以前）</td><td class="num">.320</td><td class="num">約 52（推論）</td></tr>
+          <tr><td><b>統一後（2013 起）</b></td><td class="num"><b>.294</b></td><td class="num"><b>47.7</b></td></tr>
+        </tbody>
+      </table>
+      <div class="alert blue small" style="margin-top:0;align-items:flex-start"><span class="badge">HISTORY</span><p>2012 年的文章說全替補球隊約 43 勝，那是當時 FanGraphs 的基準 .265。2013 年兩站統一為 .294。驗證：生涯 6,000 打席以上的 628 位球員，只有 1 人低於 0 WAR。</p></div>
+    </div>
+    <p class="tiny muted" style="margin-top:8px">出處：1,000 WAR、.294、570／430 <span class="src k">ART·WAR</span> <span class="src k">ART·WARpp</span>；43 勝 <span class="src k">ART·Misc</span>；.265、.320、628 位 <span class="src k">ART·RL13</span>；47.7 勝、約 52 勝為推論</p>
+  </div>
+</section>
+
+<!-- P.6 -->
+<section class="slide" data-file="BATTING.EXE" style="--accent:var(--bat)">
+  <div class="body">
+    <div class="mini-chain"><span class="on" style="background:var(--bat)">打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span>守備</span><i>▶</i><span>守位</span><i>▶</i><span>聯盟</span><i>▶</i><span>替補</span><i>▶</i><span>÷ RPW</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--bat)">LV 1</span><span class="kicker" style="margin:0"><span class="zh">組成 1</span>&nbsp;BATTING RUNS</span></div>
+    <h2>打擊：wRAA 加上球場與聯盟調整</h2>
+    <p class="small"><b>定義：</b>經過球場與聯盟調整後，打者比所屬聯盟平均野手多創造的得分。平均 ＝ 0。</p>
+    <div class="formula" style="font-size:21px">$$\text{Batting} = \underbrace{\text{wRAA}}_{\text{未調整}} + \underbrace{\dfrac{\text{lgR}}{\text{PA}}(1-\text{PF})\times\text{PA}}_{\text{球場調整}} + \underbrace{\left(\dfrac{\text{lgR}}{\text{PA}} - \dfrac{\text{wRC}_{\text{lg}}}{\text{PA}_{\text{lg}}}\right)\times\text{PA}}_{\text{聯盟調整}}$$</div>
+    <div class="def"><b>wRAA</b>：以 wOBA 換算、比聯盟平均打者多創造的得分</div>
+    <div class="def"><b>PF</b>：球場係數，網站顯示值 ÷ 100（已減半與迴歸）；<b>lgR/PA</b>：聯盟每打席平均得分</div>
+    <div class="def"><b>wRC<sub>lg</sub>／PA<sub>lg</sub></b>：所屬聯盟（AL 或 NL）不含投手的野手平均每打席創造得分</div>
+    <div class="note">wRAA、球場係數的完整推導，見另一份簡報《從 wOBA 到 wRC+》。</div>
+  </div>
+</section>
+
+<!-- P.7 -->
+<section class="slide" data-file="BASERUN.EXE" style="--accent:var(--bsr)">
+  <div class="body">
+    <div class="mini-chain"><span>打擊</span><i>▶</i><span class="on" style="background:var(--bsr)">跑壘</span><i>▶</i><span>守備</span><i>▶</i><span>守位</span><i>▶</i><span>聯盟</span><i>▶</i><span>替補</span><i>▶</i><span>÷ RPW</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--bsr)">LV 2</span><span class="kicker" style="margin:0"><span class="zh">組成 2</span>&nbsp;BASE RUNNING</span></div>
+    <h2>跑壘：BsR ＝ UBR ＋ wSB ＋ wGDP</h2>
+    <div class="grid3">
+      <div class="panel pad-top"><span class="ptag">UBR</span><p class="small"><b>非盜壘的跑壘</b>：例如安打時多推進一個壘包。需要 BIS 影像資料，無法自行計算。</p></div>
+      <div class="panel pad-top"><span class="ptag">wSB</span><p class="small"><b>盜壘與盜壘失敗</b>：可以自行計算，以聯盟平均為 0。</p></div>
+      <div class="panel pad-top"><span class="ptag">wGDP</span><p class="small"><b>避免雙殺</b>：實際雙殺打次數和預期次數的差距，換算成得分。</p></div>
+    </div>
+    <div class="formula" style="margin-top:14px">$$\text{wSB} = \text{SB}\times\text{runSB} + \text{CS}\times\text{runCS} - \text{lgwSB}\times(\text{1B} + \text{BB} + \text{HBP} - \text{IBB})$$</div>
+    <div class="def"><b>runSB</b>：盜壘成功的價值，固定 0.2 分；<b>runCS</b>：盜壘失敗的價值，約 −(2 × 每出局得分 ＋ 0.075)，2013 年 −0.384（<span class="zh">推論</span>：來源公式沒寫負號，Guts 頁數值為負）</div>
+    <div class="def"><b>lgwSB</b>：聯盟平均每次上一壘的盜壘得分；減去這一項，結果才是「相對平均」</div>
+    <div class="alert small"><span class="badge">VERSION</span><p>2016 年起，FanGraphs 把 UBR 與 wGDP 換成 Statcast 跑壘指標 XBR（wSB 是否保留，來源沒有提到）。Trout 2012、2013 仍是這一頁的公式。</p></div>
+  </div>
+</section>
+
+<!-- P.8 -->
+<section class="slide" data-file="UZR.EXE" style="--accent:var(--fld)">
+  <div class="body" style="padding-top:20px">
+    <div class="mini-chain"><span>打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span class="on" style="background:var(--fld)">守備</span><i>▶</i><span>守位</span><i>▶</i><span>聯盟</span><i>▶</i><span>替補</span><i>▶</i><span>÷ RPW</span></div>
+    <h2 style="margin-bottom:10px">守備：UZR 怎麼把一次接球換成得分</h2>
+    <div class="grid2" style="grid-template-columns:1fr 1.05fr;gap:20px">
+      <div>
+        <p class="small"><b>UZR（Ultimate Zone Rating）</b>＝守備員比<b>同守位平均</b>多救（或多丟）的分數。每顆擊球依位置、速度分類，各有兩個聯盟平均值。</p>
+        <div class="formula" style="font-size:19px;margin-top:8px">$$\text{UZR} = \text{ARM} + \text{DPR} + \text{RngR} + \text{ErrR}$$</div>
+        <div class="def" style="font-size:15px"><b>ARM</b> 外野傳球、<b>DPR</b> 雙殺、<b>RngR</b> 守備範圍、<b>ErrR</b> 失誤</div>
+        <div class="def" style="font-size:15px"><b>v</b>：這類擊球沒被接到時平均造成的得分；<b>p</b>：同守位平均守備員把它接成出局的機率</div>
+      </div>
+      <div>
+        <div class="formula" style="font-size:18px;margin-top:0">$$\begin{aligned}\text{接到} &= v\times(1-p) = 0.8\times(1-0.4) = 0.48\\ \text{沒接到} &= -v\times p = -0.8\times0.4 = -0.32\\ \text{平均守備員期望值} &= 0.4\times0.48 + 0.6\times(-0.32) = 0\end{aligned}$$</div>
+        <p class="tiny">第一行是來源的例子（<span class="src k">ART·UZR</span>）；第二、三行是<b>推論</b>：平均守備員的期望值剛好是 0，這就是「相對平均」的意思。越難接的球（p 越小），接到的獎勵越大。</p>
+      </div>
+    </div>
+    <table class="box-table htable" style="font-size:15px;margin-top:12px">
+      <thead><tr><th class="lab">UZR 評級</th><th>金手套級</th><th>很好</th><th>高於平均</th><th>平均</th><th>低於平均</th><th>差</th><th>很差</th></tr></thead>
+      <tbody><tr><td class="lab">UZR</td><td>+15</td><td>+10</td><td>+5</td><td>0</td><td>−5</td><td>−10</td><td>−15</td></tr></tbody>
+    </table>
+    <div class="alert small" style="margin-top:12px"><span class="badge">VERSION</span><p>2016 年起，守備範圍改用由 OAA 換算的得分；外野傳球、捕手阻殺改用 Statcast，新增捕手擋球，刪除雙殺得分。Trout 2012、2013 仍用 UZR。捕手見下一頁。</p></div>
+  </div>
+</section>
+
+<!-- P.9 -->
+<section class="slide" data-file="CATCHER_DRS.EXE" style="--accent:var(--fld)">
+  <div class="body" style="padding-top:20px">
+    <div class="kicker">COMPONENT 3+ · CATCHER &amp; DRS</div>
+    <h2 style="margin-bottom:12px">捕手守備與另一套指標 DRS</h2>
+    <div class="grid2" style="gap:22px">
+      <div>
+        <div class="panel pad-top"><span class="ptag">CATCHER</span><p class="small">捕手守備 ＝ 阻殺盜壘（<b>rSB</b>）＋ 防止暴投捕逸（<b>RPP</b>），兩項來自 DRS。</p></div>
+        <div class="panel pad-top" style="margin-top:16px"><span class="ptag">FRAMING</span><p class="small">2019 年起，捕手<b>偷好球（framing）</b>也算進 WAR，資料從 2008 年起。捕手多拿的好球要從投手扣回，依「投手實際和哪位捕手搭配」分配。</p></div>
+        <div class="formula" style="font-size:17px">$$\text{捕手 WAR} = \dfrac{\text{Batting} + \text{BsR} + \text{Fielding} + \text{Framing} + \cdots + \text{Replacement}}{\text{RPW}}$$</div>
+        <div class="def" style="font-size:14px"><b>Framing</b>：偷好球換成的得分（相對平均）；<b>⋯</b>：守位、聯盟調整（<span class="zh">推論</span>：來源的簡化寫法省略了這兩項）</div>
+        <div class="alert small" style="padding:8px 12px;margin-top:10px"><span class="badge">IMPACT</span><p style="font-size:16px">影響很大：2008–2018 生涯 WAR，McCann ＋18.8、Doumit −16.1。</p></div>
+      </div>
+      <div>
+        <p class="small"><b>DRS</b>：The Fielding Bible（John Dewan）計算，和 UZR 一樣用 BIS 資料、以得分為單位。</p>
+        <div class="formula" style="font-size:17px;margin-top:6px">$$\text{DRS} = \text{rSB} + \text{rBU} + \text{rGDP} + \text{rARM} + \text{rHR} + \text{rPM}$$</div>
+        <div class="def" style="font-size:14px"><b>rSB</b> 阻殺、<b>rBU</b> 觸擊、<b>rGDP</b> 雙殺、<b>rARM</b> 傳球、<b>rHR</b> 沒收全壘打（每次 1.6 分）、<b>rPM</b> 守備範圍（<span class="zh">推論</span>：來源只說 DRS 代表總守備價值，沒寫成加總公式）</div>
+        <table class="box-table" style="font-size:15px;margin-top:12px">
+          <thead><tr><th></th><th>DRS</th><th>UZR</th></tr></thead>
+          <tbody>
+            <tr><td>計算者</td><td>The Fielding Bible</td><td>Mitchel Lichtman</td></tr>
+            <tr><td>判斷難度用的資料</td><td>滾動的一年</td><td>多年</td></tr>
+            <tr><td>投手、捕手守備</td><td>有</td><td>沒有</td></tr>
+            <tr><td>評級表</td><td>相同</td><td>相同</td></tr>
+          </tbody>
+        </table>
+        <p class="tiny muted" style="margin-top:6px">出處：<span class="src k">ART·FRM19</span> <span class="src k">ART·DRS</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- P.10 -->
+<section class="slide" data-file="POSITION.EXE" style="--accent:var(--pos)">
+  <div class="body">
+    <div class="mini-chain"><span>打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span>守備</span><i>▶</i><span class="on" style="background:var(--pos)">守位</span><i>▶</i><span>聯盟</span><i>▶</i><span>替補</span><i>▶</i><span>÷ RPW</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--pos)">LV 4</span><span class="kicker" style="margin:0"><span class="zh">組成 4</span>&nbsp;POSITIONAL</span></div>
+    <h2>守位調整：守備只和同守位比，所以要再加一項</h2>
+    <div class="grid2" style="grid-template-columns:1.1fr 1fr;gap:22px">
+      <div>
+        <p class="small"><b>Fielding（P.8–9）</b>：和同守位的平均球員相比，多救了幾分。<br><b>Positional</b>：把不同守位放到同一把尺上。當平均游擊手比當平均一壘手難得多。</p>
+        <div class="formula">$$\text{Positional} = \dfrac{\text{Inn}/9}{162}\times\text{守位得分值}$$</div>
+        <div class="def"><b>Inn</b>：守備局數；9 局 ＝ 1 場。守多個位置時分別計算再相加。</div>
+        <div class="formula">$$\text{Def} = \text{Fielding} + \text{Positional}$$</div>
+      </div>
+      <table class="box-table" style="font-size:17px">
+        <thead><tr><th>守位</th><th class="num">每 162 場</th></tr></thead>
+        <tbody>
+          <tr><td>捕手 C</td><td class="num">+12.5</td></tr>
+          <tr><td>游擊 SS</td><td class="num">+7.5</td></tr>
+          <tr><td>二壘 2B、三壘 3B、中外野 CF</td><td class="num">+2.5</td></tr>
+          <tr><td>左外野 LF、右外野 RF</td><td class="num">−7.5</td></tr>
+          <tr><td>一壘 1B</td><td class="num">−12.5</td></tr>
+          <tr><td>指定打擊 DH</td><td class="num">−17.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert"><span class="badge">! NOTE</span><p>守備 +10 的一壘手，只代表比平均一壘手好 10 分，不代表比平均游擊手好。</p></div>
+    <p class="tiny muted" style="margin-top:8px">守位表：<span class="src k">ART·WARpp</span>（來源直接提供的常數）</p>
+  </div>
+</section>
+
+<!-- P.11 -->
+<section class="slide" data-file="LEAGUE_REPL.EXE" style="--accent:var(--lgc)">
+  <div class="body">
+    <div class="mini-chain"><span>打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span>守備</span><i>▶</i><span>守位</span><i>▶</i><span class="on" style="background:var(--lgc)">聯盟</span><i>▶</i><span class="on" style="background:var(--rep)">替補</span><i>▶</i><span>÷ RPW</span></div>
+    <h2>聯盟調整與替補得分：從「比平均」變成「比替補」</h2>
+    <div class="grid2" style="gap:22px">
+      <div>
+        <p class="small"><b>聯盟調整</b>：讓每個聯盟的總和歸零，每季影響約 0～5 分。</p>
+        <div class="formula" style="font-size:18px">$$\text{League} = \dfrac{-(\text{lgBat} + \text{lgBsR} + \text{lgFld} + \text{lgPos})}{\text{lgPA}}\times\text{PA}$$</div>
+        <div class="def" style="font-size:15px"><b>lgBat、lgBsR…</b>：球員所屬聯盟（AL 或 NL）所有野手前四項的總和</div>
+      </div>
+      <div style="--accent:var(--rep)">
+        <p class="small"><b>替補得分</b>：把基準換成替補球員。打越多打席，替補得分越多，這就是 WAR 反映上場量的方式。</p>
+        <div class="formula" style="font-size:18px">$$\text{Replacement} = 570\times\dfrac{\text{MLB 場次}}{2430}\times\dfrac{\text{RPW}}{\text{lgPA}}\times\text{PA}$$</div>
+        <div class="def" style="font-size:15px"><b>570</b>：野手分到的 WAR；<b>RPW ÷ lgPA</b>：把勝場換成每打席得分；<b>lgPA</b>：MLB 總打席</div>
+      </div>
+    </div>
+    <div class="why">前五項是「比平均多幾分」，加上替補得分後，變成「比替補多幾分」，也就是 <b>RAR</b>。</div>
+    <div class="panel pad-top" style="margin-top:16px"><span class="ptag">CHECK · 2012 MLB</span>
+      <p class="small">全大聯盟（含投手打擊）：打擊 −815.9、跑壘 +1.0、守備 +16.6、守位 +353.8，聯盟調整 +444.5 → <b>五項相加剛好 0.0</b>。替補得分總和 5440.2 ＝ 570 × 9.544，換成勝場<b>正好 570</b>。 <span class="src">LDR·MLB12</span> <span class="src k">GUTS</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- P.12 -->
+<section class="slide" data-file="RPW.EXE" style="--accent:var(--warc)">
+  <div class="body">
+    <div class="mini-chain"><span>打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span>守備</span><i>▶</i><span>守位</span><i>▶</i><span>聯盟</span><i>▶</i><span>替補</span><i>▶</i><span class="on" style="background:var(--warc)">÷ RPW</span></div>
+    <h2>RPW：多少分換一場勝利？</h2>
+    <div class="formula" style="font-size:21px">$$\text{WAR} = \dfrac{\text{RAR}}{\text{RPW}}, \qquad \text{RPW} = 9\times\dfrac{\text{MLB 得分}}{\text{MLB 投球局數}}\times 1.5 + 3$$</div>
+    <div class="def"><b>RPW（Runs Per Win）</b>：球隊平均要多得（或少失）幾分，才能多贏一場</div>
+    <div class="def"><b>9 × 得分 ÷ 局數</b>：聯盟每九局得分（R/9），也就是得分環境</div>
+    <table class="box-table htable" style="font-size:17px;margin-top:16px">
+      <thead><tr><th class="lab">球季</th><th>2010</th><th>2011</th><th>2012</th><th>2013</th><th>2014</th><th>2015</th></tr></thead>
+      <tbody>
+        <tr><td class="lab">RPW <span class="src k">GUTS</span></td><td>9.643</td><td>9.454</td><td>9.544</td><td>9.264</td><td>9.117</td><td>9.421</td></tr>
+        <tr><td class="lab">R/9（推論：(RPW − 3) ÷ 1.5）</td><td>4.43</td><td>4.30</td><td>4.36</td><td>4.18</td><td>4.08</td><td>4.28</td></tr>
+      </tbody>
+    </table>
+    <div class="alert"><span class="badge">! ATTENTION</span><p>「10 分 ＝ 1 勝」只是近似：得分環境越高，多贏一場需要的分數越多，通常介於 9 到 10。</p></div>
+  </div>
+</section>
+
+<!-- P.13 -->
+<section class="slide" data-file="FIP.EXE" style="--accent:var(--pit)">
+  <div class="body" style="padding-top:20px">
+    <div class="kicker">STAGE 05 · PITCHING</div>
+    <h2 style="margin-bottom:10px">FIP：只看投手自己能控制的結果</h2>
+    <div class="grid2" style="grid-template-columns:1.15fr 1fr;gap:20px">
+      <div>
+        <div class="formula" style="font-size:18px;margin-top:0">$$\text{FIP} = \dfrac{13\,\text{HR} + 3(\text{BB} + \text{HBP}) - 2\,\text{K}}{\text{IP}} + C$$</div>
+        <div class="formula" style="font-size:16px">$$C = \text{lgERA} - \dfrac{13\,\text{lgHR} + 3(\text{lgBB} + \text{lgHBP}) - 2\,\text{lgK}}{\text{lgIP}}$$</div>
+        <div class="def" style="font-size:14px"><b>HR</b> 被全壘打、<b>BB</b> 保送、<b>HBP</b> 觸身球、<b>K</b> 三振、<b>IP</b> 投球局數；<b>lg</b> 開頭：全聯盟總數；<b>C</b>：讓聯盟平均 FIP ＝ 聯盟平均 ERA 的常數，一般約 3.10</div>
+      </div>
+      <div>
+        <div class="panel pad-top"><span class="ptag">WHY · DIPS</span><p class="tiny" style="font-size:15px">Voros McCracken 發現：場內球變成安打的比例在不同球季之間幾乎不相關，大多取決於守備與運氣。所以只用不需要守備員的四種事件，也去除了事件順序（sequencing）的影響。</p></div>
+        <div class="panel pad-top" style="margin-top:14px"><span class="ptag"><span class="zh">推論</span></span><p class="tiny" style="font-size:15px">係數約等於「每個事件比一般場內球多（或少）造成的失分 × 9」：分子除以 IP 是每局，ERA 是每九局。來源只說係數來自各事件的相對價值。</p></div>
+      </div>
+    </div>
+    <table class="box-table htable" style="font-size:15px;margin-top:12px">
+      <thead><tr><th class="lab">FIP 評級（2016 年得分環境）</th><th>極佳</th><th>很好</th><th>高於平均</th><th>平均</th><th>低於平均</th><th>差</th><th>很差</th></tr></thead>
+      <tbody><tr><td class="lab">FIP <span class="src k">ART·FIP</span></td><td>3.20</td><td>3.50</td><td>3.80</td><td>4.20</td><td>4.40</td><td>4.70</td><td>5.00</td></tr></tbody>
+    </table>
+    <div class="alert small" style="margin-top:12px"><span class="badge">CAUTION</span><p>少數投手能長期優於 FIP（擅長牽制、製造不易成為安打的擊球）；FIP 預測未來比描述當下準，至少要一整季。</p></div>
+  </div>
+</section>
+
+<!-- P.14 -->
+<section class="slide" data-file="PITCHER_WAR.EXE" style="--accent:var(--pit)">
+  <div class="body" style="padding-top:20px">
+    <div class="kicker">STAGE 05 · PITCHER WAR</div>
+    <h2 style="margin-bottom:10px">投手 WAR：不同的起點，相同的邏輯</h2>
+    <p class="small" style="margin-bottom:10px">投手從 FIP 出發，但一樣是「換成得分 → 相對聯盟 → 加替補 → 換成勝場」。</p>
+    <div class="mods9">
+      <div class="panel pad-top"><span class="ptag">STEP 1</span><h3>ifFIP</h3><p>FIP，但內野高飛球算成三振</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 2</span><h3>轉成 RA9 尺度</h3><p>＋（聯盟 RA9 − 聯盟 ERA）</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 3</span><h3>球場調整</h3><p>÷ FIP 專用球場係數（乘法）</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 4</span><h3>和聯盟比</h3><p>聯盟 − 投手 ＝ 每九局少失幾分</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 5</span><h3>動態 RPW</h3><p>投手會改變自己出賽時的得分環境</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 6</span><h3>加上替補水準</h3><p>先發 0.12、後援 0.03（每場勝場）</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 7</span><h3>× IP ÷ 9</h3><p>依投球局數換成總量</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 8</span><h3>槓桿（後援）</h3><p>× (1 ＋ gmLI) ÷ 2；gmLI：登板時的平均槓桿</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 9</span><h3>全聯盟修正</h3><p>讓投手 WAR 總和 ＝ 430</p></div>
+    </div>
+    <div class="grid2" style="gap:16px;margin-top:4px">
+      <div class="note" style="font-size:15px"><b>NOTE：</b>第 1 步的 ifFIP 和上一頁的 FIP 只差在內野高飛球，常數也要重新計算，所以不能直接用球員頁上的 FIP 算 WAR。</div>
+      <div class="alert small" style="margin-top:10px;padding:8px 12px"><span class="badge">FRAMING</span><p style="font-size:15px">2019 起，第 1 步改用 FIP ＋ 每九局受惠的 framing 得分。例：Greinke 2011 FIP 3.00，捕手每九局幫他 0.31 分 → 用 3.31 計算。</p></div>
+    </div>
+  </div>
+</section>
+<!-- P.15 -->
+<section class="slide" data-file="RESULTS.TXT" style="--accent:var(--warc)">
+  <div class="body">
+    <div class="kicker">STAGE 06 · SUMMARY</div>
+    <h2>結論：每個組成各補上一塊拼圖</h2>
+    <table class="box-table" style="font-size:18px">
+      <thead><tr><th>組成</th><th>回答什麼</th><th>基準</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag" style="color:var(--bat);background:var(--bat-bg)">打擊</span></td><td>打擊比平均野手多幾分（已調整球場、聯盟）</td><td>所屬聯盟野手平均</td></tr>
+        <tr><td><span class="tag" style="color:var(--bsr);background:var(--bsr-bg)">跑壘</span></td><td>上壘之後跑得好不好</td><td>聯盟平均</td></tr>
+        <tr><td><span class="tag" style="color:var(--fld);background:var(--fld-bg)">守備</span></td><td>同守位裡守得好不好</td><td>同守位平均</td></tr>
+        <tr><td><span class="tag" style="color:var(--pos);background:var(--pos-bg)">守位</span></td><td>守的位置有多難</td><td>守位難度表</td></tr>
+        <tr><td><span class="tag" style="color:var(--lgc);background:var(--lgc-bg)">聯盟</span></td><td>修正 AL、NL 之間的落差</td><td>各聯盟總和歸零</td></tr>
+        <tr><td><span class="tag" style="color:var(--rep);background:var(--rep-bg)">替補</span></td><td>把「比平均」改成「比替補」，反映上場量</td><td>替補勝率 .294</td></tr>
+      </tbody>
+    </table>
+    <div class="alert green"><span class="badge">KEY</span><p>所有貢獻先換成「得分」才能相加，再用 RPW 換成「勝場」：WAR ＝ RAR ÷ RPW。</p></div>
+  </div>
+</section>
+
+<!-- P.16 -->
+<section class="slide" data-file="TROUT.CSV">
+  <div class="body" style="padding-top:20px">
+    <div class="kicker">STAGE 07 · RAW DATA</div>
+    <h2 style="margin-bottom:8px">範例資料：Mike Trout 的 Value 表</h2>
+    <p class="tiny">代碼：<span class="src">VAL·12·Batting</span> ＝ value.csv 中 2012 年那一列的 Batting 欄；<span class="src">PDF·FLD·12</span> ＝ 球員頁 PDF 的 Fielding 表；<span class="src">LOG·13</span> ＝ 2013 逐場紀錄；<span class="src">LDR·…</span> ＝ 2012 排行榜總和；<span class="src k">GUTS</span> 聯盟常數；<span class="src k">ART·xxx</span> 文章數字。</p>
+    <table class="box-table htable" style="font-size:15px;margin-top:8px">
+      <thead><tr><th class="lab">球季</th><th>Batting</th><th>Base Running</th><th>Fielding</th><th>Positional</th><th>Offense</th><th>Defense</th><th>League</th><th>Replacement</th><th>RAR</th><th>WAR</th><th>PA</th></tr></thead>
+      <tbody>
+        <tr><td class="lab">2012 <span class="src">VAL·12</span></td><td>50.1</td><td>14.3</td><td>10.4</td><td>−0.2</td><td>64.4</td><td>10.2</td><td>2.7</td><td>18.9</td><td>96.1</td><td>10.1</td><td>639</td></tr>
+        <tr><td class="lab">2013 <span class="src">VAL·13</span></td><td>62.2</td><td>8.2</td><td>1.6</td><td>−1.2</td><td>70.5</td><td>0.5</td><td>2.6</td><td>20.5</td><td>94.0</td><td>10.1</td><td>716</td></tr>
+      </tbody>
+    </table>
+    <div class="grid3" style="gap:14px 16px;margin-top:16px">
+      <div class="panel pad-top"><span class="ptag">PDF·FLD</span><p class="tiny">守備局數：2012 LF 328.0、CF 885⅔、RF 12.0；2013 LF 356.0、CF 952⅔（.2 ＝ 2/3 局）</p></div>
+      <div class="panel pad-top"><span class="ptag">GUTS · ART·wRC</span><p class="tiny">RPW 2012 ＝ 9.544、2013 ＝ 9.264；lgR/PA 2012 ＝ .114；天使主場 PF 0.95；美聯野手 wRC 10032、PA 85797</p></div>
+      <div class="panel pad-top"><span class="ptag">LOG·13</span><p class="tiny">2013 年 157 場，PA 716（＝ STD·13·PA ✓）；守位 CF 101、LF 37、DH 9、CF-LF 6、LF-CF 4</p></div>
+      <div class="panel pad-top"><span class="ptag">LDR·AL12</span><p class="tiny">美聯野手總和：Batting −24.5、BsR −27.6、Fielding −33.5、Positional −254.0、League 357.2</p></div>
+      <div class="panel pad-top"><span class="ptag">LDR·MLB12S</span><p class="tiny">全大聯盟 Standard：2430 場（TG 4860 ÷ 2）、PA 184,179、R 21,017</p></div>
+      <div class="panel pad-top"><span class="ptag">LDR·MLB12</span><p class="tiny">全大聯盟 Value：Batting −815.9、BsR +1.0、Fielding +16.6、Positional +353.8、League 444.5、Replacement 5440.2、WAR 570.0</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- P.17 -->
+<section class="slide" data-file="TROUT_2012.EXE" style="--accent:var(--warc)">
+  <div class="body" style="padding:18px 46px 24px">
+    <div class="kicker">STAGE 07 · EXAMPLE 1</div>
+    <h2 style="margin-bottom:8px;font-size:29px">Trout 2012：自己算一遍，再和 FanGraphs 對照</h2>
+    <div class="grid2" style="grid-template-columns:0.82fr 1.18fr;gap:18px">
+      <table class="box-table" style="font-size:14px">
+        <thead><tr><th>組成</th><th class="num">自己算</th><th class="num">FanGraphs</th><th>狀態</th></tr></thead>
+        <tbody>
+          <tr><td>Batting</td><td class="num">49.97</td><td class="num">50.1</td><td class="check">✓ 重算</td></tr>
+          <tr><td>Base Running</td><td class="num">—</td><td class="num">14.3</td><td>需 BIS 資料</td></tr>
+          <tr><td>Fielding</td><td class="num">—</td><td class="num">10.4</td><td>需 BIS 資料</td></tr>
+          <tr><td>Positional</td><td class="num">−0.23</td><td class="num">−0.2</td><td class="check">✓ 重算</td></tr>
+          <tr><td>League</td><td class="num">2.66</td><td class="num">2.7</td><td class="check">✓ 美聯總額分攤</td></tr>
+          <tr><td>Replacement</td><td class="num">18.87</td><td class="num">18.9</td><td class="check">✓ 重算</td></tr>
+          <tr><td>RAR</td><td class="num">96.2</td><td class="num">96.1</td><td class="check">✓ 加總</td></tr>
+          <tr><td>WAR</td><td class="num">10.07</td><td class="num">10.1</td><td class="check">✓</td></tr>
+        </tbody>
+      </table>
+      <div class="formula" style="font-size:16.5px;margin:0;padding:8px 12px">$$\begin{aligned}
+        \text{Batting} &= 48.2 + 3.64 - 1.87 = 49.97 \\
+        \text{Positional} &= \dfrac{328.0/9}{162}(-7.5) + \dfrac{885.67/9}{162}(2.5) + \dfrac{12.0/9}{162}(-7.5) \\ &= -1.69 + 1.52 - 0.06 = -0.23 \\
+        \text{League} &= \dfrac{357.2}{85797}\times639 = 2.66 \\
+        \text{Replacement} &= 570\times\dfrac{9.544}{184179}\times639 = 18.87 \\
+        \text{RAR} &= 50.1 + 14.3 + 10.4 - 0.2 + 2.7 + 18.9 = 96.2 \\
+        \text{WAR} &= 96.1 \div 9.544 = 10.07
+      \end{aligned}$$</div>
+    </div>
+    <div class="grid2" style="grid-template-columns:1fr 1fr;gap:16px;margin-top:10px">
+      <div class="alert small" style="margin-top:0;padding:8px 12px;align-items:flex-start"><span class="badge">OPEN</span><p style="font-size:15px">照文章公式應該用「另外四項總和的相反數」339.6，只得 2.53；美聯 League 總額多了 17.6。<b>推論</b>的兩個假說：①聯盟調整把投手打擊也算進去；②表上的 Fielding 含捕手 framing、聯盟調整卻不含。兩者都沒有來源證實。</p></div>
+      <div class="panel pad-top"><span class="ptag">RESULT</span><p class="tiny" style="font-size:15px">MLB 總打席 184,179，代入得 18.87 ≈ 18.9；之前反推的 183,900（<span class="zh">推論</span>）只差 0.15%。六個組成裡，除了需要 BIS 原始資料的跑壘、守備，其餘四項都能自己算出來。</p></div>
+    </div>
+    <p class="tiny muted" style="margin-top:6px;font-size:12.5px">48.2 <span class="src">ADV·12·wRAA</span>；局數 <span class="src">PDF·FLD·12</span>；9.544 <span class="src k">GUTS</span>；3.64、−1.87 由 <span class="src k">ART·wRC</span> 計算；357.2 <span class="src">LDR·AL12</span>；85797 <span class="src k">ART·wRC</span>；184,179 <span class="src">LDR·MLB12S</span></p>
+  </div>
+</section>
+
+<!-- P.18 -->
+<section class="slide" data-file="TROUT_2013.EXE" style="--accent:var(--pos)">
+  <div class="body">
+    <div class="kicker">STAGE 07 · EXAMPLE 2</div>
+    <h2>Trout 2013：用逐場紀錄找到守位調整的缺口</h2>
+    <div class="grid3" style="gap:16px">
+      <div class="panel pad-top"><span class="ptag">MATCH</span><p class="small">WAR ＝ 94.0 ÷ 9.264 ＝ 10.15 ≈ 10.1 ✓<br><span class="src">VAL·13·RAR</span> <span class="src k">GUTS</span></p></div>
+      <div class="panel pad-top"><span class="ptag">MISMATCH</span><p class="small">守備表只有 LF 和 CF，算出 −0.20；但 <span class="src">VAL·13·Positional</span> ＝ −1.2，差了 1.0 分。</p></div>
+      <div class="panel pad-top"><span class="ptag"><span class="zh">推論</span>→ FOUND</span><p class="small">當時推論：差距約等於 83.5 局（約 9.3 場）的指定打擊。逐場紀錄：DH 先發 <b>9 場</b> <span class="src">LOG·13</span></p></div>
+    </div>
+    <div class="formula" style="font-size:19px;margin-top:16px">$$\begin{aligned}
+      \text{只算外野：}&\ \dfrac{356.0/9}{162}(-7.5) + \dfrac{952.67/9}{162}(2.5) = -0.20 \\
+      \text{推論 DH：}&\ \dfrac{-1.2 - (-0.20)}{-17.5}\times 162 \times 9 \approx 83.5 \text{ 局} \approx 9.3 \text{ 場} \\
+      \text{加上 DH 9 場：}&\ -0.20 + \dfrac{9}{162}\times(-17.5) = -0.20 - 0.97 = -1.17 \approx -1.2 \ \checkmark
+    \end{aligned}$$</div>
+    <div class="alert green"><span class="badge">LESSON</span><p>驗算對不上時，不硬湊數字：先寫下推論、列進缺失清單，再找資料證實。</p></div>
+  </div>
+</section>
+
+<!-- P.19 -->
+<section class="slide" data-file="README.TXT">
+  <div class="body" style="padding-top:20px">
+    <div class="kicker">STAGE 08 · LIMITS</div>
+    <h2 style="margin-bottom:12px">WAR 不能怎麼用</h2>
+    <div class="sixgrid">
+      <div class="panel pad-top"><span class="ptag">ESTIMATE</span><p class="tiny" style="font-size:15px"><b>它是估計值</b>：6 WAR 可能介於 5 到 7；6.4 和 6.1 分不出高下，6.4 和 4.1 才分得出。</p></div>
+      <div class="panel pad-top"><span class="ptag">TEAM</span><p class="tiny" style="font-size:15px"><b>球隊總和 ≠ 勝場</b>：要加回全替補球隊的基準勝場。</p></div>
+      <div class="panel pad-top"><span class="ptag">PAST</span><p class="tiny" style="font-size:15px"><b>衡量過去，不是實力</b>：估計真實實力時，用近三年 WAR 依 5／3／1 加權平均。</p></div>
+      <div class="panel pad-top"><span class="ptag">FIELDING</span><p class="tiny" style="font-size:15px"><b>守備最不確定</b>：守備數據由人工輸入；靠守備拿到大量 WAR 的球員，誤差也較大。</p></div>
+      <div class="panel pad-top"><span class="ptag">CONTEXT</span><p class="tiny" style="font-size:15px"><b>不考慮情境</b>：關鍵安打沒有額外加分；情境價值要看 WPA。</p></div>
+      <div class="panel pad-top" style="background:#fff7cc"><span class="ptag">VERSION</span><p class="tiny" style="font-size:15px"><b>方法會更新</b>：2013 統一替補水準（.265 → .294）；2019 加入捕手 framing；2024 守備與跑壘改用 Statcast（回溯至 2016，多數球員變動在 1 以內，舊值以 Legacy WAR 保留）。</p></div>
+    </div>
+    <div class="legend" style="margin-top:14px;font-size:13px;line-height:1.6">
+      <div><b>Wiki 頁面</b>：war、war-position-players、war-pitchers、batting-runs、bsr、uzr、drs、fip、positional-adjustment、replacement-level、runs-per-win</div>
+      <div><b>來源</b>：Slowinski〈What is WAR?〉2010、〈WAR Misconceptions〉2012、〈WAR for Position Players〉2012、Slowinski／Weinberg〈WAR for Pitchers〉2012、Slowinski〈wRC and wRC+〉2010、〈UZR〉2010、〈DRS〉2010、〈FIP〉2010、Cameron〈Unifying Replacement Level〉2013、Appelman〈WAR Update: Catcher Framing〉2019、〈2024 FanGraphs WAR Update〉2024</div>
+      <div class="muted">出處：5／3／1 <span class="src k">ART·Misc</span>；5 到 7 <span class="src k">ART·WAR</span>；Statcast <span class="src k">ART·WAR24</span>；.265 → .294 <span class="src k">ART·RL13</span>；framing <span class="src k">ART·FRM19</span></div>
+    </div>
+  </div>
+</section>
+
+</div></div>
+
+<div id="nav"><button id="prev" aria-label="上一頁">◀ PREV</button><span id="count"></span><button id="next" aria-label="下一頁">NEXT ▶</button></div>
+
+<style>
+.flab{background:#fffdf6;border:2.5px solid #1a1638;box-shadow:3px 3px 0 #1a1638;padding:5px 10px 6px;font-family:var(--sans)}
+.flab .fh{font-size:12px;color:#77738f;font-weight:700;margin-bottom:2px}
+.flab .ops{display:grid;grid-template-columns:16px 1fr;column-gap:4px;row-gap:1px;font-size:15px;line-height:1.35;color:#1a1638}
+.flab .ops span:nth-child(odd){font-weight:900;text-align:center;color:#d45d16}
+.flab.br .ops span:nth-child(odd){color:#8a3fb8}
+.flab .fn{font-size:12px;color:#8a3fb8;margin-top:2px;padding-left:20px}
+.legend{background:#fffaf0;border:2px dashed #8f88a8;padding:10px 14px;font-size:15px;line-height:1.7;color:#1a1638}
+</style>
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=0, deck=document.getElementById('deck'), N=slides.length;
+  var prog=document.getElementById('progress');
+  slides.forEach(function(s,k){
+    var bar=document.createElement('div');bar.className='bar';
+    var no=String(k+1).padStart(2,'0'), tot=String(N).padStart(2,'0');
+    bar.innerHTML='<span class="btns"><i></i><i></i><i></i></span><span class="fname">'+(s.getAttribute('data-file')||'SLIDE')+'</span><span class="spark">✦ ✧ ✦</span><span class="pg">'+no+'/'+tot+'</span>';
+    s.insertBefore(bar,s.firstChild);
+    var seg=document.createElement('i');prog.appendChild(seg);
+  });
+  function fit(){var s=Math.min(window.innerWidth/1310,(window.innerHeight-70)/745);deck.style.transform='scale('+s+')'}
+  function show(n){i=Math.max(0,Math.min(N-1,n));slides.forEach(function(s,k){s.classList.toggle('active',k===i)});
+    document.getElementById('count').textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+    [].forEach.call(prog.children,function(e,k){e.classList.toggle('on',k<=i)});
+    try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+  window.__show=show;
+  document.getElementById('prev').onclick=function(){show(i-1)};
+  document.getElementById('next').onclick=function(){show(i+1)};
+  document.addEventListener('keydown',function(e){
+    if(['ArrowRight','PageDown',' ','Enter'].indexOf(e.key)>=0){e.preventDefault();show(i+1)}
+    else if(['ArrowLeft','PageUp','Backspace'].indexOf(e.key)>=0){e.preventDefault();show(i-1)}
+    else if(e.key==='Home')show(0); else if(e.key==='End')show(N-1);
+  });
+  var x0=null;document.addEventListener('touchstart',function(e){x0=e.touches[0].clientX});
+  document.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)show(i+(dx<0?1:-1));x0=null});
+  window.addEventListener('resize',fit);fit();
+  var h=parseInt((location.hash||'#1').slice(1),10);show(isNaN(h)?0:h-1);
+})();
+</script>
+</body>
+</html>

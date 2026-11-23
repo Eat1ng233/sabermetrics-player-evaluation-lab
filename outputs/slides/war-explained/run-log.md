@@ -56,7 +56,14 @@ N1 範圍界定（不停下，缺口帶入缺失清單）
 | 18 | **SOP-01 寫入 wiki** | 新增 `drs.md` 與 3 個來源頁；更新替補水準（分歧改為時間先後，移除 needs-review）、野手 WAR、投手 WAR、UZR、WAR、index | — | `wiki/log.md` |
 | 19 | **N2 第 5 輪** | `verify.py` 新增 3 項；spec 頁面 18 → 19；缺失 9 筆中 8 筆已解決 | ✅ **54/54**；spec_check 通過 | `evidence/n2-round5_spec_check.txt` |
 | 20 | **N3 毛片 d3** | 新增 P.9 捕手與 DRS；P.5 替補水準歷史；P.14 framing；P.17 Replacement 已驗算＋17.6 兩個假說；P.19 方法更新時間線 | ✅ `--draft` 通過；`--render` 擋下（未確認＋1 筆未解決） | `evidence/n3-d3_draft_check.txt`、`evidence/n4-d3_render_gate_blocked.txt` |
-| 21 | **🛑 使用者審閱毛片 d3** | 等待使用者回饋 | ⏸ | — |
+| 21 | **🛑 使用者審閱毛片 d3** | 使用者接受缺失 #4（17.6 差距標示推論）；確認欄第 2、3 項勾選；內容確認（第 1 項）使用者表示還要再看 | ⏸ 等待內容確認 | — |
+| 22 | **確認** | 使用者回覆「確認，開始渲染」→ `content_approved: true` | ✅ `--render` 通過（0 筆未處理） | `evidence/n4-d3_render_gate_passed.txt` |
+| 23 | **N4 撰寫 src.html** | 依 d3 逐頁撰寫 19 頁，套用 template.html | — | `src.html` |
+| 24 | **N5／N6 第 1 輪** | build 通過；check.py 19/19 通過；目視發現 P.4「第 2 步」標籤被裁掉、P.17 公式偏小 | ❌ 目視未通過 | `evidence/n6-round1_check.json` |
+| 25 | **R 規則回寫** | `check.py` 新增 `fo_clip`（foreignObject 內容被裁掉）；用第 1 輪成品測試 → 擋下 P.4；SOP 版面規則新增一條 | ✅ 規則生效 | `evidence/r-check-fo-clip-test.json` |
+| 26 | **N5／N6 第 2 輪** | 放寬標籤框、放大公式 | ✅ build、check.py 19/19、目視通過 | `evidence/n5-round2_build.txt`、`evidence/n6-round2_check.json` |
+| 27 | **N7 交付** | `outputs/slides/war-explained.html`（19 頁，511 KB，可離線） | ✅ | — |
+| 28 | **🛑 N8 使用者審閱成品** | 等待回饋 | ⏸ | — |
 
 ## 4. 和 v1.1 執行的差別
 
@@ -69,7 +76,7 @@ N1 範圍界定（不停下，缺口帶入缺失清單）
 
 本次 N2 第 1 輪即通過，原因是沿用了 v1.1 執行中被關卡擋下兩次（推論數字寫成估計值、撰寫時新增未驗證數字）後修正的計算邏輯。
 
-## 5. 下一步
+## 5. 下一步（已完成至 N7）
 
 1. 使用者審閱 `draft.md`：回覆內容修改、提供第 2 節的資料，或接受目前的處理方式。
 2. 有資料 → SOP-02 匯入 → 回 N2；有內容修改 → 規則回寫 → 回 N2。

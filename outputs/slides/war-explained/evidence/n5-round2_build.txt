@@ -1,0 +1,1 @@
+{"ok":true,"formulas":15,"sizeKB":511,"out":"outputs/slides/war-explained.html"}

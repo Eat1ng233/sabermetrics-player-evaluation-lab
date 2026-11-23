@@ -219,6 +219,7 @@ python3 scripts/slides/check.py outputs/slides/<slug>.html --shots outputs/slide
 - **重要提醒要醒目**：用黃色警示框，不要藏在小字備註裡。
 - **範例前先放原始數據表**，每個數字標上資料位置代碼（例：`STD·13·BB` = standard.csv 中 2013 年那一列的 BB 欄）；聯盟常數標 `GUTS`，文章數字標 `ART·…`。對應 spec.md 的數字表。
 - **風格**：80 年代復古（早期電腦 × 街機像素）＋少量 Y2K。像素字體**只用在英文標籤與數字**；中文一律用無襯線字體（在像素字體區塊中，中文要包 `.zh`）。check.py 會自動檢查。
+- **流程圖標籤的框要夠大**：箭頭標籤（foreignObject）的寬高不足時，文字會被裁掉，而不是溢出投影片。war-explained 的 P.4 發生過，已由 `check.py` 的 `fo_clip` 自動檢查。
 - **推論要標示**：簡報中的推論和來源說法一樣，要註明「推論」。對應 spec.md 的推論清單。
 - **分數用 `\dfrac`，不用 `\tfrac`**：`\tfrac` 在投影片上字太小。兩份簡報的 v1 都犯過，已改由 `build.js` 自動擋下。
 - **撰寫時新增的數字，要先回 N2 補進規格**：N4 不可以出現數字表裡沒有的數字（war-explained 執行時發生過）。

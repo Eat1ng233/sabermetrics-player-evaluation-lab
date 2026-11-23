@@ -3,9 +3,9 @@ title: 簡報規格：WAR 是怎麼算出來的
 type: slide-spec
 slug: war-explained
 version: v4
-status: draft-delivered
-content_approved: false
-approval_note: 等待使用者審閱毛片 draft.md（d3）
+status: delivered
+content_approved: true
+approval_note: 使用者於 2026-11-24 00:41 確認毛片 d3 內容（「確認，開始渲染」）
 updated: 2026-11-24
 ---
 
@@ -147,3 +147,6 @@ updated: 2026-11-24
 | N2-4 | 使用者補上 2012 總打席與 3 篇文章；新增 5 項驗算，51/51 通過；總打席已解決 | 文章待同意後匯入，再出毛片 d3 |
 | N2-5 | 使用者同意匯入 3 篇文章；新增 3 項驗算，54/54 通過；頁面 18 → 19；缺失只剩 1 筆 | 進入 N3 |
 | N3 d3 | --draft 通過（19 頁） | 交付毛片 d3，等待使用者審閱 |
+| 確認 | 使用者接受缺失 #4（標示推論）並確認內容；content_approved: true；--render 通過 | 進入 N4 |
+| N6-1 | build 通過（15 個公式）；check.py 19/19 通過；目視：P.4 第 2 步標籤被裁掉、P.17 公式偏小 | R：check.py 新增 fo_clip；回 N4 |
+| N6-2 | build 通過；check.py（含 fo_clip）19/19 通過；目視通過 | N7 交付 |

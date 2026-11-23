@@ -1,0 +1,17 @@
+{
+ "deck": "outputs/slides/war-explained.html",
+ "pages": 19,
+ "failed_pages": 1,
+ "problems": [
+  {
+   "page": 4,
+   "ok": false,
+   "fo_clip": [
+    "flab: 第 2 步÷RPW（每勝得分） (+12px)",
+    "ops: ÷RPW（每勝得分） (+4px)",
+    "SPAN: ÷ (+4px)",
+    "SPAN: RPW（每勝得分） (+4px)"
+   ]
+  }
+ ]
+}

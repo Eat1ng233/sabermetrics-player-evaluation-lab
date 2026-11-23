@@ -143,3 +143,8 @@
 ## [2026-11-24] output | war-explained 毛片 d3
 - verify 54/54；頁面 18 → 19（新增捕手與 DRS）；缺失 9 筆只剩「美聯 League 差 17.6」
 - 停在「🛑 使用者審閱毛片 d3」
+
+## [2026-11-24] output | war-explained 渲染交付（SOP-04 N4–N7）
+- 使用者確認毛片 d3 → content_approved: true → --render 通過
+- N6 第 1 輪目視發現流程圖標籤被裁掉 → R：check.py 新增 fo_clip、SOP 版面規則新增一條 → 第 2 輪通過
+- 成品：`outputs/slides/war-explained.html`（19 頁）；SUBMISSION.md 第 5、6 項更新

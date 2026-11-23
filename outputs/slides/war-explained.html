@@ -140,159 +140,179 @@ td.c,th.c{text-align:center}
   @page{size:1280px 720px;margin:0}
 }
 </style>
+<style>
+:root{--bat:#2a55c9;--bat-bg:#e3ebff;--bsr:#8a3fb8;--bsr-bg:#f1e4fa;--fld:#0e8a84;--fld-bg:#dcf5f2;--pos:#3b8a1d;--pos-bg:#e6f5dc;--lgc:#55566b;--lgc-bg:#ebebf0;--rep:#d45d16;--rep-bg:#ffe9da;--warc:#b3263e;--warc-bg:#fde3e7;--pit:#1d6fa3;--pit-bg:#dff0fb}
+.htable th,.htable td{text-align:center;padding:6px 6px}
+.htable td.lab,.htable th.lab{text-align:left}
+.flow{display:flex;align-items:stretch;gap:8px;margin:10px 0}
+.flow .fb{flex:1;background:#fff;border:2px solid var(--line);box-shadow:3px 3px 0 var(--line);padding:8px 10px;font-size:16px;line-height:1.45;text-align:center}
+.flow .fb b{display:block;font-size:20px}
+.flow i{align-self:center;font-style:normal;color:var(--pink);font-size:16px}
+.sixgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 18px}
+.mods9{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 16px}
+.mods9 .panel{padding:10px 12px 8px}
+.mods9 .panel h3{font-size:17px;margin-bottom:2px}
+.mods9 .panel p{font-size:15px;line-height:1.45}
+.alert.blue{background:#cfefff}.alert.blue .badge{background:#1d6fa3}
+.alert.green{background:#d9f7c9}.alert.green .badge{background:#2f7d22}
+.alert.small p{font-size:17px}
+.mini-chain span.on.c-bat{background:var(--bat)}
+</style>
 </head>
 <body>
 <div id="progress"></div>
 <div id="stage"><div class="deck" id="deck">
-<!-- ======== 1 TITLE ======== -->
+
+
+<!-- P.1 -->
 <section class="slide title-slide" data-file="WAR.EXE">
   <div class="body">
     <div class="crt">
-      <span class="sparkle" style="right:46px;top:28px">✦</span><span class="sparkle" style="right:90px;top:70px;font-size:16px;color:#ff8fc0">✦</span>
+      <span class="sparkle" style="right:46px;top:28px">✦</span>
+      <span class="sparkle" style="right:90px;top:70px;font-size:16px;color:var(--pink)">✧</span>
       <div class="boot">SABERMETRICS PLAYER EVALUATION LAB · v1.0<br>&gt; LOADING WAR_ENGINE ... OK</div>
-      <h1>WAR 是怎麼算出來的<br>從六個組成到一個勝場數</h1>
+      <h1>WAR 是怎麼算出來的</h1>
+      <p class="sub" style="font-size:24px;font-weight:800;margin-bottom:6px">從六個組成到一個勝場數</p>
       <p class="sub">打擊、跑壘、守備、守位、聯盟、替補 → 加總成得分 → 換算成勝場</p>
-      <div class="chainline">
-        <span style="background:#c9b6f0">RUNS</span><i>▶</i>
-        <span style="background:#9db8ff">RAR</span><i>▶</i>
-        <span style="background:#ffb3c1">WAR</span>
-      </div>
-      <p class="boot" style="margin-top:24px;font-size:24px">PRESS ▶ OR SPACE TO START <span class="cursor"></span></p>
+      <div class="chainline"><span style="background:#9db8ff">RUNS</span><i>▶</i><span style="background:#ffb98c">RAR</span><i>▶</i><span style="background:#ff9fb4">WAR</span></div>
+      <p class="boot" style="margin-top:22px;font-size:24px">PRESS ▶ OR SPACE TO START <span class="cursor"></span></p>
     </div>
-    <p class="tiny" style="color:#5b5875;margin-top:16px">資料：FanGraphs Library（What is WAR?、WAR Misconceptions、WAR for Position Players、WAR for Pitchers、wRC and wRC+、Park Factors）· 範例數據：Mike Trout FanGraphs 球員頁</p>
+    <p class="tiny" style="color:#5b5875;margin-top:14px">資料來源：FanGraphs Library（What is WAR?、WAR Misconceptions、WAR for Position Players、WAR for Pitchers、wRC and wRC+、Park Factors、UZR、DRS、FIP）、FanGraphs（Unifying Replacement Level、WAR Update: Catcher Framing、2024 FanGraphs WAR Update）；範例數據：Mike Trout FanGraphs 球員頁、FanGraphs 2012 排行榜</p>
   </div>
 </section>
 
-<!-- ======== 2 MENU ======== -->
+<!-- P.2 -->
 <section class="slide" data-file="MENU.EXE">
   <div class="body">
     <div class="kicker">SELECT STAGE</div>
     <h2>這份投影片的路線圖</h2>
-    <div class="panel" style="margin-bottom:22px;background:#e8fbff;box-shadow:4px 4px 0 var(--cyan)">
-      <p style="font-size:21px"><b>核心問題：</b>「這位球員比隨手可得的替補球員，多替球隊贏了幾場？」我們先把每種貢獻換成<b>得分</b>，加總後再換成<b>勝場</b>。</p>
-    </div>
+    <div class="why" style="margin:0 0 18px;font-size:19px"><b>核心問題：</b>「這位球員比隨手可得的替補球員，多替球隊贏了幾場？」先把每種貢獻換成<b>得分</b>，加總後再換成<b>勝場</b>。</div>
     <div class="mods">
       <div class="mod arrow"><span class="pp">P.3</span><span class="no">01</span><h3>WAR 是什麼</h3><p>它回答什麼問題、怎麼解讀數字</p></div>
       <div class="mod arrow"><span class="pp">P.4</span><span class="no">02</span><h3>流程圖</h3><p>六個組成 → RAR → WAR 的全貌</p></div>
       <div class="mod arrow"><span class="pp">P.5</span><span class="no">03</span><h3>替補水準</h3><p>為什麼基準不是「平均」</p></div>
-      <div class="mod"><span class="pp">P.6–10</span><span class="no">04</span><h3>逐項拆解</h3><p>打擊、跑壘、守備與守位、聯盟與替補、RPW</p></div>
-      <div class="mod arrow"><span class="pp">P.11</span><span class="no">05</span><h3>投手 WAR</h3><p>不同的起點，相同的邏輯</p></div>
-      <div class="mod arrow"><span class="pp">P.12</span><span class="no">06</span><h3>結論</h3><p>每個組成各補上什麼</p></div>
-      <div class="mod arrow"><span class="pp">P.13–15</span><span class="no">07</span><h3>實際範例</h3><p>Trout 原始數據 → 2012 拆解 → 2013 對不上的地方</p></div>
-      <div class="mod"><span class="pp">P.16</span><span class="no">08</span><h3>限制與誤解</h3><p>WAR 不能怎麼用</p></div>
+      <div class="mod"><span class="pp">P.6–12</span><span class="no">04</span><h3>逐項拆解</h3><p>打擊、跑壘、守備（UZR）、捕手與 DRS、守位、聯盟與替補、RPW</p></div>
+      <div class="mod arrow"><span class="pp">P.13–14</span><span class="no">05</span><h3>投手 WAR</h3><p>先認識 FIP，再看投手 WAR 的九個步驟</p></div>
+      <div class="mod arrow"><span class="pp">P.15</span><span class="no">06</span><h3>結論</h3><p>每個組成各補上什麼</p></div>
+      <div class="mod arrow"><span class="pp">P.16–18</span><span class="no">07</span><h3>實際範例</h3><p>Trout 原始數據 → 2012 拆解 → 2013 守位調整</p></div>
+      <div class="mod"><span class="pp">P.19</span><span class="no">08</span><h3>限制與誤解</h3><p>WAR 不能怎麼用</p></div>
     </div>
   </div>
 </section>
 
-<!-- ======== 3 WHAT ======== -->
-<section class="slide" data-file="WAR_INFO.DAT" style="--accent:var(--war)">
+<!-- P.3 -->
+<section class="slide" data-file="WHAT_IS_WAR.TXT" style="--accent:var(--warc)">
   <div class="body">
-    <div class="kicker">STAGE 01 · CHARACTER SELECT</div>
+    <div class="kicker">STAGE 01 · DEFINITION</div>
     <h2>WAR 在回答什麼問題？</h2>
-    <div class="grid2" style="grid-template-columns:1.05fr 1fr">
+    <div class="grid2" style="grid-template-columns:1.25fr 1fr">
       <div>
-        <div class="def" style="margin-top:0"><b>WAR（Wins Above Replacement）</b>：如果這位球員受傷，球隊只能找小聯盟或板凳邊緣球員（<b>替補球員</b>）頂上，球隊會<b>少贏幾場</b>？</div>
-        <div class="def"><b>單位是「勝場」</b>：打擊、跑壘、守備、投球的貢獻都先換成得分，再換成勝場，所以強打一壘手和頂級守備游擊手可以放在同一把尺上比較。</div>
-        <div class="grid2" style="margin-top:16px;gap:12px">
-          <div class="panel pad-top"><span class="ptag">CAN</span><p class="tiny">跨年份、跨聯盟、跨球隊比較：已經做了球場與聯盟調整</p></div>
-          <div class="panel pad-top"><span class="ptag">NEGATIVE</span><p class="tiny">可以是負值：表現比替補球員還差</p></div>
+        <div class="def" style="font-size:19px;margin-top:0"><b>WAR（Wins Above Replacement）</b>：如果這位球員受傷，球隊只能找小聯盟或板凳邊緣球員（<b>替補球員</b>）頂上，球隊會少贏幾場？</div>
+        <div class="panel pad-top" style="margin-top:20px"><span class="ptag">UNIT = WINS</span><p class="small">單位是「勝場」：打擊、跑壘、守備、投球的貢獻都先換成得分，再換成勝場，所以強打一壘手和頂級守備游擊手可以放在同一把尺上比較。</p></div>
+        <div class="grid2" style="margin-top:20px;gap:16px">
+          <div class="panel pad-top"><span class="ptag">CAN</span><p class="small">可以跨年份、跨聯盟、跨球隊比較，因為已經做了球場與聯盟調整。</p></div>
+          <div class="panel pad-top"><span class="ptag">NEGATIVE</span><p class="small">可以是負值，代表表現比替補球員還差。</p></div>
         </div>
       </div>
       <div>
-        <table class="box-table" style="font-size:16px">
+        <table class="box-table" style="font-size:17px">
           <thead><tr><th>單季 WAR</th><th>等級（先發野手、先發投手）</th></tr></thead>
           <tbody>
             <tr><td class="num">0–1</td><td>邊緣球員</td></tr>
             <tr><td class="num">1–2</td><td>角色球員</td></tr>
-            <tr><td class="num">2–3</td><td>穩定先發（<b>平均約 2</b>）</td></tr>
+            <tr><td class="num">2–3</td><td>穩定先發（平均約 2）</td></tr>
             <tr><td class="num">3–4</td><td>好球員</td></tr>
             <tr><td class="num">4–5</td><td>明星</td></tr>
             <tr><td class="num">5–6</td><td>超級明星</td></tr>
-            <tr style="background:#fde3e7"><td class="num">6+</td><td><b>MVP 等級</b></td></tr>
+            <tr><td class="num">6+</td><td>MVP 等級</td></tr>
           </tbody>
         </table>
-        <p class="tiny muted" style="margin-top:8px">出處：FanGraphs〈What is WAR?〉。板凳球員通常 0–1；後援投手超過 1 就很出色。</p>
+        <p class="tiny muted" style="margin-top:8px">板凳球員 0–1 就算正常；後援投手超過 1 就很出色。<span class="src k">ART·WAR</span></p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ======== 4 FLOWCHART ======== -->
+<!-- P.4 -->
 <section class="slide" data-file="MAP.EXE">
-  <div class="body" style="padding-top:20px">
+  <div class="body" style="padding-top:18px">
     <div class="kicker">STAGE 02 · WORLD MAP</div>
-    <h2 style="margin-bottom:8px">推導流程圖：先換成得分，再換成勝場</h2>
-    <svg viewBox="0 0 1160 520" width="1160" height="520" style="font-family:var(--sans);overflow:visible">
+    <h2 style="margin-bottom:6px">推導流程圖</h2>
+    <svg viewBox="0 0 1160 505" width="1160" height="505" style="font-family:var(--sans);overflow:visible">
       <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1638"/></marker></defs>
       <g stroke="#1a1638" stroke-width="3" fill="none">
-        <line x1="214" y1="34" x2="290" y2="34"/><line x1="214" y1="104" x2="290" y2="104"/><line x1="214" y1="174" x2="290" y2="174"/>
-        <line x1="214" y1="244" x2="290" y2="244"/><line x1="214" y1="314" x2="290" y2="314"/><line x1="214" y1="384" x2="290" y2="384"/>
-        <line x1="290" y1="34" x2="290" y2="384"/>
-        <line x1="290" y1="209" x2="586" y2="209" marker-end="url(#ar)"/>
-        <line x1="790" y1="209" x2="946" y2="209" marker-end="url(#ar)"/>
-        <line x1="790" y1="462" x2="946" y2="462" marker-end="url(#ar)"/>
+        <line x1="246" y1="24" x2="290" y2="24"/><line x1="246" y1="82" x2="290" y2="82"/><line x1="246" y1="140" x2="290" y2="140"/>
+        <line x1="246" y1="198" x2="290" y2="198"/><line x1="246" y1="256" x2="290" y2="256"/><line x1="246" y1="314" x2="290" y2="314"/>
+        <line x1="290" y1="24" x2="290" y2="314"/>
+      </g>
+      <g stroke="#1a1638" stroke-width="3" fill="none" marker-end="url(#ar)">
+        <line x1="290" y1="169" x2="556" y2="169"/>
+        <line x1="756" y1="169" x2="952" y2="169"/>
+        <line x1="246" y1="448" x2="952" y2="448"/>
       </g>
       <g text-anchor="middle">
-        <rect x="4" y="8" width="210" height="52" fill="#dcf5f2" stroke="#1a1638" stroke-width="2.5"/><text x="109" y="31" font-size="17" font-weight="900" fill="#0e8a84">打擊 Batting</text><text x="109" y="50" font-size="12" fill="#0e8a84">wRAA ＋ 球場、聯盟調整</text>
-        <rect x="4" y="78" width="210" height="52" fill="#e6f5dc" stroke="#1a1638" stroke-width="2.5"/><text x="109" y="101" font-size="17" font-weight="900" fill="#3b8a1d">跑壘 BsR</text><text x="109" y="120" font-size="12" fill="#3b8a1d">UBR ＋ wSB ＋ wGDP</text>
-        <rect x="4" y="148" width="210" height="52" fill="#e3ebff" stroke="#1a1638" stroke-width="2.5"/><text x="109" y="171" font-size="17" font-weight="900" fill="#2a55c9">守備 Fielding</text><text x="109" y="190" font-size="12" fill="#2a55c9">相對同守位平均</text>
-        <rect x="4" y="218" width="210" height="52" fill="#e3ebff" stroke="#1a1638" stroke-width="2.5"/><text x="109" y="241" font-size="17" font-weight="900" fill="#2a55c9">守位 Positional</text><text x="109" y="260" font-size="12" fill="#2a55c9">守位難度調整</text>
-        <rect x="4" y="288" width="210" height="52" fill="#ebebf0" stroke="#1a1638" stroke-width="2.5"/><text x="109" y="311" font-size="17" font-weight="900" fill="#55566b">聯盟 League</text><text x="109" y="330" font-size="12" fill="#55566b">各聯盟總和歸零</text>
-        <rect x="4" y="358" width="210" height="52" fill="#fff2c2" stroke="#1a1638" stroke-width="2.5"/><text x="109" y="381" font-size="17" font-weight="900" fill="#9a6b00">替補 Replacement</text><text x="109" y="400" font-size="12" fill="#9a6b00">基準從平均改成替補</text>
-
-        <rect x="590" y="176" width="200" height="66" fill="#f1e4fa" stroke="#1a1638" stroke-width="2.5"/><rect x="594" y="242" width="200" height="4" fill="#1a1638"/>
-        <text x="690" y="207" font-size="24" font-weight="900" fill="#8a3fb8">RAR</text><text x="690" y="229" font-size="13" fill="#8a3fb8">得分 · 高於替補</text>
-        <rect x="950" y="176" width="206" height="66" fill="#fde3e7" stroke="#1a1638" stroke-width="2.5"/><rect x="954" y="242" width="206" height="4" fill="#1a1638"/>
-        <text x="1053" y="207" font-size="24" font-weight="900" fill="#b3263e">野手 WAR</text><text x="1053" y="229" font-size="13" fill="#b3263e">勝場</text>
-
-        <rect x="590" y="432" width="200" height="60" fill="#ffe9da" stroke="#1a1638" stroke-width="2.5"/>
-        <text x="690" y="459" font-size="18" font-weight="900" fill="#d45d16">投手：ifFIP</text><text x="690" y="479" font-size="12" fill="#d45d16">FIP（內野高飛球算三振）</text>
-        <rect x="950" y="432" width="206" height="60" fill="#fde3e7" stroke="#1a1638" stroke-width="2.5"/>
-        <text x="1053" y="466" font-size="20" font-weight="900" fill="#b3263e">投手 WAR</text>
+        <rect x="4" y="2" width="242" height="46" fill="#e3ebff" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="22" font-size="17" font-weight="900" fill="#2a55c9">打擊 Batting</text><text x="125" y="40" font-size="12" fill="#2a55c9">wRAA ＋ 球場、聯盟調整</text>
+        <rect x="4" y="60" width="242" height="46" fill="#f1e4fa" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="80" font-size="17" font-weight="900" fill="#8a3fb8">跑壘 BsR</text><text x="125" y="98" font-size="12" fill="#8a3fb8">UBR ＋ wSB ＋ wGDP</text>
+        <rect x="4" y="118" width="242" height="46" fill="#dcf5f2" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="138" font-size="17" font-weight="900" fill="#0e8a84">守備 Fielding</text><text x="125" y="156" font-size="12" fill="#0e8a84">相對同守位平均</text>
+        <rect x="4" y="176" width="242" height="46" fill="#e6f5dc" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="196" font-size="17" font-weight="900" fill="#3b8a1d">守位 Positional</text><text x="125" y="214" font-size="12" fill="#3b8a1d">守位難度調整</text>
+        <rect x="4" y="234" width="242" height="46" fill="#ebebf0" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="254" font-size="17" font-weight="900" fill="#55566b">聯盟 League</text><text x="125" y="272" font-size="12" fill="#55566b">各聯盟總和歸零</text>
+        <rect x="4" y="292" width="242" height="46" fill="#ffe9da" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="312" font-size="17" font-weight="900" fill="#d45d16">替補 Replacement</text><text x="125" y="330" font-size="12" fill="#d45d16">基準從平均改成替補</text>
+        <rect x="560" y="134" width="196" height="70" fill="#fff3c4" stroke="#1a1638" stroke-width="2.5"/><rect x="564" y="204" width="196" height="4" fill="#1a1638"/><text x="658" y="166" font-size="26" font-weight="900" fill="#1a1638">RAR</text><text x="658" y="190" font-size="13" fill="#1a1638">得分 · 高於替補</text>
+        <rect x="956" y="134" width="200" height="70" fill="#fde3e7" stroke="#1a1638" stroke-width="2.5"/><rect x="960" y="204" width="200" height="4" fill="#1a1638"/><text x="1056" y="166" font-size="24" font-weight="900" fill="#b3263e">野手 WAR</text><text x="1056" y="190" font-size="13" fill="#b3263e">勝場</text>
+        <rect x="4" y="418" width="242" height="60" fill="#dff0fb" stroke="#1a1638" stroke-width="2.5"/><text x="125" y="443" font-size="17" font-weight="900" fill="#1d6fa3">投手 ifFIP</text><text x="125" y="463" font-size="12" fill="#1d6fa3">FIP，內野高飛球算三振</text>
+        <rect x="956" y="418" width="200" height="60" fill="#fde3e7" stroke="#1a1638" stroke-width="2.5"/><text x="1056" y="444" font-size="22" font-weight="900" fill="#b3263e">投手 WAR</text><text x="1056" y="464" font-size="13" fill="#b3263e">勝場</text>
       </g>
-      <foreignObject x="320" y="168" width="240" height="90"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 1 步</div><div class="ops"><span>Σ</span><span>六個組成相加</span><span>=</span><span>RAR（得分）</span></div></div></foreignObject>
-      <foreignObject x="800" y="172" width="140" height="80"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 2 步</div><div class="ops"><span>÷</span><span>RPW</span></div><div class="fn" style="color:#77738f">每勝得分</div></div></foreignObject>
-      <foreignObject x="800" y="400" width="140" height="120"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">投手分支</div><div class="ops"><span>÷</span><span>球場係數</span><span>÷</span><span>動態 RPW</span><span>+</span><span>替補水準</span><span>×</span><span>IP / 9</span></div></div></foreignObject>
-      <foreignObject x="320" y="300" width="250" height="110"><div xmlns="http://www.w3.org/1999/xhtml" class="legend">
-        <div>前五項以<b style="color:#0e8a84">平均</b>為 0</div>
-        <div>第六項把基準換成<b style="color:#9a6b00">替補球員</b></div>
-        <div>所以 RAR = 比替補多幾分</div>
+      <foreignObject x="318" y="128" width="214" height="82"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 1 步</div><div class="ops"><span>Σ</span><span>六個組成相加</span><span>=</span><span>RAR（得分）</span></div></div></foreignObject>
+      <foreignObject x="766" y="132" width="180" height="80"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 2 步</div><div class="ops"><span>÷</span><span>RPW（每勝得分）</span></div></div></foreignObject>
+      <foreignObject x="490" y="372" width="230" height="130"><div xmlns="http://www.w3.org/1999/xhtml" class="flab br"><div class="fh">投手分支</div><div class="ops"><span>÷</span><span>球場係數</span><span>÷</span><span>動態 RPW</span><span>+</span><span>替補水準</span><span>×</span><span>IP ÷ 9</span></div></div></foreignObject>
+      <foreignObject x="560" y="232" width="596" height="110"><div xmlns="http://www.w3.org/1999/xhtml" class="legend">
+        <div><b style="color:#2a55c9">前五項</b>：以「平均」為 0，算出比平均多幾分</div>
+        <div><b style="color:#d45d16">第六項</b>：把基準從平均換成替補球員</div>
+        <div><b>所以 RAR</b> ＝ 比替補多幾分；再除以 RPW 換成勝場</div>
       </div></foreignObject>
     </svg>
   </div>
 </section>
-
-<!-- ======== 5 REPLACEMENT ======== -->
-<section class="slide" data-file="REPLACE.DAT" style="--accent:#9a6b00">
+<!-- P.5 -->
+<section class="slide" data-file="REPLACE.DAT" style="--accent:var(--rep)">
   <div class="body">
-    <div class="kicker">STAGE 03 · <span class="zh">替補水準</span></div>
+    <div class="kicker">STAGE 03 · BASELINE</div>
     <h2>為什麼基準是「替補球員」，不是「平均球員」？</h2>
-    <div class="grid2">
+    <div class="grid2" style="gap:18px">
       <div class="panel pad-top"><span class="ptag">REASON 1</span><p class="small"><b>平均球員本身就有價值。</b>能穩定打出平均水準的球員並不好找，球隊要付出代價才能取得。</p></div>
       <div class="panel pad-top"><span class="ptag">REASON 2</span><p class="small"><b>平均基準看不出上場量。</b>以平均為 0 時，打 600 打席的平均球員和打 1 打席的球員都是 0。</p></div>
     </div>
-    <h3 style="margin-top:18px">替補水準有多低？</h3>
-    <div style="display:grid;grid-template-columns:1fr 30px 1fr 30px 1fr 30px 1fr;align-items:stretch">
-      <div class="panel pad-top"><span class="ptag">TOTAL</span><p class="small">每季 2,430 場比賽，共分配 <b>1,000 WAR</b></p></div>
-      <div style="display:flex;align-items:center;justify-content:center;color:var(--pink)">▶</div>
-      <div class="panel pad-top"><span class="ptag">REPLACEMENT</span><p class="small">全替補球隊的總勝場 = 2,430 − 1,000 = <b>1,430</b></p></div>
-      <div style="display:flex;align-items:center;justify-content:center;color:var(--pink)">▶</div>
-      <div class="panel pad-top"><span class="ptag">PER TEAM</span><p class="small">1,430 ÷ 30 隊 ≈ <b>47.7 勝</b>（推論）</p></div>
-      <div style="display:flex;align-items:center;justify-content:center;color:var(--pink)">▶</div>
-      <div class="panel pad-top"><span class="ptag">WIN PCT</span><p class="small">47.7 ÷ 162 ≈ <b>.294</b>，野手分 570、投手分 430</p></div>
+    <p class="small" style="margin-top:12px;font-weight:800">替補水準有多低？</p>
+    <div class="flow">
+      <div class="fb">每季 2,430 場<b>分配 1,000 WAR</b></div><i>▶</i>
+      <div class="fb">全替補球隊總勝場<b>2,430 − 1,000 ＝ 1,430</b></div><i>▶</i>
+      <div class="fb">每隊（<span class="zh">推論</span>）<b>1,430 ÷ 30 ≈ 47.7 勝</b></div><i>▶</i>
+      <div class="fb">替補勝率<b>47.7 ÷ 162 ≈ .294</b></div><i>▶</i>
+      <div class="fb">分配<b>野手 570／投手 430</b></div>
     </div>
-    <div class="alert"><span class="badge">! CONFLICT</span><p>另一篇 2012 年的文章說全替補球隊約 <b>43 勝</b>，和 47.7 勝不一致；可能是替補水準在兩篇文章之間調整過，目前沒有來源證實。</p></div>
+    <div class="grid2" style="grid-template-columns:1.05fr 1fr;gap:18px;margin-top:6px">
+      <table class="box-table" style="font-size:15px">
+        <thead><tr><th>時期／網站</th><th class="num">替補勝率</th><th class="num">每隊勝場</th></tr></thead>
+        <tbody>
+          <tr><td>FanGraphs（2013 年以前）</td><td class="num">.265</td><td class="num">約 43</td></tr>
+          <tr><td>Baseball-Reference（2013 年以前）</td><td class="num">.320</td><td class="num">約 52（推論）</td></tr>
+          <tr><td><b>統一後（2013 起）</b></td><td class="num"><b>.294</b></td><td class="num"><b>47.7</b></td></tr>
+        </tbody>
+      </table>
+      <div class="alert blue small" style="margin-top:0;align-items:flex-start"><span class="badge">HISTORY</span><p>2012 年的文章說全替補球隊約 43 勝，那是當時 FanGraphs 的基準 .265。2013 年兩站統一為 .294。驗證：生涯 6,000 打席以上的 628 位球員，只有 1 人低於 0 WAR。</p></div>
+    </div>
+    <p class="tiny muted" style="margin-top:8px">出處：1,000 WAR、.294、570／430 <span class="src k">ART·WAR</span> <span class="src k">ART·WARpp</span>；43 勝 <span class="src k">ART·Misc</span>；.265、.320、628 位 <span class="src k">ART·RL13</span>；47.7 勝、約 52 勝為推論</p>
   </div>
 </section>
 
-<!-- ======== 6 BATTING ======== -->
-<section class="slide" data-file="BATTING.EXE" style="--accent:var(--wraa)">
+<!-- P.6 -->
+<section class="slide" data-file="BATTING.EXE" style="--accent:var(--bat)">
   <div class="body">
-    <div class="mini-chain"><span class="on" style="background:var(--wraa)">打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span>守備·守位</span><i>▶</i><span>聯盟·替補</span><i>▶</i><span>RPW</span></div>
-    <div class="step-head"><span class="lv" style="background:var(--wraa)">LV 1</span><span class="kicker" style="margin:0"><span class="zh">組成 1 / 6</span></span></div>
-    <h2>打擊：Batting Runs</h2>
-    <div class="def" style="margin-top:0"><b>Batting Runs</b>：經過球場與聯盟調整後，打者比所屬聯盟平均野手多創造的得分。平均 = 0。</div>
-    <div class="formula" style="font-size:18px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">Batting</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0097em;vertical-align:-1.3263em;"></span><span class="minner munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6833em;"><span style="top:-1.6737em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord cjk_fallback mtight">未調整</span></span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="minner munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6833em;"><span class="svg-align" style="top:-2.352em;"><span class="pstrut" style="height:3em;"></span><span class="stretchy" style="height:0.548em;min-width:1.6em;"><span class="brace-left" style="height:0.548em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="0.548em" viewBox="0 0 400000 548" preserveAspectRatio="xMinYMin slice"><path d="M0 6l6-6h17c12.688 0 19.313.3 20 1 4 4 7.313 8.3 10 13
+    <div class="mini-chain"><span class="on" style="background:var(--bat)">打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span>守備</span><i>▶</i><span>守位</span><i>▶</i><span>聯盟</span><i>▶</i><span>替補</span><i>▶</i><span>÷ RPW</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--bat)">LV 1</span><span class="kicker" style="margin:0"><span class="zh">組成 1</span>&nbsp;BATTING RUNS</span></div>
+    <h2>打擊：wRAA 加上球場與聯盟調整</h2>
+    <p class="small"><b>定義：</b>經過球場與聯盟調整後，打者比所屬聯盟平均野手多創造的得分。平均 ＝ 0。</p>
+    <div class="formula" style="font-size:21px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">Batting</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0097em;vertical-align:-1.3263em;"></span><span class="minner munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6833em;"><span style="top:-1.6737em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord cjk_fallback mtight">未調整</span></span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="minner munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6833em;"><span class="svg-align" style="top:-2.352em;"><span class="pstrut" style="height:3em;"></span><span class="stretchy" style="height:0.548em;min-width:1.6em;"><span class="brace-left" style="height:0.548em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="0.548em" viewBox="0 0 400000 548" preserveAspectRatio="xMinYMin slice"><path d="M0 6l6-6h17c12.688 0 19.313.3 20 1 4 4 7.313 8.3 10 13
  35.313 51.3 80.813 93.8 136.5 127.5 55.688 33.7 117.188 55.8 184.5 66.5.688
  0 2 .3 4 1 18.688 2.7 76 4.3 172 5h399450v120H429l-6-1c-124.688-8-235-61.7
 -331-161C60.687 138.7 32.312 99.3 7 54L0 41V6z"/></svg></span><span class="brace-center" style="height:0.548em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="0.548em" viewBox="0 0 400000 548" preserveAspectRatio="xMidYMin slice"><path d="M199572 214
@@ -320,50 +340,101 @@ c100.7 8.3 195.3 44 280 108 55.3 42 101.7 93 139 153l9 14c2.7-4 5.7-8.7 9-14
 -5-4-11-12-44.7-59.3-101.3-106.3-170-141s-145.3-54.3-229-60H0V214z"/></svg></span><span class="brace-right" style="height:0.548em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="0.548em" viewBox="0 0 400000 548" preserveAspectRatio="xMaxYMin slice"><path d="M399994 0l6 6v35l-6 11c-56 104-135.3 181.3-238 232-57.3
  28.7-117 45-179 50H-300V214h399897c43.3-7 81-15 113-26 100.7-33 179.7-91 237
 -174 2.7-5 6-9 10-13 .7-1 7.3-1 20-1h17z"/></svg></span></span></span><span style="top:-3.45em;"><span class="pstrut" style="height:3.45em;"></span><span class="mord"><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size3">(</span></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">PA</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">lgR</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord text"><span class="mord">PA</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">lg</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord text"><span class="mord">wRC</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">lg</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9721em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size3">)</span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">PA</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.6201em;"><span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:2.2984em;"><span></span></span></span></span></span></span></span></span></span></div>
-    <div class="grid3">
-      <div class="def"><b>wRAA</b>：以 wOBA 換算、比聯盟平均打者多創造的得分</div>
-      <div class="def"><b>PF</b>：球場係數，網站顯示值 ÷ 100（已減半與迴歸）</div>
-      <div class="def"><b>wRC<sub>lg</sub>/PA<sub>lg</sub></b>：所屬聯盟<b>不含投手</b>的野手平均</div>
-    </div>
-    <p class="tiny muted" style="margin-top:12px">wRAA、球場係數的完整推導，見另一份簡報《從 wOBA 到 wRC+》。</p>
+    <div class="def"><b>wRAA</b>：以 wOBA 換算、比聯盟平均打者多創造的得分</div>
+    <div class="def"><b>PF</b>：球場係數，網站顯示值 ÷ 100（已減半與迴歸）；<b>lgR/PA</b>：聯盟每打席平均得分</div>
+    <div class="def"><b>wRC<sub>lg</sub>／PA<sub>lg</sub></b>：所屬聯盟（AL 或 NL）不含投手的野手平均每打席創造得分</div>
+    <div class="note">wRAA、球場係數的完整推導，見另一份簡報《從 wOBA 到 wRC+》。</div>
   </div>
 </section>
 
-<!-- ======== 7 BSR ======== -->
-<section class="slide" data-file="BASERUN.EXE" style="--accent:var(--wrc)">
+<!-- P.7 -->
+<section class="slide" data-file="BASERUN.EXE" style="--accent:var(--bsr)">
   <div class="body">
-    <div class="mini-chain"><span>打擊</span><i>▶</i><span class="on" style="background:var(--wrc)">跑壘</span><i>▶</i><span>守備·守位</span><i>▶</i><span>聯盟·替補</span><i>▶</i><span>RPW</span></div>
-    <div class="step-head"><span class="lv" style="background:var(--wrc)">LV 2</span><span class="kicker" style="margin:0"><span class="zh">組成 2 / 6</span></span></div>
-    <h2>跑壘：BsR = UBR + wSB + wGDP</h2>
+    <div class="mini-chain"><span>打擊</span><i>▶</i><span class="on" style="background:var(--bsr)">跑壘</span><i>▶</i><span>守備</span><i>▶</i><span>守位</span><i>▶</i><span>聯盟</span><i>▶</i><span>替補</span><i>▶</i><span>÷ RPW</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--bsr)">LV 2</span><span class="kicker" style="margin:0"><span class="zh">組成 2</span>&nbsp;BASE RUNNING</span></div>
+    <h2>跑壘：BsR ＝ UBR ＋ wSB ＋ wGDP</h2>
     <div class="grid3">
-      <div class="panel pad-top"><span class="ptag">UBR</span><h3>非盜壘的跑壘</h3><p class="tiny">例如安打時多推進一個壘包。需要 BIS 影像資料，<b>無法自行計算</b>。</p></div>
-      <div class="panel pad-top"><span class="ptag">wSB</span><h3>盜壘與盜壘失敗</h3><p class="tiny">可以自行計算（見下方公式），以聯盟平均為 0。</p></div>
-      <div class="panel pad-top"><span class="ptag">wGDP</span><h3>避免雙殺</h3><p class="tiny">實際雙殺打次數和預期次數的差距，換算成得分。</p></div>
+      <div class="panel pad-top"><span class="ptag">UBR</span><p class="small"><b>非盜壘的跑壘</b>：例如安打時多推進一個壘包。需要 BIS 影像資料，無法自行計算。</p></div>
+      <div class="panel pad-top"><span class="ptag">wSB</span><p class="small"><b>盜壘與盜壘失敗</b>：可以自行計算，以聯盟平均為 0。</p></div>
+      <div class="panel pad-top"><span class="ptag">wGDP</span><p class="small"><b>避免雙殺</b>：實際雙殺打次數和預期次數的差距，換算成得分。</p></div>
     </div>
-    <div class="formula" style="font-size:18px;margin-top:16px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">wSB</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">SB</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">runSB</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">CS</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">runCS</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">lgwSB</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord text"><span class="mord">1B</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">BB</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">HBP</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">IBB</span></span><span class="mclose">)</span></span></span></span></span></div>
-    <div class="grid2" style="gap:12px">
-      <div class="def"><b>runSB</b>：盜壘成功的價值，固定 0.2 分；<b>runCS</b>：盜壘失敗的價值，約 −(2 × 每出局得分 + 0.075)</div>
-      <div class="def"><b>lgwSB</b>：聯盟平均每次上一壘的盜壘得分；減去這一項，結果才是「相對平均」</div>
-    </div>
-    <p class="tiny muted" style="margin-top:8px">runCS 的負號是推論：來源公式未寫負號，但 Guts 頁數值為負（2013 年 −0.384）。</p>
+    <div class="formula" style="margin-top:14px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">wSB</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">SB</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">runSB</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">CS</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">runCS</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">lgwSB</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord text"><span class="mord">1B</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">BB</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">HBP</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">IBB</span></span><span class="mclose">)</span></span></span></span></span></div>
+    <div class="def"><b>runSB</b>：盜壘成功的價值，固定 0.2 分；<b>runCS</b>：盜壘失敗的價值，約 −(2 × 每出局得分 ＋ 0.075)，2013 年 −0.384（<span class="zh">推論</span>：來源公式沒寫負號，Guts 頁數值為負）</div>
+    <div class="def"><b>lgwSB</b>：聯盟平均每次上一壘的盜壘得分；減去這一項，結果才是「相對平均」</div>
+    <div class="alert small"><span class="badge">VERSION</span><p>2016 年起，FanGraphs 把 UBR 與 wGDP 換成 Statcast 跑壘指標 XBR（wSB 是否保留，來源沒有提到）。Trout 2012、2013 仍是這一頁的公式。</p></div>
   </div>
 </section>
 
-<!-- ======== 8 FIELDING + POSITIONAL ======== -->
-<section class="slide" data-file="FIELD.EXE" style="--accent:var(--woba)">
-  <div class="body">
-    <div class="mini-chain"><span>打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span class="on" style="background:var(--woba)">守備·守位</span><i>▶</i><span>聯盟·替補</span><i>▶</i><span>RPW</span></div>
-    <div class="step-head"><span class="lv" style="background:var(--woba)">LV 3</span><span class="kicker" style="margin:0"><span class="zh">組成 3–4 / 6</span></span></div>
-    <h2>守備與守位：兩個組成要一起看</h2>
-    <div class="grid2" style="grid-template-columns:1fr 1.05fr">
+<!-- P.8 -->
+<section class="slide" data-file="UZR.EXE" style="--accent:var(--fld)">
+  <div class="body" style="padding-top:20px">
+    <div class="mini-chain"><span>打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span class="on" style="background:var(--fld)">守備</span><i>▶</i><span>守位</span><i>▶</i><span>聯盟</span><i>▶</i><span>替補</span><i>▶</i><span>÷ RPW</span></div>
+    <h2 style="margin-bottom:10px">守備：UZR 怎麼把一次接球換成得分</h2>
+    <div class="grid2" style="grid-template-columns:1fr 1.05fr;gap:20px">
       <div>
-        <div class="def" style="margin-top:0"><b>Fielding</b>：和<b>同守位</b>的平均球員相比，多救了幾分。非捕手用 UZR，捕手用阻殺盜壘（rSB）＋防止暴投捕逸（RPP）。</div>
-        <div class="alert" style="margin-top:12px"><span class="badge">! NOTE</span><p style="font-size:17px">守備 +10 的一壘手，只代表比平均一壘手好 10 分，不代表比平均游擊手好。</p></div>
-        <div class="def" style="margin-top:14px"><b>Positional</b>：把不同守位放到同一把尺上。當平均游擊手比當平均一壘手難得多。</div>
-        <div class="formula" style="font-size:18px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">Positional</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.113em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">Inn</span></span><span class="mord">/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord cjk_fallback">守位得分值</span></span></span></span></span></span></div>
-        <p class="tiny muted">Inn = 守備局數；9 局 = 1 場。守多個位置時分別計算再相加。</p>
+        <p class="small"><b>UZR（Ultimate Zone Rating）</b>＝守備員比<b>同守位平均</b>多救（或多丟）的分數。每顆擊球依位置、速度分類，各有兩個聯盟平均值。</p>
+        <div class="formula" style="font-size:19px;margin-top:8px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">UZR</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">ARM</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">DPR</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">RngR</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">ErrR</span></span></span></span></span></span></div>
+        <div class="def" style="font-size:15px"><b>ARM</b> 外野傳球、<b>DPR</b> 雙殺、<b>RngR</b> 守備範圍、<b>ErrR</b> 失誤</div>
+        <div class="def" style="font-size:15px"><b>v</b>：這類擊球沒被接到時平均造成的得分；<b>p</b>：同守位平均守備員把它接成出局的機率</div>
       </div>
-      <table class="box-table" style="font-size:16px">
+      <div>
+        <div class="formula" style="font-size:18px;margin-top:0"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:4.2em;vertical-align:-1.85em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.35em;"><span style="top:-4.51em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord cjk_fallback">接到</span></span></span></span><span style="top:-3.01em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord cjk_fallback">沒接到</span></span></span></span><span style="top:-1.51em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord cjk_fallback">平均守備員期望值</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.85em;"><span></span></span></span></span></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.35em;"><span style="top:-4.51em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">p</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">0.8</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">0.4</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">0.48</span></span></span><span style="top:-3.01em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">−</span><span class="mord mathnormal" style="margin-right:0.0359em;">v</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">−</span><span class="mord">0.8</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">0.4</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">−</span><span class="mord">0.32</span></span></span><span style="top:-1.51em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">0.4</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">0.48</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">0.6</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">0.32</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.85em;"><span></span></span></span></span></span></span></span></span></span></span></span></div>
+        <p class="tiny">第一行是來源的例子（<span class="src k">ART·UZR</span>）；第二、三行是<b>推論</b>：平均守備員的期望值剛好是 0，這就是「相對平均」的意思。越難接的球（p 越小），接到的獎勵越大。</p>
+      </div>
+    </div>
+    <table class="box-table htable" style="font-size:15px;margin-top:12px">
+      <thead><tr><th class="lab">UZR 評級</th><th>金手套級</th><th>很好</th><th>高於平均</th><th>平均</th><th>低於平均</th><th>差</th><th>很差</th></tr></thead>
+      <tbody><tr><td class="lab">UZR</td><td>+15</td><td>+10</td><td>+5</td><td>0</td><td>−5</td><td>−10</td><td>−15</td></tr></tbody>
+    </table>
+    <div class="alert small" style="margin-top:12px"><span class="badge">VERSION</span><p>2016 年起，守備範圍改用由 OAA 換算的得分；外野傳球、捕手阻殺改用 Statcast，新增捕手擋球，刪除雙殺得分。Trout 2012、2013 仍用 UZR。捕手見下一頁。</p></div>
+  </div>
+</section>
+
+<!-- P.9 -->
+<section class="slide" data-file="CATCHER_DRS.EXE" style="--accent:var(--fld)">
+  <div class="body" style="padding-top:20px">
+    <div class="kicker">COMPONENT 3+ · CATCHER &amp; DRS</div>
+    <h2 style="margin-bottom:12px">捕手守備與另一套指標 DRS</h2>
+    <div class="grid2" style="gap:22px">
+      <div>
+        <div class="panel pad-top"><span class="ptag">CATCHER</span><p class="small">捕手守備 ＝ 阻殺盜壘（<b>rSB</b>）＋ 防止暴投捕逸（<b>RPP</b>），兩項來自 DRS。</p></div>
+        <div class="panel pad-top" style="margin-top:16px"><span class="ptag">FRAMING</span><p class="small">2019 年起，捕手<b>偷好球（framing）</b>也算進 WAR，資料從 2008 年起。捕手多拿的好球要從投手扣回，依「投手實際和哪位捕手搭配」分配。</p></div>
+        <div class="formula" style="font-size:17px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord cjk_fallback">捕手</span><span class="mord"> WAR</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0574em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">RPW</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">Batting</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">BsR</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">Fielding</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">Framing</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="minner">⋯</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">Replacement</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></div>
+        <div class="def" style="font-size:14px"><b>Framing</b>：偷好球換成的得分（相對平均）；<b>⋯</b>：守位、聯盟調整（<span class="zh">推論</span>：來源的簡化寫法省略了這兩項）</div>
+        <div class="alert small" style="padding:8px 12px;margin-top:10px"><span class="badge">IMPACT</span><p style="font-size:16px">影響很大：2008–2018 生涯 WAR，McCann ＋18.8、Doumit −16.1。</p></div>
+      </div>
+      <div>
+        <p class="small"><b>DRS</b>：The Fielding Bible（John Dewan）計算，和 UZR 一樣用 BIS 資料、以得分為單位。</p>
+        <div class="formula" style="font-size:17px;margin-top:6px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">DRS</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">rSB</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">rBU</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">rGDP</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">rARM</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord text"><span class="mord">rHR</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">rPM</span></span></span></span></span></span></div>
+        <div class="def" style="font-size:14px"><b>rSB</b> 阻殺、<b>rBU</b> 觸擊、<b>rGDP</b> 雙殺、<b>rARM</b> 傳球、<b>rHR</b> 沒收全壘打（每次 1.6 分）、<b>rPM</b> 守備範圍（<span class="zh">推論</span>：來源只說 DRS 代表總守備價值，沒寫成加總公式）</div>
+        <table class="box-table" style="font-size:15px;margin-top:12px">
+          <thead><tr><th></th><th>DRS</th><th>UZR</th></tr></thead>
+          <tbody>
+            <tr><td>計算者</td><td>The Fielding Bible</td><td>Mitchel Lichtman</td></tr>
+            <tr><td>判斷難度用的資料</td><td>滾動的一年</td><td>多年</td></tr>
+            <tr><td>投手、捕手守備</td><td>有</td><td>沒有</td></tr>
+            <tr><td>評級表</td><td>相同</td><td>相同</td></tr>
+          </tbody>
+        </table>
+        <p class="tiny muted" style="margin-top:6px">出處：<span class="src k">ART·FRM19</span> <span class="src k">ART·DRS</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- P.10 -->
+<section class="slide" data-file="POSITION.EXE" style="--accent:var(--pos)">
+  <div class="body">
+    <div class="mini-chain"><span>打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span>守備</span><i>▶</i><span class="on" style="background:var(--pos)">守位</span><i>▶</i><span>聯盟</span><i>▶</i><span>替補</span><i>▶</i><span>÷ RPW</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--pos)">LV 4</span><span class="kicker" style="margin:0"><span class="zh">組成 4</span>&nbsp;POSITIONAL</span></div>
+    <h2>守位調整：守備只和同守位比，所以要再加一項</h2>
+    <div class="grid2" style="grid-template-columns:1.1fr 1fr;gap:22px">
+      <div>
+        <p class="small"><b>Fielding（P.8–9）</b>：和同守位的平均球員相比，多救了幾分。<br><b>Positional</b>：把不同守位放到同一把尺上。當平均游擊手比當平均一壘手難得多。</p>
+        <div class="formula"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">Positional</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.113em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">Inn</span></span><span class="mord">/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord cjk_fallback">守位得分值</span></span></span></span></span></span></div>
+        <div class="def"><b>Inn</b>：守備局數；9 局 ＝ 1 場。守多個位置時分別計算再相加。</div>
+        <div class="formula"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">Def</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">Fielding</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">Positional</span></span></span></span></span></span></div>
+      </div>
+      <table class="box-table" style="font-size:17px">
         <thead><tr><th>守位</th><th class="num">每 162 場</th></tr></thead>
         <tbody>
           <tr><td>捕手 C</td><td class="num">+12.5</td></tr>
@@ -375,202 +446,210 @@ c100.7 8.3 195.3 44 280 108 55.3 42 101.7 93 139 153l9 14c2.7-4 5.7-8.7 9-14
         </tbody>
       </table>
     </div>
+    <div class="alert"><span class="badge">! NOTE</span><p>守備 +10 的一壘手，只代表比平均一壘手好 10 分，不代表比平均游擊手好。</p></div>
+    <p class="tiny muted" style="margin-top:8px">守位表：<span class="src k">ART·WARpp</span>（來源直接提供的常數）</p>
   </div>
 </section>
 
-<!-- ======== 9 LEAGUE + REPLACEMENT ======== -->
-<section class="slide" data-file="ADJUST.EXE" style="--accent:#9a6b00">
+<!-- P.11 -->
+<section class="slide" data-file="LEAGUE_REPL.EXE" style="--accent:var(--lgc)">
   <div class="body">
-    <div class="mini-chain"><span>打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span>守備·守位</span><i>▶</i><span class="on" style="background:#9a6b00">聯盟·替補</span><i>▶</i><span>RPW</span></div>
-    <div class="step-head"><span class="lv" style="background:#9a6b00">LV 4</span><span class="kicker" style="margin:0"><span class="zh">組成 5–6 / 6</span></span></div>
-    <h2>聯盟調整與替補得分</h2>
-    <div class="grid2">
-      <div>
-        <h3>聯盟調整：讓每個聯盟的總和歸零</h3>
-        <div class="formula" style="font-size:17px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">League</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.3074em;vertical-align:-0.8804em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">lgPA</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">−</span><span class="mopen">(</span><span class="mord text"><span class="mord">lgBat</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">lgBsR</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">lgFld</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">lgPos</span></span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">PA</span></span></span></span></span></span></div>
-        <div class="def"><b>lgBat、lgBsR…</b>：球員所屬聯盟（AL 或 NL）所有野手前四項的總和</div>
-        <p class="tiny" style="margin-top:8px">每季影響約 0～5 分。</p>
-      </div>
-      <div>
-        <h3>替補得分：把基準換成替補球員</h3>
-        <div class="formula" style="font-size:17px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">Replacement</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">570</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2430</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">MLB </span><span class="mord cjk_fallback">場次</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:2.2408em;vertical-align:-0.8804em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">lgPA</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">RPW</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">PA</span></span></span></span></span></span></div>
-        <div class="def"><b>570</b>：野手分到的 WAR；<b>RPW ÷ lgPA</b>：把勝場換成每打席得分；<b>lgPA</b>：MLB 總打席</div>
-        <p class="tiny" style="margin-top:8px">打越多打席，替補得分越多：這就是 WAR 反映上場量的方式。</p>
-      </div>
-    </div>
-    <div class="why"><b>加總後</b>：前五項是「比平均多幾分」，加上替補得分後，變成「比替補多幾分」，也就是 <b>RAR</b>。</div>
-  </div>
-</section>
-
-<!-- ======== 10 RPW ======== -->
-<section class="slide" data-file="RPW.EXE" style="--accent:var(--war)">
-  <div class="body">
-    <div class="mini-chain"><span>打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span>守備·守位</span><i>▶</i><span>聯盟·替補</span><i>▶</i><span class="on" style="background:var(--war)">RPW</span></div>
-    <div class="step-head"><span class="lv" style="background:var(--war)">LV 5</span><span class="kicker" style="margin:0"><span class="zh">得分 → 勝場</span></span></div>
-    <h2>RPW：多少分換一場勝利？</h2>
-    <div class="grid2">
-      <div>
-        <div class="formula"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">WAR</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">RPW</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">RAR</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:2em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">RPW</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">9</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">MLB </span><span class="mord cjk_fallback">投球局數</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">MLB </span><span class="mord cjk_fallback">得分</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1.5</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">3</span></span></span></span></span></div>
-        <div class="def"><b>RPW（Runs Per Win）</b>：球隊平均要多得（或少失）幾分，才能多贏一場。</div>
-        <div class="def"><b>9 × 得分 ÷ 局數</b>：聯盟每九局得分，也就是得分環境。</div>
-        <div class="alert"><span class="badge">! ATTENTION</span><p>「10 分 = 1 勝」只是近似：得分環境越高，多贏一場需要的分數越多，通常介於 9 到 10。</p></div>
-      </div>
-      <div>
-        <table class="box-table" style="font-size:16px">
-          <thead><tr><th>球季</th><th class="num">RPW</th><th class="num">R/9（推論）</th></tr></thead>
-          <tbody>
-            <tr><td>2010</td><td class="num">9.643</td><td class="num">4.43</td></tr>
-            <tr><td>2011</td><td class="num">9.454</td><td class="num">4.30</td></tr>
-            <tr style="background:#fff7d1"><td>2012</td><td class="num">9.544</td><td class="num">4.36</td></tr>
-            <tr style="background:#fff7d1"><td>2013</td><td class="num">9.264</td><td class="num">4.18</td></tr>
-            <tr><td>2014</td><td class="num">9.117</td><td class="num">4.08</td></tr>
-            <tr><td>2015</td><td class="num">9.421</td><td class="num">4.28</td></tr>
-          </tbody>
-        </table>
-        <p class="tiny muted" style="margin-top:6px">RPW 取自 FanGraphs Guts 頁；R/9 = (RPW − 3) ÷ 1.5 為推論。黃色為範例會用到的年份。</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ======== 11 PITCHERS ======== -->
-<section class="slide" data-file="PITCHER.EXE" style="--accent:var(--wrcp)">
-  <div class="body">
-    <div class="kicker">STAGE 05 · <span class="zh">投手 WAR</span></div>
-    <h2>投手 WAR：不同的起點，相同的邏輯</h2>
-    <div class="mods" style="grid-template-columns:repeat(3,1fr);gap:14px 34px">
-      <div class="mod arrow" style="min-height:96px"><span class="no">01</span><h3>ifFIP</h3><p>FIP，但內野高飛球算成三振</p></div>
-      <div class="mod arrow" style="min-height:96px"><span class="no">02</span><h3>轉成 RA9 尺度</h3><p>+ (聯盟 RA9 − 聯盟 ERA)</p></div>
-      <div class="mod" style="min-height:96px"><span class="no">03</span><h3>球場調整</h3><p>÷ FIP 專用球場係數（乘法）</p></div>
-      <div class="mod arrow" style="min-height:96px"><span class="no">04</span><h3>和聯盟比</h3><p>聯盟 − 投手 = 每九局少失幾分</p></div>
-      <div class="mod arrow" style="min-height:96px"><span class="no">05</span><h3>動態 RPW</h3><p>投手會改變自己出賽時的得分環境</p></div>
-      <div class="mod" style="min-height:96px"><span class="no">06</span><h3>加上替補水準</h3><p>先發 0.12、後援 0.03（每場勝場）</p></div>
-      <div class="mod arrow" style="min-height:96px"><span class="no">07</span><h3>× IP ÷ 9</h3><p>依投球局數換成總量</p></div>
-      <div class="mod arrow" style="min-height:96px"><span class="no">08</span><h3>槓桿（後援）</h3><p>× (1 + gmLI) ÷ 2</p></div>
-      <div class="mod" style="min-height:96px"><span class="no">09</span><h3>全聯盟修正</h3><p>讓投手 WAR 總和 = 430</p></div>
-    </div>
-    <div class="alert"><span class="badge">TO DO</span><p>FIP 本身（為什麼是 13、3、2）還沒有 wiki 頁面，這一頁只做概覽；匯入 FIP 來源後再補細節。</p></div>
-  </div>
-</section>
-
-<!-- ======== 12 CONCLUSION ======== -->
-<section class="slide" data-file="RESULTS.TXT">
-  <div class="body">
-    <div class="kicker">STAGE CLEAR · <span class="zh">結論</span></div>
-    <h2>每個組成各補上一塊拼圖</h2>
-    <table class="box-table">
-      <thead><tr><th style="width:18%">組成</th><th style="width:44%">回答什麼</th><th>基準</th></tr></thead>
-      <tbody>
-        <tr><td><span class="tag t-wraa">打擊</span></td><td>打擊比平均野手多幾分（已調整球場、聯盟）</td><td>所屬聯盟野手平均</td></tr>
-        <tr><td><span class="tag t-wrc">跑壘</span></td><td>上壘之後跑得好不好</td><td>聯盟平均</td></tr>
-        <tr><td><span class="tag t-woba">守備</span></td><td>同守位裡守得好不好</td><td>同守位平均</td></tr>
-        <tr><td><span class="tag t-woba">守位</span></td><td>守的位置有多難</td><td>守位難度表</td></tr>
-        <tr><td><span class="tag t-re">聯盟</span></td><td>修正 AL、NL 之間的落差</td><td>各聯盟總和歸零</td></tr>
-        <tr><td><span class="tag" style="color:#9a6b00;background:#fff2c2">替補</span></td><td>把「比平均」改成「比替補」，反映上場量</td><td>替補勝率 .294</td></tr>
-      </tbody>
-    </table>
-    <div class="alert" style="background:#bff6ff"><span class="badge" style="background:var(--war)">KEY</span><p>所有貢獻先換成「得分」才能相加，再用 RPW 換成「勝場」。WAR = RAR ÷ RPW。</p></div>
-  </div>
-</section>
-
-<!-- ======== 13 RAW DATA ======== -->
-<section class="slide" data-file="TROUT.CSV">
-  <div class="body">
-    <div class="kicker">PLAYER 1 · RAW DATA</div>
-    <h2>範例資料：Mike Trout 的 Value 表</h2>
-    <p class="small" style="margin-bottom:10px">代碼 <span class="src">VAL·12·Batting</span> = value.csv 中 2012 年那一列的 Batting 欄；<span class="src">PDF·FLD·12</span> = 球員頁 PDF 的 Fielding 表 2012 年。</p>
-    <table class="box-table" style="font-size:16px">
-      <thead>
-        <tr><th rowspan="2">球季</th><th colspan="10" class="c" style="background:#d7f7e6">VAL = raw/data/fangraphs_mlb_2011-2026_trout-value.csv</th><th class="c" style="background:#e3ebff">STD</th></tr>
-        <tr><th class="num">Batting</th><th class="num">Base Running</th><th class="num">Fielding</th><th class="num">Positional</th><th class="num">Offense</th><th class="num">Defense</th><th class="num">League</th><th class="num">Replacement</th><th class="num">RAR</th><th class="num">WAR</th><th class="num">PA</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><b>2012</b></td><td class="num">50.1</td><td class="num">14.3</td><td class="num">10.4</td><td class="num">−0.2</td><td class="num">64.4</td><td class="num">10.2</td><td class="num">2.7</td><td class="num">18.9</td><td class="num">96.1</td><td class="num">10.1</td><td class="num">639</td></tr>
-        <tr><td><b>2013</b></td><td class="num">62.2</td><td class="num">8.2</td><td class="num">1.6</td><td class="num">−1.2</td><td class="num">70.5</td><td class="num">0.5</td><td class="num">2.6</td><td class="num">20.5</td><td class="num">94.0</td><td class="num">10.1</td><td class="num">716</td></tr>
-      </tbody>
-    </table>
-    <div class="grid3" style="margin-top:16px">
-      <div class="panel pad-top"><span class="ptag">PDF·FLD</span><p class="tiny">守備局數：2012 LF 328.0、CF 885⅔、RF 12.0；2013 LF 356.0、CF 952⅔（.2 = 2/3 局）</p></div>
-      <div class="panel pad-top"><span class="ptag">GUTS</span><p class="tiny">RPW：2012 = 9.544、2013 = 9.264；lgR/PA 2012 = .114</p></div>
-      <div class="panel pad-top"><span class="ptag">ART·wRC</span><p class="tiny">2012 天使主場 PF 0.95；美聯野手 wRC 10032、PA 85797</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ======== 14 EXAMPLE 2012 ======== -->
-<section class="slide" data-file="TROUT_2012.EXE">
-  <div class="body">
-    <div class="kicker">PLAYER 1 · EXAMPLE 1</div>
-    <h2>Trout 2012：自己算一遍，再和 FanGraphs 對照</h2>
-    <div class="grid2" style="grid-template-columns:1.1fr 1fr;gap:20px">
-      <table class="box-table" style="font-size:15px">
-        <thead><tr><th>組成</th><th class="num">自己算</th><th class="num">FanGraphs</th><th>狀態</th></tr></thead>
-        <tbody>
-          <tr><td>Batting</td><td class="num">49.97</td><td class="num">50.1 <span class="src">VAL·12</span></td><td class="check">✓ 重算</td></tr>
-          <tr><td>Base Running</td><td class="num">—</td><td class="num">14.3</td><td class="tiny">需 BIS 資料</td></tr>
-          <tr><td>Fielding</td><td class="num">—</td><td class="num">10.4</td><td class="tiny">需 BIS 資料</td></tr>
-          <tr><td>Positional</td><td class="num">−0.23</td><td class="num">−0.2</td><td class="check">✓ 重算</td></tr>
-          <tr><td>League</td><td class="num">—</td><td class="num">2.7</td><td class="tiny">需聯盟總和</td></tr>
-          <tr><td>Replacement</td><td class="num">—</td><td class="num">18.9</td><td class="tiny">需 MLB 總 PA</td></tr>
-          <tr style="background:#fff7d1"><td><b>RAR</b></td><td class="num">96.2</td><td class="num">96.1</td><td class="check">✓ 加總</td></tr>
-          <tr style="background:#fde3e7"><td><b>WAR</b></td><td class="num">10.07</td><td class="num">10.1</td><td class="check">✓</td></tr>
-        </tbody>
-      </table>
-      <div style="font-size:16px">
-        <span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:8.713em;vertical-align:-4.1065em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:4.6065em;"><span style="top:-7.1935em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord">Batting</span></span></span></span><span style="top:-4.9065em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord">Positional</span></span></span></span><span style="top:-3.0805em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"></span></span><span style="top:-1.3805em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord">RAR</span></span></span></span><span style="top:0.3195em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord">WAR</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:4.1065em;"><span></span></span></span></span></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:4.6065em;"><span style="top:-7.1935em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">48.2</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">3.64</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1.87</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">49.97</span></span></span><span style="top:-4.9065em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">328.0/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">7.5</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">885.67/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">2.5</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">12.0/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">7.5</span><span class="mclose">)</span></span></span><span style="top:-3.0805em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">−</span><span class="mord">1.69</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1.52</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">0.06</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">−</span><span class="mord">0.23</span></span></span><span style="top:-1.3805em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">50.1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">14.3</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">10.4</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">0.2</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">2.7</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">18.9</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">96.2</span></span></span><span style="top:0.3195em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">96.1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">÷</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">9.544</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">10.07</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:4.1065em;"><span></span></span></span></span></span></span></span></span></span></span></span>
-        <p class="tiny">48.2 = <span class="src">ADV·12·wRAA</span>；局數 = <span class="src">PDF·FLD·12</span>；9.544 = <span class="src k">GUTS</span></p>
-        <div class="panel pad-top" style="margin-top:10px"><span class="ptag"><span class="zh">推論</span></span><p class="tiny">由替補得分反推 MLB 總打席：570 × 9.544 × 639 ÷ 18.9 ≈ <b>183,900</b>，取得聯盟數據後可核對。</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ======== 15 EXAMPLE 2013 ======== -->
-<section class="slide" data-file="TROUT_2013.EXE">
-  <div class="body">
-    <div class="kicker">PLAYER 1 · EXAMPLE 2</div>
-    <h2>Trout 2013：總數對得上，守位調整卻對不上</h2>
+    <div class="mini-chain"><span>打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span>守備</span><i>▶</i><span>守位</span><i>▶</i><span class="on" style="background:var(--lgc)">聯盟</span><i>▶</i><span class="on" style="background:var(--rep)">替補</span><i>▶</i><span>÷ RPW</span></div>
+    <h2>聯盟調整與替補得分：從「比平均」變成「比替補」</h2>
     <div class="grid2" style="gap:22px">
       <div>
-        <div class="panel pad-top"><span class="ptag">WAR · <span class="zh">對得上</span></span>
-          <div style="font-size:18px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">WAR</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">94.0</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">÷</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">9.264</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">10.15</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6922em;"></span><span class="mord">10.1</span><span class="mspace"> </span><span class="mord amsrm">✓</span></span></span></span></span></div>
-          <p class="tiny">94.0 = <span class="src">VAL·13·RAR</span>；9.264 = <span class="src k">GUTS</span></p></div>
-        <div class="panel pad-top" style="margin-top:16px;background:#fde3e7"><span class="ptag">POSITIONAL · <span class="zh">對不上</span></span>
-          <div style="font-size:17px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.113em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">356.0/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">7.5</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:2.113em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">952.67/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">2.5</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">−</span><span class="mord">0.20</span></span></span></span></span></div>
-          <p class="small">但 <span class="src">VAL·13·Positional</span> = <b>−1.2</b>，差了 1.0 分。</p></div>
+        <p class="small"><b>聯盟調整</b>：讓每個聯盟的總和歸零，每季影響約 0～5 分。</p>
+        <div class="formula" style="font-size:18px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">League</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.3074em;vertical-align:-0.8804em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">lgPA</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">−</span><span class="mopen">(</span><span class="mord text"><span class="mord">lgBat</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">lgBsR</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">lgFld</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">lgPos</span></span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">PA</span></span></span></span></span></span></div>
+        <div class="def" style="font-size:15px"><b>lgBat、lgBsR…</b>：球員所屬聯盟（AL 或 NL）所有野手前四項的總和</div>
       </div>
-      <div>
-        <div class="panel pad-top"><span class="ptag"><span class="zh">推論</span></span>
-          <p class="small">守備表只有 LF 和 CF。差距可能來自<b>指定打擊</b>出賽（−17.5 ÷ 162 場）：</p>
-          <div style="font-size:17px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.1963em;vertical-align:-0.7693em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">−</span><span class="mord">17.5</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">−</span><span class="mord">1.2</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">0.20</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">162</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">9</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">83.5</span><span class="mord text"><span class="mord"> </span><span class="mord cjk_fallback">局</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">9.3</span><span class="mord text"><span class="mord"> </span><span class="mord cjk_fallback">場</span></span></span></span></span></span></div>
-        </div>
-        <div class="alert"><span class="badge">LESSON</span><p style="font-size:17px">驗算對不上時，不硬湊數字：寫下推論、列進缺失清單（需要 Trout 2013 指定打擊出賽數據）。</p></div>
+      <div style="--accent:var(--rep)">
+        <p class="small"><b>替補得分</b>：把基準換成替補球員。打越多打席，替補得分越多，這就是 WAR 反映上場量的方式。</p>
+        <div class="formula" style="font-size:18px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">Replacement</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">570</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2430</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">MLB </span><span class="mord cjk_fallback">場次</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:2.2408em;vertical-align:-0.8804em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">lgPA</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">RPW</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">PA</span></span></span></span></span></span></div>
+        <div class="def" style="font-size:15px"><b>570</b>：野手分到的 WAR；<b>RPW ÷ lgPA</b>：把勝場換成每打席得分；<b>lgPA</b>：MLB 總打席</div>
       </div>
+    </div>
+    <div class="why">前五項是「比平均多幾分」，加上替補得分後，變成「比替補多幾分」，也就是 <b>RAR</b>。</div>
+    <div class="panel pad-top" style="margin-top:16px"><span class="ptag">CHECK · 2012 MLB</span>
+      <p class="small">全大聯盟（含投手打擊）：打擊 −815.9、跑壘 +1.0、守備 +16.6、守位 +353.8，聯盟調整 +444.5 → <b>五項相加剛好 0.0</b>。替補得分總和 5440.2 ＝ 570 × 9.544，換成勝場<b>正好 570</b>。 <span class="src">LDR·MLB12</span> <span class="src k">GUTS</span></p>
     </div>
   </div>
 </section>
 
-<!-- ======== 16 LIMITS ======== -->
-<section class="slide" data-file="README.TXT">
+<!-- P.12 -->
+<section class="slide" data-file="RPW.EXE" style="--accent:var(--warc)">
   <div class="body">
-    <div class="kicker">GAME OVER? · <span class="zh">限制與誤解</span></div>
-    <h2>WAR 不能怎麼用</h2>
-    <div class="grid3" style="gap:16px 18px">
-      <div class="panel pad-top"><span class="ptag">ESTIMATE</span><h3>它是估計值</h3><p class="tiny">6 WAR 可能介於 5 到 7；6.4 和 6.1 分不出高下，6.4 和 4.1 才分得出。</p></div>
-      <div class="panel pad-top"><span class="ptag">TEAM</span><h3>球隊總和 ≠ 勝場</h3><p class="tiny">要加回全替補球隊的基準勝場。</p></div>
-      <div class="panel pad-top"><span class="ptag">PAST</span><h3>衡量過去，不是實力</h3><p class="tiny">估計真實實力時，用近三年 WAR 依 5／3／1 加權平均。</p></div>
-      <div class="panel pad-top"><span class="ptag">FIELDING</span><h3>守備最不確定</h3><p class="tiny">守備數據由人工輸入；靠守備拿到大量 WAR 的球員，誤差也較大。</p></div>
-      <div class="panel pad-top"><span class="ptag">CONTEXT</span><h3>不考慮情境</h3><p class="tiny">關鍵安打沒有額外加分；情境價值要看 WPA。</p></div>
-      <div class="panel pad-top"><span class="ptag">TO CHECK</span><h3>方法可能已更新</h3><p class="tiny">來源（2012–2016）說守備用 UZR、捕手不含接捕；FanGraphs 現行做法待確認。</p></div>
+    <div class="mini-chain"><span>打擊</span><i>▶</i><span>跑壘</span><i>▶</i><span>守備</span><i>▶</i><span>守位</span><i>▶</i><span>聯盟</span><i>▶</i><span>替補</span><i>▶</i><span class="on" style="background:var(--warc)">÷ RPW</span></div>
+    <h2>RPW：多少分換一場勝利？</h2>
+    <div class="formula" style="font-size:21px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">WAR</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">RPW</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">RAR</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:2em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">RPW</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">9</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">MLB </span><span class="mord cjk_fallback">投球局數</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">MLB </span><span class="mord cjk_fallback">得分</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1.5</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">3</span></span></span></span></span></div>
+    <div class="def"><b>RPW（Runs Per Win）</b>：球隊平均要多得（或少失）幾分，才能多贏一場</div>
+    <div class="def"><b>9 × 得分 ÷ 局數</b>：聯盟每九局得分（R/9），也就是得分環境</div>
+    <table class="box-table htable" style="font-size:17px;margin-top:16px">
+      <thead><tr><th class="lab">球季</th><th>2010</th><th>2011</th><th>2012</th><th>2013</th><th>2014</th><th>2015</th></tr></thead>
+      <tbody>
+        <tr><td class="lab">RPW <span class="src k">GUTS</span></td><td>9.643</td><td>9.454</td><td>9.544</td><td>9.264</td><td>9.117</td><td>9.421</td></tr>
+        <tr><td class="lab">R/9（推論：(RPW − 3) ÷ 1.5）</td><td>4.43</td><td>4.30</td><td>4.36</td><td>4.18</td><td>4.08</td><td>4.28</td></tr>
+      </tbody>
+    </table>
+    <div class="alert"><span class="badge">! ATTENTION</span><p>「10 分 ＝ 1 勝」只是近似：得分環境越高，多贏一場需要的分數越多，通常介於 9 到 10。</p></div>
+  </div>
+</section>
+
+<!-- P.13 -->
+<section class="slide" data-file="FIP.EXE" style="--accent:var(--pit)">
+  <div class="body" style="padding-top:20px">
+    <div class="kicker">STAGE 05 · PITCHING</div>
+    <h2 style="margin-bottom:10px">FIP：只看投手自己能控制的結果</h2>
+    <div class="grid2" style="grid-template-columns:1.15fr 1fr;gap:20px">
+      <div>
+        <div class="formula" style="font-size:18px;margin-top:0"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord text"><span class="mord">FIP</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.113em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">IP</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">13</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">HR</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">3</span><span class="mopen">(</span><span class="mord text"><span class="mord">BB</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">HBP</span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">K</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0715em;">C</span></span></span></span></span></div>
+        <div class="formula" style="font-size:16px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0715em;">C</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord text"><span class="mord">lgERA</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:2.3074em;vertical-align:-0.8804em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">lgIP</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">13</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">lgHR</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">3</span><span class="mopen">(</span><span class="mord text"><span class="mord">lgBB</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">lgHBP</span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">lgK</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></div>
+        <div class="def" style="font-size:14px"><b>HR</b> 被全壘打、<b>BB</b> 保送、<b>HBP</b> 觸身球、<b>K</b> 三振、<b>IP</b> 投球局數；<b>lg</b> 開頭：全聯盟總數；<b>C</b>：讓聯盟平均 FIP ＝ 聯盟平均 ERA 的常數，一般約 3.10</div>
+      </div>
+      <div>
+        <div class="panel pad-top"><span class="ptag">WHY · DIPS</span><p class="tiny" style="font-size:15px">Voros McCracken 發現：場內球變成安打的比例在不同球季之間幾乎不相關，大多取決於守備與運氣。所以只用不需要守備員的四種事件，也去除了事件順序（sequencing）的影響。</p></div>
+        <div class="panel pad-top" style="margin-top:14px"><span class="ptag"><span class="zh">推論</span></span><p class="tiny" style="font-size:15px">係數約等於「每個事件比一般場內球多（或少）造成的失分 × 9」：分子除以 IP 是每局，ERA 是每九局。來源只說係數來自各事件的相對價值。</p></div>
+      </div>
     </div>
-    <div class="grid2" style="margin-top:16px;grid-template-columns:1fr 1.25fr">
-      <div class="panel pad-top"><span class="ptag">WIKI PAGES</span>
-        <span class="chip">war</span><span class="chip">war-position-players</span><span class="chip">war-pitchers</span><span class="chip">batting-runs</span><span class="chip">bsr</span><span class="chip">positional-adjustment</span><span class="chip">replacement-level</span><span class="chip">runs-per-win</span></div>
-      <div class="panel pad-top"><span class="ptag">SOURCES · FANGRAPHS LIBRARY</span>
-        <p class="tiny">Slowinski〈What is WAR?〉2010 · Slowinski〈WAR Misconceptions〉2012 · Slowinski〈WAR for Position Players〉2012 · Slowinski／Weinberg〈WAR for Pitchers〉2012 · Slowinski〈wRC and wRC+〉2010</p></div>
+    <table class="box-table htable" style="font-size:15px;margin-top:12px">
+      <thead><tr><th class="lab">FIP 評級（2016 年得分環境）</th><th>極佳</th><th>很好</th><th>高於平均</th><th>平均</th><th>低於平均</th><th>差</th><th>很差</th></tr></thead>
+      <tbody><tr><td class="lab">FIP <span class="src k">ART·FIP</span></td><td>3.20</td><td>3.50</td><td>3.80</td><td>4.20</td><td>4.40</td><td>4.70</td><td>5.00</td></tr></tbody>
+    </table>
+    <div class="alert small" style="margin-top:12px"><span class="badge">CAUTION</span><p>少數投手能長期優於 FIP（擅長牽制、製造不易成為安打的擊球）；FIP 預測未來比描述當下準，至少要一整季。</p></div>
+  </div>
+</section>
+
+<!-- P.14 -->
+<section class="slide" data-file="PITCHER_WAR.EXE" style="--accent:var(--pit)">
+  <div class="body" style="padding-top:20px">
+    <div class="kicker">STAGE 05 · PITCHER WAR</div>
+    <h2 style="margin-bottom:10px">投手 WAR：不同的起點，相同的邏輯</h2>
+    <p class="small" style="margin-bottom:10px">投手從 FIP 出發，但一樣是「換成得分 → 相對聯盟 → 加替補 → 換成勝場」。</p>
+    <div class="mods9">
+      <div class="panel pad-top"><span class="ptag">STEP 1</span><h3>ifFIP</h3><p>FIP，但內野高飛球算成三振</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 2</span><h3>轉成 RA9 尺度</h3><p>＋（聯盟 RA9 − 聯盟 ERA）</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 3</span><h3>球場調整</h3><p>÷ FIP 專用球場係數（乘法）</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 4</span><h3>和聯盟比</h3><p>聯盟 − 投手 ＝ 每九局少失幾分</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 5</span><h3>動態 RPW</h3><p>投手會改變自己出賽時的得分環境</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 6</span><h3>加上替補水準</h3><p>先發 0.12、後援 0.03（每場勝場）</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 7</span><h3>× IP ÷ 9</h3><p>依投球局數換成總量</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 8</span><h3>槓桿（後援）</h3><p>× (1 ＋ gmLI) ÷ 2；gmLI：登板時的平均槓桿</p></div>
+      <div class="panel pad-top"><span class="ptag">STEP 9</span><h3>全聯盟修正</h3><p>讓投手 WAR 總和 ＝ 430</p></div>
+    </div>
+    <div class="grid2" style="gap:16px;margin-top:4px">
+      <div class="note" style="font-size:15px"><b>NOTE：</b>第 1 步的 ifFIP 和上一頁的 FIP 只差在內野高飛球，常數也要重新計算，所以不能直接用球員頁上的 FIP 算 WAR。</div>
+      <div class="alert small" style="margin-top:10px;padding:8px 12px"><span class="badge">FRAMING</span><p style="font-size:15px">2019 起，第 1 步改用 FIP ＋ 每九局受惠的 framing 得分。例：Greinke 2011 FIP 3.00，捕手每九局幫他 0.31 分 → 用 3.31 計算。</p></div>
     </div>
   </div>
 </section>
+<!-- P.15 -->
+<section class="slide" data-file="RESULTS.TXT" style="--accent:var(--warc)">
+  <div class="body">
+    <div class="kicker">STAGE 06 · SUMMARY</div>
+    <h2>結論：每個組成各補上一塊拼圖</h2>
+    <table class="box-table" style="font-size:18px">
+      <thead><tr><th>組成</th><th>回答什麼</th><th>基準</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag" style="color:var(--bat);background:var(--bat-bg)">打擊</span></td><td>打擊比平均野手多幾分（已調整球場、聯盟）</td><td>所屬聯盟野手平均</td></tr>
+        <tr><td><span class="tag" style="color:var(--bsr);background:var(--bsr-bg)">跑壘</span></td><td>上壘之後跑得好不好</td><td>聯盟平均</td></tr>
+        <tr><td><span class="tag" style="color:var(--fld);background:var(--fld-bg)">守備</span></td><td>同守位裡守得好不好</td><td>同守位平均</td></tr>
+        <tr><td><span class="tag" style="color:var(--pos);background:var(--pos-bg)">守位</span></td><td>守的位置有多難</td><td>守位難度表</td></tr>
+        <tr><td><span class="tag" style="color:var(--lgc);background:var(--lgc-bg)">聯盟</span></td><td>修正 AL、NL 之間的落差</td><td>各聯盟總和歸零</td></tr>
+        <tr><td><span class="tag" style="color:var(--rep);background:var(--rep-bg)">替補</span></td><td>把「比平均」改成「比替補」，反映上場量</td><td>替補勝率 .294</td></tr>
+      </tbody>
+    </table>
+    <div class="alert green"><span class="badge">KEY</span><p>所有貢獻先換成「得分」才能相加，再用 RPW 換成「勝場」：WAR ＝ RAR ÷ RPW。</p></div>
+  </div>
+</section>
+
+<!-- P.16 -->
+<section class="slide" data-file="TROUT.CSV">
+  <div class="body" style="padding-top:20px">
+    <div class="kicker">STAGE 07 · RAW DATA</div>
+    <h2 style="margin-bottom:8px">範例資料：Mike Trout 的 Value 表</h2>
+    <p class="tiny">代碼：<span class="src">VAL·12·Batting</span> ＝ value.csv 中 2012 年那一列的 Batting 欄；<span class="src">PDF·FLD·12</span> ＝ 球員頁 PDF 的 Fielding 表；<span class="src">LOG·13</span> ＝ 2013 逐場紀錄；<span class="src">LDR·…</span> ＝ 2012 排行榜總和；<span class="src k">GUTS</span> 聯盟常數；<span class="src k">ART·xxx</span> 文章數字。</p>
+    <table class="box-table htable" style="font-size:15px;margin-top:8px">
+      <thead><tr><th class="lab">球季</th><th>Batting</th><th>Base Running</th><th>Fielding</th><th>Positional</th><th>Offense</th><th>Defense</th><th>League</th><th>Replacement</th><th>RAR</th><th>WAR</th><th>PA</th></tr></thead>
+      <tbody>
+        <tr><td class="lab">2012 <span class="src">VAL·12</span></td><td>50.1</td><td>14.3</td><td>10.4</td><td>−0.2</td><td>64.4</td><td>10.2</td><td>2.7</td><td>18.9</td><td>96.1</td><td>10.1</td><td>639</td></tr>
+        <tr><td class="lab">2013 <span class="src">VAL·13</span></td><td>62.2</td><td>8.2</td><td>1.6</td><td>−1.2</td><td>70.5</td><td>0.5</td><td>2.6</td><td>20.5</td><td>94.0</td><td>10.1</td><td>716</td></tr>
+      </tbody>
+    </table>
+    <div class="grid3" style="gap:14px 16px;margin-top:16px">
+      <div class="panel pad-top"><span class="ptag">PDF·FLD</span><p class="tiny">守備局數：2012 LF 328.0、CF 885⅔、RF 12.0；2013 LF 356.0、CF 952⅔（.2 ＝ 2/3 局）</p></div>
+      <div class="panel pad-top"><span class="ptag">GUTS · ART·wRC</span><p class="tiny">RPW 2012 ＝ 9.544、2013 ＝ 9.264；lgR/PA 2012 ＝ .114；天使主場 PF 0.95；美聯野手 wRC 10032、PA 85797</p></div>
+      <div class="panel pad-top"><span class="ptag">LOG·13</span><p class="tiny">2013 年 157 場，PA 716（＝ STD·13·PA ✓）；守位 CF 101、LF 37、DH 9、CF-LF 6、LF-CF 4</p></div>
+      <div class="panel pad-top"><span class="ptag">LDR·AL12</span><p class="tiny">美聯野手總和：Batting −24.5、BsR −27.6、Fielding −33.5、Positional −254.0、League 357.2</p></div>
+      <div class="panel pad-top"><span class="ptag">LDR·MLB12S</span><p class="tiny">全大聯盟 Standard：2430 場（TG 4860 ÷ 2）、PA 184,179、R 21,017</p></div>
+      <div class="panel pad-top"><span class="ptag">LDR·MLB12</span><p class="tiny">全大聯盟 Value：Batting −815.9、BsR +1.0、Fielding +16.6、Positional +353.8、League 444.5、Replacement 5440.2、WAR 570.0</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- P.17 -->
+<section class="slide" data-file="TROUT_2012.EXE" style="--accent:var(--warc)">
+  <div class="body" style="padding:18px 46px 24px">
+    <div class="kicker">STAGE 07 · EXAMPLE 1</div>
+    <h2 style="margin-bottom:8px;font-size:29px">Trout 2012：自己算一遍，再和 FanGraphs 對照</h2>
+    <div class="grid2" style="grid-template-columns:0.82fr 1.18fr;gap:18px">
+      <table class="box-table" style="font-size:14px">
+        <thead><tr><th>組成</th><th class="num">自己算</th><th class="num">FanGraphs</th><th>狀態</th></tr></thead>
+        <tbody>
+          <tr><td>Batting</td><td class="num">49.97</td><td class="num">50.1</td><td class="check">✓ 重算</td></tr>
+          <tr><td>Base Running</td><td class="num">—</td><td class="num">14.3</td><td>需 BIS 資料</td></tr>
+          <tr><td>Fielding</td><td class="num">—</td><td class="num">10.4</td><td>需 BIS 資料</td></tr>
+          <tr><td>Positional</td><td class="num">−0.23</td><td class="num">−0.2</td><td class="check">✓ 重算</td></tr>
+          <tr><td>League</td><td class="num">2.66</td><td class="num">2.7</td><td class="check">✓ 美聯總額分攤</td></tr>
+          <tr><td>Replacement</td><td class="num">18.87</td><td class="num">18.9</td><td class="check">✓ 重算</td></tr>
+          <tr><td>RAR</td><td class="num">96.2</td><td class="num">96.1</td><td class="check">✓ 加總</td></tr>
+          <tr><td>WAR</td><td class="num">10.07</td><td class="num">10.1</td><td class="check">✓</td></tr>
+        </tbody>
+      </table>
+      <div class="formula" style="font-size:16.5px;margin:0;padding:8px 12px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:12.7279em;vertical-align:-6.1139em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:6.6139em;"><span style="top:-9.2009em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord">Batting</span></span></span></span><span style="top:-7.1139em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord">Positional</span></span></span></span><span style="top:-5.2879em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"></span></span><span style="top:-3.3065em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord">League</span></span></span></span><span style="top:-0.9991em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord">Replacement</span></span></span></span><span style="top:0.8269em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord">RAR</span></span></span></span><span style="top:2.3269em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord">WAR</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:6.1139em;"><span></span></span></span></span></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:6.6139em;"><span style="top:-9.2009em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">48.2</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">3.64</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1.87</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">49.97</span></span></span><span style="top:-7.1139em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">328.0/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">7.5</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">885.67/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">2.5</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">12.0/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">7.5</span><span class="mclose">)</span></span></span><span style="top:-5.2879em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">−</span><span class="mord">1.69</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1.52</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">0.06</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">−</span><span class="mord">0.23</span></span></span><span style="top:-3.3065em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">85797</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">357.2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">639</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">2.66</span></span></span><span style="top:-0.9991em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">570</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">184179</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">9.544</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">639</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">18.87</span></span></span><span style="top:0.8269em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">50.1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">14.3</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">10.4</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">0.2</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">2.7</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">18.9</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">96.2</span></span></span><span style="top:2.3269em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">96.1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">÷</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">9.544</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">10.07</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:6.1139em;"><span></span></span></span></span></span></span></span></span></span></span></span></div>
+    </div>
+    <div class="grid2" style="grid-template-columns:1fr 1fr;gap:16px;margin-top:10px">
+      <div class="alert small" style="margin-top:0;padding:8px 12px;align-items:flex-start"><span class="badge">OPEN</span><p style="font-size:15px">照文章公式應該用「另外四項總和的相反數」339.6，只得 2.53；美聯 League 總額多了 17.6。<b>推論</b>的兩個假說：①聯盟調整把投手打擊也算進去；②表上的 Fielding 含捕手 framing、聯盟調整卻不含。兩者都沒有來源證實。</p></div>
+      <div class="panel pad-top"><span class="ptag">RESULT</span><p class="tiny" style="font-size:15px">MLB 總打席 184,179，代入得 18.87 ≈ 18.9；之前反推的 183,900（<span class="zh">推論</span>）只差 0.15%。六個組成裡，除了需要 BIS 原始資料的跑壘、守備，其餘四項都能自己算出來。</p></div>
+    </div>
+    <p class="tiny muted" style="margin-top:6px;font-size:12.5px">48.2 <span class="src">ADV·12·wRAA</span>；局數 <span class="src">PDF·FLD·12</span>；9.544 <span class="src k">GUTS</span>；3.64、−1.87 由 <span class="src k">ART·wRC</span> 計算；357.2 <span class="src">LDR·AL12</span>；85797 <span class="src k">ART·wRC</span>；184,179 <span class="src">LDR·MLB12S</span></p>
+  </div>
+</section>
+
+<!-- P.18 -->
+<section class="slide" data-file="TROUT_2013.EXE" style="--accent:var(--pos)">
+  <div class="body">
+    <div class="kicker">STAGE 07 · EXAMPLE 2</div>
+    <h2>Trout 2013：用逐場紀錄找到守位調整的缺口</h2>
+    <div class="grid3" style="gap:16px">
+      <div class="panel pad-top"><span class="ptag">MATCH</span><p class="small">WAR ＝ 94.0 ÷ 9.264 ＝ 10.15 ≈ 10.1 ✓<br><span class="src">VAL·13·RAR</span> <span class="src k">GUTS</span></p></div>
+      <div class="panel pad-top"><span class="ptag">MISMATCH</span><p class="small">守備表只有 LF 和 CF，算出 −0.20；但 <span class="src">VAL·13·Positional</span> ＝ −1.2，差了 1.0 分。</p></div>
+      <div class="panel pad-top"><span class="ptag"><span class="zh">推論</span>→ FOUND</span><p class="small">當時推論：差距約等於 83.5 局（約 9.3 場）的指定打擊。逐場紀錄：DH 先發 <b>9 場</b> <span class="src">LOG·13</span></p></div>
+    </div>
+    <div class="formula" style="font-size:19px;margin-top:16px"><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:6.9168em;vertical-align:-3.2084em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:3.7084em;"><span style="top:-5.7084em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord cjk_fallback">只算外野：</span></span></span></span><span style="top:-3.2954em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord cjk_fallback">推論</span><span class="mord"> DH</span><span class="mord cjk_fallback">：</span></span></span></span><span style="top:-0.9046em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord text"><span class="mord cjk_fallback">加上</span><span class="mord"> DH 9 </span><span class="mord cjk_fallback">場：</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:3.2084em;"><span></span></span></span></span></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:3.7084em;"><span style="top:-5.7084em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace"> </span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">356.0/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">7.5</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">952.67/9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord">2.5</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">−</span><span class="mord">0.20</span></span></span><span style="top:-3.2954em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace"> </span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">−</span><span class="mord">17.5</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">−</span><span class="mord">1.2</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">0.20</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">162</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">9</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">83.5</span><span class="mord text"><span class="mord"> </span><span class="mord cjk_fallback">局</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">9.3</span><span class="mord text"><span class="mord"> </span><span class="mord cjk_fallback">場</span></span></span></span><span style="top:-0.9046em;"><span class="pstrut" style="height:3.427em;"></span><span class="mord"><span class="mord"></span><span class="mspace"> </span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">0.20</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">162</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">9</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mopen">(</span><span class="mord">−</span><span class="mord">17.5</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">−</span><span class="mord">0.20</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">0.97</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">−</span><span class="mord">1.17</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord">−</span><span class="mord">1.2</span><span class="mspace"> </span><span class="mord amsrm">✓</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:3.2084em;"><span></span></span></span></span></span></span></span></span></span></span></span></div>
+    <div class="alert green"><span class="badge">LESSON</span><p>驗算對不上時，不硬湊數字：先寫下推論、列進缺失清單，再找資料證實。</p></div>
+  </div>
+</section>
+
+<!-- P.19 -->
+<section class="slide" data-file="README.TXT">
+  <div class="body" style="padding-top:20px">
+    <div class="kicker">STAGE 08 · LIMITS</div>
+    <h2 style="margin-bottom:12px">WAR 不能怎麼用</h2>
+    <div class="sixgrid">
+      <div class="panel pad-top"><span class="ptag">ESTIMATE</span><p class="tiny" style="font-size:15px"><b>它是估計值</b>：6 WAR 可能介於 5 到 7；6.4 和 6.1 分不出高下，6.4 和 4.1 才分得出。</p></div>
+      <div class="panel pad-top"><span class="ptag">TEAM</span><p class="tiny" style="font-size:15px"><b>球隊總和 ≠ 勝場</b>：要加回全替補球隊的基準勝場。</p></div>
+      <div class="panel pad-top"><span class="ptag">PAST</span><p class="tiny" style="font-size:15px"><b>衡量過去，不是實力</b>：估計真實實力時，用近三年 WAR 依 5／3／1 加權平均。</p></div>
+      <div class="panel pad-top"><span class="ptag">FIELDING</span><p class="tiny" style="font-size:15px"><b>守備最不確定</b>：守備數據由人工輸入；靠守備拿到大量 WAR 的球員，誤差也較大。</p></div>
+      <div class="panel pad-top"><span class="ptag">CONTEXT</span><p class="tiny" style="font-size:15px"><b>不考慮情境</b>：關鍵安打沒有額外加分；情境價值要看 WPA。</p></div>
+      <div class="panel pad-top" style="background:#fff7cc"><span class="ptag">VERSION</span><p class="tiny" style="font-size:15px"><b>方法會更新</b>：2013 統一替補水準（.265 → .294）；2019 加入捕手 framing；2024 守備與跑壘改用 Statcast（回溯至 2016，多數球員變動在 1 以內，舊值以 Legacy WAR 保留）。</p></div>
+    </div>
+    <div class="legend" style="margin-top:14px;font-size:13px;line-height:1.6">
+      <div><b>Wiki 頁面</b>：war、war-position-players、war-pitchers、batting-runs、bsr、uzr、drs、fip、positional-adjustment、replacement-level、runs-per-win</div>
+      <div><b>來源</b>：Slowinski〈What is WAR?〉2010、〈WAR Misconceptions〉2012、〈WAR for Position Players〉2012、Slowinski／Weinberg〈WAR for Pitchers〉2012、Slowinski〈wRC and wRC+〉2010、〈UZR〉2010、〈DRS〉2010、〈FIP〉2010、Cameron〈Unifying Replacement Level〉2013、Appelman〈WAR Update: Catcher Framing〉2019、〈2024 FanGraphs WAR Update〉2024</div>
+      <div class="muted">出處：5／3／1 <span class="src k">ART·Misc</span>；5 到 7 <span class="src k">ART·WAR</span>；Statcast <span class="src k">ART·WAR24</span>；.265 → .294 <span class="src k">ART·RL13</span>；framing <span class="src k">ART·FRM19</span></div>
+    </div>
+  </div>
+</section>
+
 </div></div>
 
 <div id="nav"><button id="prev" aria-label="上一頁">◀ PREV</button><span id="count"></span><button id="next" aria-label="下一頁">NEXT ▶</button></div>
