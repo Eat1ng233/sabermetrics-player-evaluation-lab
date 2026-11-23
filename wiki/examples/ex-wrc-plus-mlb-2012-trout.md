@@ -5,8 +5,8 @@ aliases: [Trout 2012 wRC+]
 domain: [batting]
 leagues: [MLB]
 tags: [worked-example, park-adjusted]
-sources: ["[[src-2010-slowinski-fangraphs-wrc]]"]
-source_count: 1
+sources: ["[[src-2010-slowinski-fangraphs-wrc]]", "[[src-2010-slowinski-fangraphs-park-factors]]"]
+source_count: 2
 status: stable
 metric: ["[[wrc-plus]]"]
 league: MLB
@@ -34,7 +34,7 @@ updated: 2026-11-23
 | 常數 | 數值 | 說明 |
 |---|---|---|
 | $\text{lgR/PA}$ | .114 | MLB 2012（也與 [[woba#MLB 2010–2015 年常數]] 一致） |
-| $\text{PF}$ | 0.95 | 天使隊主場，FanGraphs 球場係數 95 ÷ 100 |
+| $\text{PF}$ | 0.95 | 天使隊主場，FanGraphs 網站顯示的球場係數 95 ÷ 100（顯示值已減半，見 [[park-factor]]） |
 | AL 野手 wRC 總和 | 10032 | 美聯 2012 年，不含投手 |
 | AL 野手 PA 總和 | 85797 | 同上 |
 
@@ -62,6 +62,9 @@ $$
 
 PF < 1 代表天使主場在 2012 年偏向投手，所以每打席加回 0.0057 分。
 
+> [!info] 推論：原始球場係數
+> 顯示值 95 已減半。依 [[park-factor]]，原始係數約為 $2 \times 95 - 100 = 90$，也就是天使主場的得分約比平均少 10%。
+
 ### 第 4 步：聯盟野手平均
 
 $$
@@ -84,4 +87,4 @@ $$
 - 球場調整的影響：如果不做球場調整，結果是 $0.18943 / 0.11693 \times 100 = 162.0$。球場調整讓他多了約 5 分。
 
 ## 相關頁面
-[[wrc-plus]]、[[wrc]]、[[wraa]]、[[park-factor]]
+[[wrc-plus]]、[[wrc]]、[[wraa]]、[[park-factor]]、[[ex-war-mlb-2012-trout]]

@@ -42,3 +42,11 @@
 - 新建：[[src-2010-slowinski-fangraphs-wrc]]、[[wrc]]、[[wrc-plus]]、[[park-factor]]（stub）、[[ex-wrc-plus-mlb-2012-trout]]
 - 更新：[[wraa]]（status → stable）、[[ex-woba-mlb-2013-trout]]（加入 wRC）、[[index]]、[[overview]]
 - 備註：使用者指出 FanGraphs 只提供 2016 年以後的球場係數，Trout 2013 年 wRC+ 176 無法驗算
+
+## [2026-11-23] ingest | Park Factors、What is WAR?、WAR Misconceptions、WAR for Position Players、WAR for Pitchers
+- 模式：discussed（使用者確認後寫入）
+- 改名：五份 PDF 以規則命名存入 raw/articles/（`2010-02-27_fangraphs_park-factors.pdf`、`2010-02-15_fangraphs_what-is-war.pdf`、`2012-03-23_fangraphs_war-misconceptions.pdf`、`2012-04-02_fangraphs_war-position-players.pdf`、`2012-03-28_fangraphs_war-pitchers.pdf`）
+- 新建：五篇來源頁、[[war]]、[[war-position-players]]、[[war-pitchers]]、[[batting-runs]]、[[bsr]]、[[replacement-level]]（needs-review）、[[runs-per-win]]、[[positional-adjustment]]、[[ex-war-mlb-2012-trout]]
+- 更新：[[park-factor]]（stub → draft）、[[wrc-plus]]、[[wraa]]、[[ex-wrc-plus-mlb-2012-trout]]（PF 為減半顯示值）、[[index]]、[[overview]]
+- 分歧：替補球隊 43 勝 vs .294 勝率，並列於 [[replacement-level]]
+- 備註：Trout 2012 年 Batting、守位調整、WAR 驗算吻合；2013 年守位調整差 1.0（推測 DH 出賽）；runCS 公式在來源中缺少負號（推論）

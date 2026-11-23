@@ -5,8 +5,8 @@ aliases: [wRAA, weighted Runs Above Average]
 domain: [batting]
 leagues: [MLB]
 tags: [counting-stat, runs, linear-weights]
-sources: ["[[src-2010-slowinski-fangraphs-woba]]", "[[src-2010-slowinski-fangraphs-wrc]]"]
-source_count: 2
+sources: ["[[src-2010-slowinski-fangraphs-woba]]", "[[src-2010-slowinski-fangraphs-wrc]]", "[[src-2012-slowinski-fangraphs-war-position-players]]"]
+source_count: 3
 status: stable
 full_name: weighted Runs Above Average
 scale: runs
@@ -50,7 +50,7 @@ $$
 - 下游：
   - [[wrc]]：wRAA 加回聯盟平均得分，$\text{wRC} = \text{wRAA} + \frac{\text{lgR}}{\text{PA}} \times \text{PA}$
   - [[wrc-plus]]：wRAA/PA 是 wRC+ 公式的第一項
-  - [[batting-runs]]：wRAA 經過球場與聯盟調整後就是 Batting Runs
+  - [[batting-runs]]：wRAA 經過球場與聯盟調整後就是 Batting Runs，公式見該頁（[[src-2012-slowinski-fangraphs-war-position-players]]）
 
 兩份來源的說法一致：[[src-2010-slowinski-fangraphs-woba]] 說 wRAA 是未經球場調整的 Batting Runs；[[src-2010-slowinski-fangraphs-wrc]] 說 Batting Runs 是經過球場與聯盟調整的 wRAA。
 
@@ -64,7 +64,7 @@ $\text{lgwOBA}$ 與 $\text{wOBA Scale}$ 都是特定聯盟、特定球季的常�
 
 ## 限制與常見誤用
 - 沒有球場調整，打者友善球場的球員會被高估。
-- 以「平均」而不是「替補水準」為基準，所以上場時間多的平均打者 wRAA 仍是 0，不能反映他的耐操價值。替補水準的概念見 [[replacement-level]]。
+- 以「平均」而不是「替補水準」為基準，所以上場時間多的平均打者 wRAA 仍是 0，不能反映他的上場量價值。WAR 用[[replacement-level|替補水準]]解決這個問題。
 - 繼承 wOBA 的所有限制（不考慮情境、不含跑壘）。
 
 ## 範例

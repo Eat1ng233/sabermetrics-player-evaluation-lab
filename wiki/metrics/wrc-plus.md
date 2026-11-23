@@ -5,8 +5,8 @@ aliases: [wRC+, weighted Runs Created Plus, 加權得分創造指數]
 domain: [batting]
 leagues: [MLB]
 tags: [rate-stat, park-adjusted, league-adjusted, index-100]
-sources: ["[[src-2010-slowinski-fangraphs-wrc]]"]
-source_count: 1
+sources: ["[[src-2010-slowinski-fangraphs-wrc]]", "[[src-2010-slowinski-fangraphs-park-factors]]", "[[src-2012-slowinski-fangraphs-war-position-players]]"]
+source_count: 3
 status: draft
 full_name: weighted Runs Created Plus
 scale: 100=avg
@@ -35,7 +35,7 @@ $$
 變數說明：
 - $\dfrac{\text{wRAA}}{\text{PA}}$：打者每打席高於平均的得分，也可以直接算成 $\dfrac{\text{wOBA} - \text{lgwOBA}}{\text{wOBA Scale}}$，兩種算法結果相同
 - $\dfrac{\text{lgR}}{\text{PA}}$：**MLB** 每打席平均得分（Guts 頁）
-- $\text{PF}$：球場係數，FanGraphs 頁面上的數字除以 100（例如 95 → 0.95），見 [[park-factor]]
+- $\text{PF}$：球場係數，FanGraphs 頁面上的數字除以 100（例如 95 → 0.95）。網站顯示的數字**已經減半**，反映只有一半比賽在主場，見 [[park-factor]]
 - 分母：打者所屬聯盟（AL 或 NL）**扣除投手**後的 wRC 總和 ÷ PA 總和，要從 Leaders 頁面取得
 
 出處：[[src-2010-slowinski-fangraphs-wrc]]。
@@ -67,6 +67,13 @@ $$
 ## 推導鏈：上游與下游
 - 上游：[[run-expectancy-matrix]] → [[linear-weights]] → [[woba]] → [[wraa]] → [[wrc]] → wRC+
 - 調整項：[[park-factor]]、聯盟（AL / NL）野手平均
+- 平行指標：[[batting-runs]] 使用完全相同的球場與聯盟基準，只是用「相減」表示差距；wRC+ 用「相除」表示比例。兩者可以互相換算：
+
+$$
+\text{wRC+} = \left(1 + \frac{\text{Batting}/\text{PA}}{\text{wRC}_{\text{lg}}/\text{PA}_{\text{lg}}}\right) \times 100
+$$
+
+（推論，推導見 [[batting-runs#和 wRC+ 的關係]]）
 
 ## 聯盟與年份差異
 - 平均永遠是 100，所以 2000 年的 140 和 2014 年的 140 意義相同（[[src-2010-slowinski-fangraphs-wrc]]）。
