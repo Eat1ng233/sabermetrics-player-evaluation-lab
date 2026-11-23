@@ -4,12 +4,12 @@ type: concept
 aliases: [Replacement Level, 替補水準, Replacement Runs]
 domain: [value, method]
 leagues: [MLB]
-tags: [war, replacement-level, contested]
-sources: ["[[src-2010-slowinski-fangraphs-what-is-war]]", "[[src-2012-slowinski-fangraphs-war-misconceptions]]", "[[src-2012-slowinski-fangraphs-war-position-players]]", "[[src-2012-slowinski-fangraphs-war-pitchers]]"]
-source_count: 4
-status: needs-review
+tags: [war, replacement-level]
+sources: ["[[src-2010-slowinski-fangraphs-what-is-war]]", "[[src-2012-slowinski-fangraphs-war-misconceptions]]", "[[src-2012-slowinski-fangraphs-war-position-players]]", "[[src-2012-slowinski-fangraphs-war-pitchers]]", "[[src-2013-cameron-fangraphs-unifying-replacement-level]]"]
+source_count: 5
+status: draft
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # 替補水準（Replacement Level）
@@ -47,15 +47,29 @@ $$
 
 ## 不同觀點
 
-> [!note] 觀點 A：全替補球隊約 43 勝
-> 依據：球隊 WAR 總和加上約 43 勝才是預估勝場（依年份而異）。
-> 來源：[[src-2012-slowinski-fangraphs-war-misconceptions]]（2012-03-23）
+> [!note] 觀點 A（2013 年以前的 FanGraphs）：全替補球隊約 43 勝
+> 依據：球隊 WAR 總和加上約 43 勝才是預估勝場。43 勝約等於 .265 勝率，正是 FanGraphs 統一前的基準。
+> 來源：[[src-2012-slowinski-fangraphs-war-misconceptions]]（2012-03-23）；[[src-2013-cameron-fangraphs-unifying-replacement-level]]
 
-> [!note] 觀點 B：替補勝率 .294（約 47.7 勝）
-> 依據：每季 1,000 WAR，FanGraphs 與 Baseball-Reference 使用相同替補水準。
-> 來源：[[src-2010-slowinski-fangraphs-what-is-war]]（2010 年發表，內容含後來的更新）；[[src-2012-slowinski-fangraphs-war-position-players]]
+> [!note] 觀點 B（2013 年起）：替補勝率 .294（約 47.7 勝）
+> 依據：2013 年 FanGraphs 與 Baseball-Reference 統一替補水準，每季 1,000 WAR。
+> 來源：[[src-2013-cameron-fangraphs-unifying-replacement-level]]（2013-03-28）；[[src-2010-slowinski-fangraphs-what-is-war]]（內容含後來的更新）
 
-**分歧所在**：43 勝約等於 .265 勝率，與 .294 差約 4.7 勝。兩篇文章的撰寫或更新時間不同，可能是替補水準的定義在這段期間有調整，但目前沒有來源說明調整的時間與原因。
+**分歧所在**：時間先後不同，已由來源證實。2013 年 3 月以前，FanGraphs 的替補勝率是 .265、Baseball-Reference 是 .320；2013 年起兩站統一為 .294（Tango 2008 年原始模型是 .292）。〈WAR Misconceptions〉寫於統一之前，所以是 43 勝。
+
+| 時期／網站 | 替補勝率 | 每隊勝場 |
+|---|---|---|
+| FanGraphs（2013 年以前） | .265 | 約 43 |
+| Baseball-Reference（2013 年以前） | .320 | 約 52（推論） |
+| Tango 原始模型（2008） | .292 | 約 47（推論） |
+| 統一後（2013 起） | .294 | 47.7 |
+
+## 替補水準設在哪裡才合理
+- Tango 的定義：在自由市場上只需支付最低薪資、或在交易中以極小代價就能取得的能力。
+- 檢驗一：以小聯盟合約或讓渡取得的 24 名野手，兩季約 10,000 打席累積約 0 WAR。
+- 檢驗二：用 .294 計算，生涯 6,000 打席以上的 628 位球員中只有 1 人低於 0（Alfredo Griffin，−1.0）。
+- 統一的影響：單季幾乎看不出（Trout 當時生涯 10.8 → 10.7）；長生涯球員降最多（Aparicio −14.2）。
+（[[src-2013-cameron-fangraphs-unifying-replacement-level]]）
 
 ## 在球員評估中的用途
 - 估計球隊勝場：$\text{預估勝場} \approx \text{全替補球隊勝場} + \sum \text{WAR}$
@@ -69,3 +83,4 @@ $$
 - [[src-2012-slowinski-fangraphs-war-misconceptions]]：約 43 勝
 - [[src-2012-slowinski-fangraphs-war-position-players]]：野手公式
 - [[src-2012-slowinski-fangraphs-war-pitchers]]：投手公式
+- [[src-2013-cameron-fangraphs-unifying-replacement-level]]：2013 年統一替補水準、舊基準 .265／.320

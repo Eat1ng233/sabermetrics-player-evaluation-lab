@@ -5,8 +5,8 @@ aliases: [Pitcher WAR, 投手 WAR, ifFIP, FIPR9]
 domain: [value, pitching]
 leagues: [MLB]
 tags: [war, replacement-level, fip]
-sources: ["[[src-2012-slowinski-fangraphs-war-pitchers]]"]
-source_count: 1
+sources: ["[[src-2012-slowinski-fangraphs-war-pitchers]]", "[[src-2010-slowinski-fangraphs-fip]]", "[[src-2019-appelman-fangraphs-war-update-catcher-framing]]"]
+source_count: 3
 status: draft
 full_name: Wins Above Replacement for Pitchers
 scale: wins
@@ -14,15 +14,15 @@ upstream: ["[[fip]]", "[[park-factor]]", "[[replacement-level]]", "[[runs-per-wi
 downstream: ["[[war]]"]
 stabilization:
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # 投手 WAR 計算
 
 > 一句話定義：以 FIP（把內野高飛球算成三振）衡量投手相對聯盟平均的失分預防，換成勝場、加上替補水準、依局數縮放。
 
-> [!warning] 待補來源
-> [[fip|FIP]] 本身還沒有來源與頁面。本頁的 FIP 公式只取自投手 WAR 文章，FIP 的推導（為什麼是 13、3、2）待匯入 FIP 來源後補上。
+> [!note] FIP 的定義與推導
+> 一般 FIP 的公式、常數與 DIPS 理論見 [[fip]]。本頁使用的是把內野高飛球算成三振的 **ifFIP**，係數 13、3、2 的完整推導仍待補來源。
 
 ## 定義與公式
 
@@ -45,6 +45,9 @@ C_{\text{ifFIP}} = \text{lgERA} - \frac{13\,\text{lgHR} + 3(\text{lgBB} + \text{
 $$
 
 - IFFB：內野高飛球。和一般 FIP 不同，所以不能直接用球員頁的 FIP 或 Guts 頁的 cFIP。
+
+> [!note] 2019 年起：捕手 framing 調整
+> 投手受惠於捕手偷好球的部分要扣回：WAR 計算改用 $\text{FIP} + \dfrac{\text{Framing}}{9}$（每九局受惠的 framing 得分），動態 RPW 也一起調整；RA9-WAR 同樣調整。例：Greinke 2011 FIP 3.00，每九局受惠 0.31 → 改用 3.31（[[src-2019-appelman-fangraphs-war-update-catcher-framing]]）。
 
 ### 2. 轉成 RA9 尺度
 FIP 的尺度和 ERA 相同，但 WAR 要用全部失分（RA9）：

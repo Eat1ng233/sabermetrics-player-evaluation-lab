@@ -110,3 +110,36 @@
 - `build.js`：工作資料夾的 spec.md 未設 `content_approved: true` 時拒絕建置
 - 現有簡報：woba-to-wrc-plus 設為已確認（依 v1–v3 審閱）；war-explained 設為未確認（日後先補毛片）
 - `AGENTS.md` 第 14 節同步更新
+
+## [2026-11-23] output | war-explained 依 SOP-04 v1.2 重跑至毛片
+- 依使用者要求刪除 v1.1 版（成品與工作檔；本機刪除待使用者執行，見交付訊息）
+- N1 → N2（29/29）→ N3 毛片 `draft.md`（16 頁、7 筆缺失、6 項需要補充的資料）→ 毛片關卡通過
+- 確認關卡驗證：`--render` 擋下（8 項原因）、`build.js` 拒絕建置
+- 目前停在「🛑 使用者審閱毛片」；紀錄見 `outputs/slides/war-explained/run-log.md`
+- 新增 `SUBMISSION.md`（作業六項繳交內容，依 v1.2 更新）
+
+## [2026-11-24] ingest | war-explained 毛片 §2 補充資料（6 份）
+- 文章存入 `raw/articles/`：`2024-04-05_fangraphs_war-update-2024.pdf`、`2010-02-15_fangraphs_uzr.pdf`、`2010-02-15_fangraphs_fip.pdf`（討論模式，wiki 頁面待同意）
+- 資料存入 `raw/data/`：Trout 2013 逐場紀錄（CSV＋meta）、2012 美聯野手 Value 總和（CSV＋meta）、2012 PA 排行（季後賽篩選，標註不可用）
+- `verify.py` 39/39：DH 9 場 → Positional −1.2 ✓；League 2.7 ✓（按美聯總額分攤）；美聯 League 與文章公式差 17.6 列為待確認
+
+## [2026-11-24] ingest | FIP、UZR、2024 WAR 更新寫入 wiki
+- 新增：`metrics/fip.md`、`metrics/uzr.md`（needs-review）；來源頁 `src-2010-slowinski-fangraphs-fip`、`src-2010-slowinski-fangraphs-uzr`、`src-2024-appelman-fangraphs-war-update`
+- 更新：`war-position-players`（2016 起 Statcast、「不同觀點」，needs-review）、`bsr`（XBR）、`war-pitchers`（移除 FIP 待補警示）、`index`
+- 資料：`raw/data/fangraphs_mlb_2012_mlb-all-value-totals.csv`（全大聯盟 Value；沒有 PA 欄）
+
+## [2026-11-24] output | war-explained 毛片 d2
+- verify 46/46；頁面 16 → 18（新增 UZR、FIP）；缺失 9 筆中 4 筆已解決
+- 停在「🛑 使用者審閱毛片 d2」
+
+## [2026-11-24] ingest | 2012 總打席與 3 篇文章（討論模式）
+- 資料：`raw/data/fangraphs_mlb_2012_mlb-all-standard-totals.csv`（lgPA 184,179）；war-explained verify 51/51
+- 文章存入 `raw/articles/`：`2013-03-28_fangraphs_unifying-replacement-level.pdf`、`2010-02-15_fangraphs_drs.pdf`、`2019-03-20_fangraphs_war-update-catcher-framing.pdf`（wiki 頁面待同意）
+
+## [2026-11-24] ingest | 替補水準統一、DRS、捕手 framing 寫入 wiki
+- 新增：`metrics/drs.md`；來源頁 `src-2013-cameron-fangraphs-unifying-replacement-level`、`src-2010-slowinski-fangraphs-drs`、`src-2019-appelman-fangraphs-war-update-catcher-framing`
+- 更新：`replacement-level`（43 勝 vs .294 改為時間先後，移除 needs-review／contested）、`war`（方法更新時間線）、`war-position-players`、`war-pitchers`（framing）、`uzr`（vs DRS）、兩個舊來源頁的待追問、`index`
+
+## [2026-11-24] output | war-explained 毛片 d3
+- verify 54/54；頁面 18 → 19（新增捕手與 DRS）；缺失 9 筆只剩「美聯 League 差 17.6」
+- 停在「🛑 使用者審閱毛片 d3」

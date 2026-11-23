@@ -1,0 +1,2 @@
+內容尚未經使用者確認：請先交付毛片（draft.md），使用者確認後把 spec.md 的 content_approved 設為 true。
+exit=1

@@ -1,4 +1,0 @@
-版面規則錯誤 2 個：
-  - 第 494 行使用 \tfrac（請改用 \dfrac）
-  - 第 517 行使用 \tfrac（請改用 \dfrac）
-build exit=1

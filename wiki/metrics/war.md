@@ -5,8 +5,8 @@ aliases: [WAR, Wins Above Replacement, fWAR, 勝場貢獻值, 替補水準以上
 domain: [value]
 leagues: [MLB]
 tags: [counting-stat, wins, replacement-level]
-sources: ["[[src-2010-slowinski-fangraphs-what-is-war]]", "[[src-2012-slowinski-fangraphs-war-misconceptions]]", "[[src-2012-slowinski-fangraphs-war-position-players]]", "[[src-2012-slowinski-fangraphs-war-pitchers]]"]
-source_count: 4
+sources: ["[[src-2010-slowinski-fangraphs-what-is-war]]", "[[src-2012-slowinski-fangraphs-war-misconceptions]]", "[[src-2012-slowinski-fangraphs-war-position-players]]", "[[src-2012-slowinski-fangraphs-war-pitchers]]", "[[src-2013-cameron-fangraphs-unifying-replacement-level]]", "[[src-2019-appelman-fangraphs-war-update-catcher-framing]]", "[[src-2024-appelman-fangraphs-war-update]]"]
+source_count: 7
 status: draft
 full_name: Wins Above Replacement
 scale: wins
@@ -14,7 +14,7 @@ upstream: ["[[batting-runs]]", "[[bsr]]", "[[positional-adjustment]]", "[[replac
 downstream: []
 stabilization:
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # WAR（勝場貢獻值）
@@ -101,8 +101,11 @@ $$
 6. **環境交互作用**：球場調整無法消除球員技能與環境的交互影響。
 7. **不考慮情境**：關鍵安打、高槓桿後援沒有額外加分（後援投手 WAR 有槓桿係數，但只是部分反映）；情境價值看 [[wpa|WPA]]。
 
-> [!warning] 待確認：可能已過時的說法
-> 來源（2012–2016 年）指出：捕手 WAR **不含** framing；非捕手守備用 **UZR**。使用者匯入的 Trout 球員頁（2026 年）已出現 OAA、FRV 欄位，FanGraphs 現行做法可能已經改變，需要新來源確認。
+> [!note] 方法的更新（已由來源確認）
+> - **2013**：FanGraphs 與 Baseball-Reference 統一替補水準為 .294（之前 FanGraphs .265）（[[src-2013-cameron-fangraphs-unifying-replacement-level]]）
+> - **2019**：捕手 framing 納入 WAR，資料從 2008 年起；投手依搭配捕手扣回（[[src-2019-appelman-fangraphs-war-update-catcher-framing]]）
+> - **2024**：守備與跑壘改用 Statcast（OAA、XBR 等），回溯至 2016 年（[[src-2024-appelman-fangraphs-war-update]]）
+> 比較不同年代、或不同時間抓下來的 WAR 時，要注意這些版本差異。
 
 ## 範例
 - [[ex-war-mlb-2012-trout]]：Trout 2012 年野手 WAR 完整拆解

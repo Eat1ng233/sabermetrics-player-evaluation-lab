@@ -17,27 +17,28 @@
 - [[batting-runs|Batting Runs]] — 經球場與聯盟調整的 wRAA，WAR 打擊組成（來源數：3）
 
 ### 投球（pitching）
-_（尚無頁面）_
+- [[fip|FIP]] — 只用三振、保送、觸身球、全壘打估計的 ERA；含常數推導、評級表（來源數：2）
 
 ### 守備（fielding）
-_（尚無頁面）_
+- [[drs|DRS]] — Fielding Bible 的守備救分；六個組成、和 UZR 的比較（來源數：3）
+- [[uzr|UZR]] — 相對同守位平均的守備得分；四個組成、計算例子、2016 年起被 Statcast 取代（來源數：4，needs-review）
 
 ### 跑壘（baserunning）
-- [[bsr|BsR]] — 跑壘得分 = UBR + wSB + wGDP；含 wSB 推導（來源數：1）
+- [[bsr|BsR]] — 跑壘得分 = UBR + wSB + wGDP（2016 年起改 XBR）；含 wSB 推導（來源數：2）
 
 ### Statcast／追蹤數據（statcast）
 _（尚無頁面）_
 
 ### 綜合價值、新秀與合約（value / prospect / contract）
-- [[war|WAR]] — 高於替補水準的勝場；總覽、解讀、誤用、各版本（來源數：4）
-- [[war-position-players|野手 WAR 計算]] — 六個組成與 RPW 換算（來源數：1）
-- [[war-pitchers|投手 WAR 計算]] — ifFIP → FIPR9 → 動態 RPW → 替補水準 → 槓桿（來源數：1）
+- [[war|WAR]] — 高於替補水準的勝場；總覽、解讀、誤用、各版本、方法更新時間線（來源數：7）
+- [[war-position-players|野手 WAR 計算]] — 六個組成與 RPW 換算；含 2016 年起的 Statcast 版本差異（來源數：5，needs-review）
+- [[war-pitchers|投手 WAR 計算]] — ifFIP → FIPR9 → 動態 RPW → 替補水準 → 槓桿；framing 調整（來源數：3）
 
 ## 概念與方法（concepts）
 - [[run-expectancy-matrix|得分期望值矩陣]] — 24 種壘包出局狀態到局末的平均得分；含 2010–2015 年矩陣（來源數：1）
 - [[linear-weights|Linear Weights]] — 每種事件的平均得分價值，wOBA 權重的來源（來源數：2）
 - [[park-factor|Park Factor]] — 球場係數的計算（原始、減半、迴歸）、加法與乘法調整、限制（來源數：5）
-- [[replacement-level|替補水準]] — 1,000 WAR、.294；含來源分歧（來源數：4，needs-review）
+- [[replacement-level|替補水準]] — 1,000 WAR、.294；2013 年統一前後的基準（來源數：5）
 - [[runs-per-win|RPW]] — 每勝得分與各年數值（來源數：3）
 - [[positional-adjustment|守位調整]] — 各守位每 162 場的調整值（來源數：1）
 
@@ -55,6 +56,12 @@ _（尚無頁面）_
 - [[ex-war-mlb-2012-trout|Trout 2012 WAR]] — 野手 WAR 逐項拆解並對照 FanGraphs（來源數：3）
 
 ## 來源（sources）
+- [[src-2019-appelman-fangraphs-war-update-catcher-framing|WAR Update: Catcher Framing!]] — 捕手 framing 納入 WAR（2019，Appelman）
+- [[src-2013-cameron-fangraphs-unifying-replacement-level|Unifying Replacement Level]] — FanGraphs 與 B-R 統一替補水準 .294（2013，Cameron）
+- [[src-2010-slowinski-fangraphs-drs|FanGraphs Library — DRS]] — DRS 的組成與和 UZR 的差別（2010，Slowinski）
+- [[src-2024-appelman-fangraphs-war-update|2024 FanGraphs WAR Update]] — 守備、跑壘改用 Statcast，回溯至 2016（2024，Appelman）
+- [[src-2010-slowinski-fangraphs-uzr|FanGraphs Library — UZR]] — UZR 的組成、計算邏輯與限制（2010，Slowinski）
+- [[src-2010-slowinski-fangraphs-fip|FanGraphs Library — FIP]] — FIP 的公式、常數與 DIPS 理論（2010，Slowinski）
 - [[src-2016-appelman-fangraphs-park-factors-5yr|FanGraphs Library — Park Factors – 5 Year Regressed]] — FanGraphs 球場係數的計算方法（2016，Appelman／Heipp）
 - [[src-2014-weinberg-fangraphs-re24|FanGraphs Library — RE24]] — 得分期望值與 RE24 的定義、計算（2014，Weinberg）
 - [[src-2012-slowinski-fangraphs-war-position-players|FanGraphs Library — WAR for Position Players]] — 野手 WAR 完整計算（2012，Slowinski）

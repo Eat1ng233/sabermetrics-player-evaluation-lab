@@ -1,79 +1,76 @@
 ---
-title: 執行紀錄：做簡報「WAR 是怎麼算出來的」
+title: 執行紀錄：做簡報「WAR 是怎麼算出來的」（SOP-04 v1.2）
 type: run-log
 slug: war-explained
 date: 2026-11-23
-graph: SOP.md › SOP-04
-result: 交付 v1，等待使用者審閱（N8）
+graph: SOP.md › SOP-04 v1.2（先交毛片、確認後才渲染）
+result: 已交付毛片，停在「🛑 使用者審閱毛片」；尚未渲染
 ---
 
 # 執行紀錄：做簡報「WAR 是怎麼算出來的」
 
-> 依 `SOP.md` 的 SOP-04 graph，從輸入主題一路執行到交付。本文件逐節點記錄實際的輸入、輸出與關卡結果，原始輸出存在 `evidence/`。
+> 依 `SOP.md` 的 SOP-04 v1.2 執行。舊版（v1.1 流程，直接渲染）已依使用者要求刪除，本次從 N1 重新開始。原始輸出存在 `evidence/`。
 
 ## 1. 執行資訊
 
 | 項目 | 內容 |
 |---|---|
 | 輸入 | 「做簡報：WAR 是怎麼算出來的」 |
-| 模式 | 快速模式（N1 通過後不在大綱停下） |
+| 流程版本 | SOP-04 v1.2 |
 | 使用的 wiki 頁面 | war、war-position-players、war-pitchers、batting-runs、bsr、positional-adjustment、replacement-level、runs-per-win、park-factor、ex-war-mlb-2012-trout |
 | 使用的數據 | `raw/data/fangraphs_mlb_2011-2026_trout-{standard,advanced,value}.csv`、球員頁 PDF 的 Fielding 表 |
-| 成品 | `outputs/slides/war-explained.html`（16 頁） |
-| 工作檔 | `spec.md`（16 個符號、19 筆數字）、`verify.py`（29 項斷言）、`src.html` |
+| 目前產出 | `spec.md`（19 符號、18 筆數字）、`verify.py`（29 項斷言）、`draft.md`（16 頁毛片） |
+| 目前狀態 | ⏸ 等待使用者審閱毛片；`content_approved: false` |
 
 ## 2. 實際走過的路徑
 
 ```
-N1 ─通過→ N2 第 1 輪 ✗ → N2e 補強 → N2 第 2 輪 ✓
-        → N4 撰寫 ─(新增 11 個數字不在規格)→ 退回 N2e → N2 第 3 輪 ✓
-        → N4 → N5 ✓ → N6 第 1 輪：自動 ✓、目視 ✗ → R 規則回寫 → N4 修正
-        → N5 ✓ → N6 第 2 輪：自動 ✓、目視 ✓ → N7 交付 → N8 等待審閱
+N1 範圍界定（不停下，缺口帶入缺失清單）
+ → N2 第 1 輪 ✓ 29/29
+ → N3 毛片 → 毛片關卡 ✓
+ → 🛑 使用者審閱毛片  ← 目前位置
+    （渲染關卡、build.js 已確認會擋下未確認的內容）
 ```
-
-兩個 loop 合計跑了 **5 次關卡**，其中 **3 次未通過**；每一次未通過都在交付前被擋下。
 
 ## 3. 逐節點紀錄
 
-| # | 節點 | 做了什麼 | 關卡結果 | 證據 |
+| # | 節點 | 做了什麼 | 結果 | 證據 |
 |---|---|---|---|---|
-| 1 | **N1 範圍界定** | 讀 `index.md`。野手 WAR 主線頁面齊全；缺口：FIP 無頁面、UZR 無頁面、替補水準有來源分歧 | ✅ 內容足夠；投手 WAR 只做概覽，FIP 列為選擇性缺失 | — |
-| 2 | **N2 第 1 輪** | 寫 `spec.md`（16 符號、16 筆數字）與 `verify.py`（19 項斷言） | ❌ **18/19**。「2013 指定打擊局數」規格寫 75.4（估計值），程式實算 **83.5** | `evidence/n2-round1_spec_check.txt` |
-| 3 | **N2e 補強** | 改用實算值。並發現**關卡本身的缺陷**：失敗時只顯示「(無訊息)」，看不出哪一項失敗 → 修改 `spec_check.py`，改為列出每個 ✗ 項目，並用負面測試確認 | — | — |
-| 4 | **N2 第 2 輪** | 重跑 | ✅ **19/19** | — |
-| 5 | **N4 撰寫** | 套用 `template.html` 撰寫 16 頁。撰寫 P.10 時加入 RPW 2010–2015 表、R/9 推論、runCS、2012 守位分項，共 **11 個數字不在數字表** | ↩ 依規則**退回 N2** | — |
-| 6 | **N2 第 3 輪** | 補進數字表與 10 項斷言 | ✅ **29/29** | `evidence/n2-round3_spec_check.txt` |
-| 7 | **N5 建置** | `build.js` | ✅ 公式 10 個、錯誤 0 | — |
-| 8 | **N6 第 1 輪** | `check.py` 自動檢查＋目視重點頁（P.4、5、8、10、11、13、14、15） | 自動 ✅ 16 頁 0 失敗；目視 ❌ **P.14、P.15 分數用 `\tfrac`，字太小** | `evidence/n6-round1_check.json`、`evidence/n6-round1_p14_tfrac.png` |
-| 9 | **R 規則回寫** | 同一錯誤在 woba-to-wrc-plus v1 也發生過 → 在 `build.js` 加入「禁用 `\tfrac`」，並寫進 SOP-04 版面規則。用未修正的原始檔測試：**擋下 2 處** | — | `evidence/r-lint-test_build.txt` |
-| 10 | **N4 修正** | 改用 `\dfrac` | — | — |
-| 11 | **N5 第 2 次** | `build.js`（含新規則） | ✅ | — |
-| 12 | **N6 第 2 輪** | 自動＋目視 | ✅ 16 頁 0 失敗；分數清楚 | `evidence/n6-round2_check.json`、`evidence/n6-round2_p14_dfrac.png` |
-| 13 | **N7 交付** | 存回資料夾、`wiki/log.md`、傳檔給使用者 | — | — |
-| 14 | **N8 審閱** 🛑 | 等待使用者回饋 | ⏳ | — |
+| 1 | **N1 範圍界定** | 讀 `index.md` 與 `raw/`。野手 WAR 主線頁面齊全；缺口：FIP、UZR 無頁面，替補水準有來源分歧，`raw/` 沒有 2012 MLB 總打席、2012 美聯野手總和、Trout 2013 DH 出賽 | 依 v1.2 規則**不停下**，7 個缺口帶入缺失清單 | — |
+| 2 | **N2 第 1 輪** | 寫 `spec.md` 與 `verify.py` | ✅ **29/29**；7 筆選擇性缺失列為「未解決」帶入毛片 | `evidence/n2-round1_spec_check.txt` |
+| 3 | **N3 毛片** | 依 `draft_template.md` 撰寫 16 頁完整內容；缺失清單標出影響頁數與目前處理方式；需要補充的資料寫明取得路徑、格式、存放位置 | — | `draft.md` |
+| 4 | **N3 毛片關卡** | `spec_check.py --draft` | ✅ 16 頁都有內容；「缺失清單」、「需要補充的資料」兩節都在 | `evidence/n3_draft_check.txt` |
+| 5 | **確認關卡驗證** | 在使用者確認前，試跑渲染關卡與建置 | ✅ 如預期被擋下：`--render` 列出 8 項原因（未確認＋7 筆未解決）；`build.js` 拒絕建置 | `evidence/n4_render_gate_blocked.txt`、`evidence/n5_build_blocked.txt` |
+| 6 | **🛑 使用者審閱毛片** | 使用者回覆：上傳毛片第 2 節要求的 6 份檔案 | ▶ 回到 SOP-01／02 匯入 | — |
+| 7 | **SOP-02 匯入資料** | 逐場紀錄轉 CSV（157 場，PA 716、H 190 等 9 項與 Total 列完全相符）；美聯 Value 總和轉 CSV；季後賽 PA 表只保留原檔並標註不可用 | 2 份可用、1 份需重新匯出 | `raw/data/*.meta.md` |
+| 8 | **N2 第 2 輪** | `verify.py` 新增 10 項；缺失清單更新（2 筆已解決、1 筆新增） | ✅ **39/39**；spec_check 通過 | `evidence/n2-round2_spec_check.txt` |
+| 9 | **SOP-01 文章（討論模式）** | 2024 WAR 更新、UZR、FIP 三篇存入 `raw/articles/`，重點回報使用者 | 使用者同意寫入 FIP、UZR | — |
+| 10 | **SOP-01 寫入 wiki** | 新增 `fip.md`、`uzr.md`、3 個來源頁；更新野手 WAR、BsR、投手 WAR、index（含「不同觀點」：UZR vs Statcast） | — | `wiki/log.md` |
+| 11 | **SOP-02 匯入資料** | 使用者重新匯出的檔案是 Value 頁籤（全大聯盟、例行賽），沒有 PA 欄；轉成 CSV＋meta | 五項加總 0.0 ✓、替補 ＝ 570 × RPW ✓；總打席仍缺 | `raw/data/fangraphs_mlb_2012_mlb-all-value-totals.meta.md` |
+| 12 | **N2 第 3 輪** | `verify.py` 新增 7 項；spec 頁面 16 → 18、符號 +7、數字 +9 | ✅ **46/46**；spec_check 通過 | `evidence/n2-round3_spec_check.txt` |
+| 13 | **N3 毛片 d2** | 新增 P.8 UZR、P.12 FIP；P.16 League 已驗算＋17.6 差距；P.17 DH 9 場 | ✅ `--draft` 通過；`--render` 如預期擋下（未確認＋5 筆未解決） | `evidence/n3-d2_draft_check.txt`、`evidence/n4-d2_render_gate_blocked.txt` |
+| 14 | **🛑 使用者審閱毛片 d2** | 使用者回覆：上傳 2012 總打席與 3 篇文章（替補水準統一、DRS、捕手 framing） | ▶ 回到 SOP-01／02 | — |
+| 15 | **SOP-02 匯入資料** | Standard 頁籤總和轉 CSV＋meta：lgPA 184,179 | ✅ Trout Replacement 18.87 ≈ 18.9 | `raw/data/fangraphs_mlb_2012_mlb-all-standard-totals.meta.md` |
+| 16 | **N2 第 4 輪** | `verify.py` 新增 5 項；缺失「2012 MLB 總打席」改為已解決 | ✅ **51/51**；spec_check 通過 | `evidence/n2-round4_spec_check.txt` |
+| 17 | **SOP-01 文章（討論模式）** | 3 篇存入 `raw/articles/`，重點回報使用者 | 使用者同意寫入 | — |
+| 18 | **SOP-01 寫入 wiki** | 新增 `drs.md` 與 3 個來源頁；更新替補水準（分歧改為時間先後，移除 needs-review）、野手 WAR、投手 WAR、UZR、WAR、index | — | `wiki/log.md` |
+| 19 | **N2 第 5 輪** | `verify.py` 新增 3 項；spec 頁面 18 → 19；缺失 9 筆中 8 筆已解決 | ✅ **54/54**；spec_check 通過 | `evidence/n2-round5_spec_check.txt` |
+| 20 | **N3 毛片 d3** | 新增 P.9 捕手與 DRS；P.5 替補水準歷史；P.14 framing；P.17 Replacement 已驗算＋17.6 兩個假說；P.19 方法更新時間線 | ✅ `--draft` 通過；`--render` 擋下（未確認＋1 筆未解決） | `evidence/n3-d3_draft_check.txt`、`evidence/n4-d3_render_gate_blocked.txt` |
+| 21 | **🛑 使用者審閱毛片 d3** | 等待使用者回饋 | ⏸ | — |
 
-## 4. 關卡擋下的問題
+## 4. 和 v1.1 執行的差別
 
-| # | 問題 | 在哪個關卡被擋 | 如果沒擋會怎樣 | 處理 |
-|---|---|---|---|---|
-| 1 | 推論數字寫成未經計算的估計值（75.4 → 83.5） | N2 內容關卡（verify.py） | 簡報第 15 頁出現錯的數字 | 改用實算值 |
-| 2 | 關卡失敗時看不出原因 | N2（執行者發現） | 每次失敗都要手動翻輸出找原因 | 改良 `spec_check.py` |
-| 3 | 撰寫時新增 11 個未驗證的數字 | N4 → 規則「N4 不可出現規格外的數字」 | 未驗算的數字直接進簡報 | 退回 N2 補驗算 |
-| 4 | `\tfrac` 分數字太小 | N6 目視 | 範例頁的計算過程看不清楚 | 修正，並把檢查**往前移到 N5 自動執行** |
-
-## 5. 這次執行改動了哪些流程
-
-| 改動 | 檔案 | 原因 |
+| | v1.1（已刪除） | v1.2（本次） |
 |---|---|---|
-| 失敗時列出每個 ✗ 項目 | `scripts/slides/spec_check.py` | 關卡要能說出「哪裡錯」，修正才快 |
-| 建置時禁用 `\tfrac` | `scripts/slides/build.js` | 同一錯誤出現第二次：從目視檢查（N6）往前移成自動檢查（N5） |
-| 新增兩條版面規則 | `SOP.md` SOP-04 | 「分數用 `\dfrac`」、「N4 新增的數字要先回 N2 補規格」 |
+| 使用者第一次看到的東西 | 渲染好的 16 頁簡報 | 毛片：逐頁內容＋缺失清單＋需要補充的資料 |
+| 缺失怎麼告知 | 散在簡報各頁的「待補」與交付訊息中 | 集中在毛片第 1、2 節，標出影響哪幾頁與取得方式 |
+| 內容有問題時 | 要重新渲染 | 只改毛片，不必渲染 |
+| 「確認後才渲染」 | 靠 agent 自律 | 由 `spec_check.py --render` 與 `build.js` 強制 |
 
-## 6. 留待下一輪的事項
+本次 N2 第 1 輪即通過，原因是沿用了 v1.1 執行中被關卡擋下兩次（推論數字寫成估計值、撰寫時新增未驗證數字）後修正的計算邏輯。
 
-| 類別 | 項目 | 重要性 |
-|---|---|---|
-| 缺少的數據 | Trout 2013 指定打擊出賽局數（驗證守位調整 −1.2） | 選擇性 |
-| 缺少的解釋 | FIP、UZR 沒有 wiki 頁面 | 選擇性 |
-| 待確認 | FanGraphs 現行守備是否改用 OAA／FRV、捕手是否含 framing | 選擇性 |
-| 版面觀察 | P.5、P.13、P.15 下方留白偏多，自動檢查不會抓；N8 時請使用者判斷是否需要調整 | 選擇性 |
+## 5. 下一步
+
+1. 使用者審閱 `draft.md`：回覆內容修改、提供第 2 節的資料，或接受目前的處理方式。
+2. 有資料 → SOP-02 匯入 → 回 N2；有內容修改 → 規則回寫 → 回 N2。
+3. 確認後：`content_approved: true`、缺失狀態更新 → `spec_check.py --render` → N4–N6 渲染 loop → N7 交付 → N8。

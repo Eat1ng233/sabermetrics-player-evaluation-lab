@@ -5,8 +5,8 @@ aliases: [BsR, Base Running Runs, Base Running, 跑壘得分]
 domain: [baserunning, value]
 leagues: [MLB]
 tags: [counting-stat, runs, linear-weights]
-sources: ["[[src-2012-slowinski-fangraphs-war-position-players]]"]
-source_count: 1
+sources: ["[[src-2012-slowinski-fangraphs-war-position-players]]", "[[src-2024-appelman-fangraphs-war-update]]"]
+source_count: 2
 status: draft
 full_name: Base Running Runs
 scale: runs
@@ -14,7 +14,7 @@ upstream: ["[[ubr]]", "[[wsb]]", "[[wgdp]]"]
 downstream: ["[[war-position-players]]"]
 stabilization:
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # BsR（跑壘得分）
@@ -32,6 +32,9 @@ $$
 - **wGDP**（Weighted GIDP Runs）：實際雙殺打次數與預期次數的差距，換算成得分。由 Lichtman 開發。
 
 出處：[[src-2012-slowinski-fangraphs-war-position-players]]。
+
+> [!note] 2016 年起的版本
+> FanGraphs 在 2024 年把 UBR 與 wGDP 換成 Statcast 的跑壘指標 **XBR**，回溯到 2016 年（[[src-2024-appelman-fangraphs-war-update]]）。文章沒有提到 wSB，推論 wSB 仍保留，待確認。2016 年以前（例如 Trout 2012、2013）仍是上面的公式。
 
 ## wSB 的推導
 

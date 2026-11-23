@@ -5,16 +5,16 @@ aliases: [Position Player WAR, 野手 WAR, RAR]
 domain: [value, batting, baserunning, fielding]
 leagues: [MLB]
 tags: [war, replacement-level]
-sources: ["[[src-2012-slowinski-fangraphs-war-position-players]]"]
-source_count: 1
-status: draft
+sources: ["[[src-2012-slowinski-fangraphs-war-position-players]]", "[[src-2024-appelman-fangraphs-war-update]]", "[[src-2010-slowinski-fangraphs-uzr]]", "[[src-2019-appelman-fangraphs-war-update-catcher-framing]]", "[[src-2010-slowinski-fangraphs-drs]]"]
+source_count: 5
+status: needs-review
 full_name: Wins Above Replacement for Position Players
 scale: wins
-upstream: ["[[batting-runs]]", "[[bsr]]", "[[positional-adjustment]]", "[[replacement-level]]", "[[runs-per-win]]"]
+upstream: ["[[batting-runs]]", "[[bsr]]", "[[uzr]]", "[[positional-adjustment]]", "[[replacement-level]]", "[[runs-per-win]]"]
 downstream: ["[[war]]"]
 stabilization:
 created: 2026-11-23
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # 野手 WAR 計算
@@ -47,9 +47,13 @@ $$
 ### 2. Base Running Runs（相對平均）
 見 [[bsr]]：$\text{BsR} = \text{UBR} + \text{wSB} + \text{wGDP}$
 
+2016 年起，UBR 與 wGDP 改用 Statcast 跑壘指標 XBR（[[src-2024-appelman-fangraphs-war-update]]）。
+
 ### 3. Fielding Runs（相對同守位平均）
-- 非捕手：UZR（BIS 影像資料，由 Mitchel Lichtman 開發）
-- 捕手：DRS 中的 rSB（阻殺盜壘）+ RPP（防止捕逸、暴投），**不含** framing（來源時間：2012–2016，待確認是否已更新）
+- 非捕手：[[uzr|UZR]]（BIS 影像資料，由 Mitchel Lichtman 開發）
+- 捕手：[[drs|DRS]] 中的 rSB（阻殺盜壘）+ RPP（防止捕逸、暴投）
+- **捕手 framing**：2019 年起加入 WAR（資料從 2008 年起），framing 得分 ÷ RPW 加進捕手 WAR；同樣的得分依搭配捕手從投手 WAR 扣回（[[src-2019-appelman-fangraphs-war-update-catcher-framing]]）
+- **2016 年起改用 Statcast**：守備範圍改用由 OAA 換算的得分；外野傳球、捕手阻殺改用 Statcast；新增捕手擋球；刪除雙殺得分（[[src-2024-appelman-fangraphs-war-update]]，見下方「不同觀點」）
 - 守多個位置時，各位置的守備得分直接相加
 - +10 的一壘手代表比平均一壘手多 10 分，不代表比平均游擊手好
 
@@ -90,11 +94,27 @@ $$
 - 守位調整的數值來自多年前的實證比較，可能已不符合現況。
 - 其他限制見 [[war#限制與常見誤用]]。
 
+## 不同觀點
+
+> [!note] 觀點 A：守備用 UZR＋DRS，跑壘用 UBR＋wSB＋wGDP
+> 依據：本頁六個組成的原始說明。
+> 來源：[[src-2012-slowinski-fangraphs-war-position-players]]、[[src-2010-slowinski-fangraphs-uzr]]
+
+> [!note] 觀點 B：2016 年起守備與跑壘改用 Statcast
+> 依據：守備範圍（2022 年起）、外野傳球、捕手阻殺與擋球改用 Statcast Fielding Run Value；UBR 與 wGDP 改用 XBR；UZR 的雙殺得分刪除。2016–2023 年大部分球員的 WAR 變動在 1 以內。
+> 來源：[[src-2024-appelman-fangraphs-war-update]]
+
+**分歧所在**：時間先後不同。2016 年以前的 WAR（例如 [[ex-war-mlb-2012-trout]]）仍依觀點 A 計算；2016 年以後依觀點 B。六個組成的架構與 RPW 換算沒有改變。
+
 ## 範例
-- [[ex-war-mlb-2012-trout]]
+- [[ex-war-mlb-2012-trout]]（2012 年，不在 2024 更新的回溯範圍內）
 
 ## 相關頁面
-[[war]]、[[war-pitchers]]、[[batting-runs]]、[[bsr]]、[[positional-adjustment]]、[[replacement-level]]、[[runs-per-win]]
+[[war]]、[[uzr]]、[[drs]]、[[war-pitchers]]、[[batting-runs]]、[[bsr]]、[[positional-adjustment]]、[[replacement-level]]、[[runs-per-win]]
 
 ## 來源
 - [[src-2012-slowinski-fangraphs-war-position-players]]
+- [[src-2024-appelman-fangraphs-war-update]]：2016 年起的 Statcast 替換
+- [[src-2010-slowinski-fangraphs-uzr]]：UZR 的定義
+- [[src-2019-appelman-fangraphs-war-update-catcher-framing]]：捕手 framing
+- [[src-2010-slowinski-fangraphs-drs]]：DRS 的定義
