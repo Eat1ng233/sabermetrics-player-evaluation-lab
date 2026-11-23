@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>賽伯計量學教學簡報</title>
+<style>
+:root{--ink:#1a1638;--paper:#f6efdf;--pink:#ff3d8b;--line:#1a1638}
+*{box-sizing:border-box;margin:0}
+body{min-height:100vh;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;color:var(--ink);
+  background:radial-gradient(1200px 700px at 50% 40%,#2a2170 0%,#130f33 60%,#0a0820 100%);display:flex;align-items:center;justify-content:center;padding:32px 16px}
+main{width:min(760px,100%);background:var(--paper);border:3px solid var(--line);box-shadow:10px 10px 0 var(--pink),10px 10px 0 3px var(--line)}
+.bar{height:38px;background:linear-gradient(90deg,#2b1d7a,#5b3fd1 45%,#c84fd0 75%,#ff6fae);border-bottom:3px solid var(--line)}
+.body{padding:28px clamp(18px,5vw,44px) 34px}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.2;margin-bottom:8px}
+p{font-size:16px;line-height:1.6;color:#3a3756}
+ul{list-style:none;padding:0;margin-top:22px;display:grid;gap:16px}
+a{display:block;text-decoration:none;color:var(--ink);background:#fffaf0;border:2px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:16px 18px}
+a:hover,a:focus-visible{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--line);outline:none}
+a b{font-size:21px;display:block;margin-bottom:4px}
+a span{font-size:15px;color:#5b5875}
+</style>
+</head>
+<body>
+<main>
+  <div class="bar"></div>
+  <div class="body">
+    <h1>賽伯計量學教學簡報</h1>
+    <p>Sabermetrics Player Evaluation Lab 產出的教學投影片。點選開啟，用方向鍵或空白鍵換頁。</p>
+    <ul>
+      <li><a href="woba-to-wrc-plus.html"><b>從 wOBA 到 wRC+</b><span>得分期望值 → 線性權重 → wOBA → wRAA → wRC → wRC+，含球場係數與 Trout 範例（23 頁）</span></a></li>
+      <li><a href="war-explained.html"><b>WAR 是怎麼算出來的</b><span>六個組成 → RAR → ÷ RPW → WAR，含 UZR、DRS、FIP 與 Trout 2012、2013 範例（19 頁）</span></a></li>
+    </ul>
+  </div>
+</main>
+</body>
+</html>
