@@ -50,3 +50,9 @@
 - 更新：[[park-factor]]（stub → draft）、[[wrc-plus]]、[[wraa]]、[[ex-wrc-plus-mlb-2012-trout]]（PF 為減半顯示值）、[[index]]、[[overview]]
 - 分歧：替補球隊 43 勝 vs .294 勝率，並列於 [[replacement-level]]
 - 備註：Trout 2012 年 Batting、守位調整、WAR 驗算吻合；2013 年守位調整差 1.0（推測 DH 出賽）；runCS 公式在來源中缺少負號（推論）
+
+## [2026-11-23] output | 教學投影片：從 wOBA 到 wRC+
+- 檔案：`outputs/slides/woba-to-wrc-plus.html`（16 頁，獨立 HTML，數學式以 KaTeX 預先轉譯、字型內嵌，可離線開啟）
+- 結構：指標意義 → 推導流程圖 → 第 0～4 步 → 旁支 Batting Runs → 結論 → 實際範例（Trout 2012 wRC+、Trout 2013 wOBA）→ 限制與來源
+- 內容取自：[[woba]]、[[wraa]]、[[wrc]]、[[wrc-plus]]、[[batting-runs]]、[[run-expectancy-matrix]]、[[park-factor]]、[[ex-wrc-plus-mlb-2012-trout]]、[[ex-woba-mlb-2013-trout]]
+- 備註：使用者指定 HTML 格式，未使用 Marp
