@@ -16,6 +16,12 @@ try { katex = require(path.join(nm, 'katex')); }
 catch (e) { console.error('找不到 katex。請先在 scripts/slides 執行：npm install'); process.exit(2); }
 
 let html = fs.readFileSync(src, 'utf8');
+
+// 版面規則（由過去的目視檢查往前移到建置階段）：
+// - 禁用 \tfrac：在投影片上字太小（woba-to-wrc-plus v1、war-explained v1 都發生過）
+const lint = [];
+html.split('\n').forEach((line, i) => { if (/\\tfrac/.test(line)) lint.push(`第 ${i + 1} 行使用 \\tfrac（請改用 \\dfrac）`); });
+if (lint.length) { console.error(`版面規則錯誤 ${lint.length} 個：`); lint.forEach(e => console.error('  - ' + e)); process.exit(1); }
 const dist = path.join(nm, 'katex', 'dist');
 let css = fs.readFileSync(path.join(dist, 'katex.min.css'), 'utf8');
 css = css.replace(/src:([^;}]*)/g, (m, srcs) => {

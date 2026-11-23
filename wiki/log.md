@@ -93,3 +93,12 @@
 - 新增 `outputs/slides/woba-to-wrc-plus/`：spec.md、verify.py（29 項斷言通過）、src.html，作為第一個實際範例
 - `AGENTS.md` 第 14 節：教學簡報預設 HTML，輸入「做簡報：<主題>」即啟動 SOP-04
 - 測試：check.py 能抓到溢出、像素字體中文；build.js 能抓到公式錯誤；spec_check.py 能抓到驗算不符與必要缺失未解決
+
+## [2026-11-23] output | 教學投影片：WAR 是怎麼算出來的（SOP-04 首次完整執行）
+- 成品：`outputs/slides/war-explained.html`（16 頁）；工作檔與逐節點紀錄：`outputs/slides/war-explained/`（spec.md、verify.py、src.html、run-log.md、evidence/）
+- 關卡：N2 三輪（18/19 → 19/19 → 由 N4 退回後 29/29）；N6 兩輪（目視抓到 \tfrac 字太小 → 修正後通過）
+- 規則回寫：spec_check.py 失敗時列出 ✗ 項目；build.js 禁用 \tfrac；SOP-04 新增兩條版面規則
+- 依據：[[war]]、[[war-position-players]]、[[war-pitchers]]、[[batting-runs]]、[[bsr]]、[[positional-adjustment]]、[[replacement-level]]、[[runs-per-win]]、[[ex-war-mlb-2012-trout]]
+
+## [2026-11-23] output | war-explained：N8 審閱暫緩
+- 使用者決定先交作業，審閱與修改留待日後；待辦見 `outputs/slides/war-explained/run-log.md` 第 6 節

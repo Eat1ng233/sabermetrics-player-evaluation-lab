@@ -157,7 +157,7 @@ flowchart TD
 | **N2d 內容關卡** | spec.md、verify.py | `spec_check.py` 的 JSON 報告 | 符號都有定義與出處；數字都有出處，驗算為 ✓ 或「無法驗算（原因）」；沒有「必要、未解決」的缺失；verify.py 通過 | 回 N2e；**最多 3 輪**，仍未通過就 🛑 回報 |
 | **N2e 補強** | 關卡報告 | 修正後的 spec.md／verify.py | — | 找不到資料就寫進缺失清單 |
 | **N4 撰寫** | spec.md、`template.html` | `src.html` | 遵守下方版面規則 | — |
-| **N5 建置** | src.html | `<slug>.html`（單一檔案、可離線） | 公式錯誤 = 0（build.js exit 0） | 回 N4 |
+| **N5 建置** | src.html | `<slug>.html`（單一檔案、可離線） | 公式錯誤 = 0、版面規則錯誤 = 0（例：禁用 `\tfrac`） | 回 N4 |
 | **N6 版面關卡** | `<slug>.html` | `check.py` 報告＋每頁截圖 | 溢出 = 0、殘留公式錯誤 = 0、像素字體中文 = 0、每頁都有標題；重點頁目視無重疊 | 回 N4；**最多 3 輪** |
 | **N7 交付** | 成品 | 存回資料夾、`log.md`、傳檔給使用者 | — | — |
 | **N8 審閱** 🛑 | 使用者回饋 | — | 使用者滿意 | 進入 R |
@@ -206,9 +206,12 @@ python3 scripts/slides/check.py outputs/slides/<slug>.html --shots outputs/slide
 - **範例前先放原始數據表**，每個數字標上資料位置代碼（例：`STD·13·BB` = standard.csv 中 2013 年那一列的 BB 欄）；聯盟常數標 `GUTS`，文章數字標 `ART·…`。對應 spec.md 的數字表。
 - **風格**：80 年代復古（早期電腦 × 街機像素）＋少量 Y2K。像素字體**只用在英文標籤與數字**；中文一律用無襯線字體（在像素字體區塊中，中文要包 `.zh`）。check.py 會自動檢查。
 - **推論要標示**：簡報中的推論和來源說法一樣，要註明「推論」。對應 spec.md 的推論清單。
+- **分數用 `\dfrac`，不用 `\tfrac`**：`\tfrac` 在投影片上字太小。兩份簡報的 v1 都犯過，已改由 `build.js` 自動擋下。
+- **撰寫時新增的數字，要先回 N2 補進規格**：N4 不可以出現數字表裡沒有的數字（war-explained 執行時發生過）。
 
 ### 範例
-`outputs/slides/woba-to-wrc-plus/`：v3 的 spec.md（17 個符號、19 筆數字）、verify.py（29 項斷言全部通過）、src.html；spec_check 與 check.py 皆通過。
+- `outputs/slides/woba-to-wrc-plus/`：v3 的 spec.md（17 個符號、19 筆數字）、verify.py（29 項斷言全部通過）、src.html；spec_check 與 check.py 皆通過。
+- `outputs/slides/war-explained/`：第一次從主題完整跑完 graph，含逐節點的 `run-log.md`。
 
 ---
 

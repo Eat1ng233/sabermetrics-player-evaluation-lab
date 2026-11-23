@@ -51,7 +51,10 @@ def main(d):
     else:
         r = subprocess.run([sys.executable, '-I', str(vp)], capture_output=True, text=True, cwd=str(d))
         print(r.stdout.strip())
-        if r.returncode != 0: errs.append('verify.py 未通過：' + (r.stderr.strip().splitlines() or ['(無訊息)'])[-1])
+        if r.returncode != 0:
+            failed = [l.strip() for l in r.stdout.splitlines() if l.strip().startswith('✗')]
+            if failed: errs += ['verify.py 未通過：' + l for l in failed]
+            else: errs.append('verify.py 未通過：' + ((r.stderr.strip().splitlines() or ['(無訊息)'])[-1]))
     print(json.dumps({'spec': str(d / 'spec.md'), 'symbols': len(sym or []), 'numbers': len(num or []),
                       'ok': not errs, 'errors': errs}, ensure_ascii=False, indent=1))
     return 0 if not errs else 1
