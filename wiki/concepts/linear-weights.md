@@ -5,8 +5,8 @@ aliases: [Linear Weights, 線性權重, run values]
 domain: [method, batting]
 leagues: [general]
 tags: [linear-weights, run-value]
-sources: ["[[src-2010-slowinski-fangraphs-woba]]", "[[src-2016-weinberg-fangraphs-deriving-woba]]"]
-source_count: 2
+sources: ["[[src-2010-slowinski-fangraphs-woba]]", "[[src-2016-weinberg-fangraphs-deriving-woba]]", "[[src-2014-weinberg-fangraphs-re24]]"]
+source_count: 3
 status: draft
 created: 2026-11-23
 updated: 2026-11-23
@@ -38,6 +38,9 @@ $$
 
 ### 「線性」的意思
 不管事件發生在什麼情境，都用同一個平均值，所以總價值可以直接相加。
+
+## 和 RE24 的差別
+同樣從 ΔRE 出發：[[re24|RE24]] 把每次的 ΔRE 原樣加總（考慮情境），線性權重則把同類事件**取平均**（不考慮情境）。所以線性權重衡量「做了什麼」，RE24 衡量「在當時情境下造成多少影響」（[[src-2014-weinberg-fangraphs-re24]]）。
 
 ## 在球員評估中的用途
 - [[woba|wOBA]] 權重的來源（[[src-2010-slowinski-fangraphs-woba]]）

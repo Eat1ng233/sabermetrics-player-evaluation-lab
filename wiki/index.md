@@ -36,7 +36,7 @@ _（尚無頁面）_
 ## 概念與方法（concepts）
 - [[run-expectancy-matrix|得分期望值矩陣]] — 24 種壘包出局狀態到局末的平均得分；含 2010–2015 年矩陣（來源數：1）
 - [[linear-weights|Linear Weights]] — 每種事件的平均得分價值，wOBA 權重的來源（來源數：2）
-- [[park-factor|Park Factor]] — 球場係數的成因、減半顯示、加法與乘法調整、限制（來源數：4）
+- [[park-factor|Park Factor]] — 球場係數的計算（原始、減半、迴歸）、加法與乘法調整、限制（來源數：5）
 - [[replacement-level|替補水準]] — 1,000 WAR、.294；含來源分歧（來源數：4，needs-review）
 - [[runs-per-win|RPW]] — 每勝得分與各年數值（來源數：3）
 - [[positional-adjustment|守位調整]] — 各守位每 162 場的調整值（來源數：1）
@@ -48,12 +48,15 @@ _（尚無頁面）_
 _（尚無頁面）_
 
 ## 計算範例（examples）
+- [[re24|RE24]] — 把每次打席的 ΔRE 加總、考慮情境的得分指標（來源數：1）
 - [[ex-woba-mlb-2015-derivation|wOBA 權重推導（MLB 2015）]] — 從得分期望值到最終權重的五個步驟（來源數：1）
 - [[ex-woba-mlb-2013-trout|Trout 2013 wOBA、wRAA、wRC]] — 逐步計算並與 FanGraphs 數據核對（來源數：2）
 - [[ex-wrc-plus-mlb-2012-trout|Trout 2012 wRC+]] — wRC+ 五步驟計算，含球場調整（來源數：2）
 - [[ex-war-mlb-2012-trout|Trout 2012 WAR]] — 野手 WAR 逐項拆解並對照 FanGraphs（來源數：3）
 
 ## 來源（sources）
+- [[src-2016-appelman-fangraphs-park-factors-5yr|FanGraphs Library — Park Factors – 5 Year Regressed]] — FanGraphs 球場係數的計算方法（2016，Appelman／Heipp）
+- [[src-2014-weinberg-fangraphs-re24|FanGraphs Library — RE24]] — 得分期望值與 RE24 的定義、計算（2014，Weinberg）
 - [[src-2012-slowinski-fangraphs-war-position-players|FanGraphs Library — WAR for Position Players]] — 野手 WAR 完整計算（2012，Slowinski）
 - [[src-2012-slowinski-fangraphs-war-pitchers|FanGraphs Library — WAR for Pitchers]] — 投手 WAR 完整計算（2012，Slowinski／Weinberg 更新）
 - [[src-2012-slowinski-fangraphs-war-misconceptions|FanGraphs Library — WAR Misconceptions]] — WAR 的五個常見誤解（2012，Slowinski）

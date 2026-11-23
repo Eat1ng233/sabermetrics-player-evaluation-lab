@@ -5,9 +5,9 @@ aliases: [Run Expectancy, RE24 matrix, 得分期望值, RE matrix]
 domain: [method]
 leagues: [MLB]
 tags: [run-expectancy, base-out-state]
-sources: ["[[src-2016-weinberg-fangraphs-deriving-woba]]"]
-source_count: 1
-status: draft
+sources: ["[[src-2016-weinberg-fangraphs-deriving-woba]]", "[[src-2014-weinberg-fangraphs-re24]]"]
+source_count: 2
+status: stable
 created: 2026-11-23
 updated: 2026-11-23
 ---
@@ -19,6 +19,7 @@ updated: 2026-11-23
 ## 詳細說明
 - **壘包出局狀態（base-out state）**：出局數有 3 種（0、1、2），壘包狀態有 8 種（無人、一壘、二壘……滿壘），共 **24 種**狀態。每個打席開始時都處於其中一種。
 - **計算方式**：找出一整季（或多季）中所有處於某狀態的時刻，加總每次從那一刻到該局結束的得分，再除以次數。
+- **矩陣依環境而變**：取決於整體得分環境，每個球場、每一年都有自己的矩陣（[[src-2014-weinberg-fangraphs-re24]]）。
 
 $$
 \text{RE}(s) = \frac{\sum_{i \in s} \text{從第 } i \text{ 次出現到該局結束的得分}}{n_s}
@@ -58,11 +59,31 @@ $$
 
 把同一類事件的 $\Delta \text{RE}$ 取平均，就得到該事件的[[linear-weights|線性權重]]，也就是 [[woba|wOBA]] 權重的基礎。
 
-> [!info] 推論：$\Delta\text{RE}$ 公式中的「直接得分」項
-> 來源的保送範例沒有得分，所以沒有寫出這一項。但全壘打等事件會直接得分，必須加回去，否則得分事件的價值會被低估。這是常見的定義方式，待其他來源確認。
+「直接得分」一項已由 [[src-2014-weinberg-fangraphs-re24]] 確認。例：無人出局一三壘有人，一壘安打得 1 分、變成一二壘有人。用本頁 2010–2015 矩陣計算：
+
+$$
+\Delta \text{RE} = 1.437 - 1.784 + 1 = +0.653
+$$
+
+（來源用的是 2014 年中性矩陣，結果為 0.575。）
+
+### 另一張矩陣：2014 年中性環境（4.15 分／場）
+
+| 壘上跑者 | 0 出局 | 1 出局 | 2 出局 |
+|---|---|---|---|
+| 無人 | 0.461 | 0.243 | 0.095 |
+| 一壘 | 0.831 | 0.489 | 0.214 |
+| 二壘 | 1.068 | 0.644 | 0.305 |
+| 一、二壘 | 1.373 | 0.908 | 0.343 |
+| 三壘 | 1.426 | 0.865 | 0.413 |
+| 一、三壘 | 1.798 | 1.140 | 0.471 |
+| 二、三壘 | 1.920 | 1.352 | 0.570 |
+| 滿壘 | 2.282 | 1.520 | 0.736 |
+
+出處：[[src-2014-weinberg-fangraphs-re24]]。兩張矩陣的差異來自不同的得分環境，不是矛盾。
 
 ## 相關指標
-[[linear-weights]]、[[woba]]、[[re24]]
+[[linear-weights]]、[[woba]]、[[re24]]（把每次 ΔRE 直接加總、考慮情境的指標）
 
 ## 限制
 - 矩陣取決於得分環境，不同聯盟、年代需要各自計算。NPB、KBO、CPBL 目前沒有來源。
@@ -70,3 +91,4 @@ $$
 
 ## 來源
 - [[src-2016-weinberg-fangraphs-deriving-woba]]：定義、24 種狀態、2010–2015 年矩陣、保送範例
+- [[src-2014-weinberg-fangraphs-re24]]：ΔRE 含直接得分、矩陣依環境而變、2014 年中性矩陣

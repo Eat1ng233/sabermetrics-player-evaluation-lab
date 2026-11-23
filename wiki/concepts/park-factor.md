@@ -5,8 +5,8 @@ aliases: [Park Factor, PF, 球場係數, 球場因子]
 domain: [method]
 leagues: [MLB]
 tags: [park-adjusted]
-sources: ["[[src-2010-slowinski-fangraphs-park-factors]]", "[[src-2010-slowinski-fangraphs-wrc]]", "[[src-2012-slowinski-fangraphs-war-position-players]]", "[[src-2012-slowinski-fangraphs-war-pitchers]]"]
-source_count: 4
+sources: ["[[src-2016-appelman-fangraphs-park-factors-5yr]]", "[[src-2010-slowinski-fangraphs-park-factors]]", "[[src-2010-slowinski-fangraphs-wrc]]", "[[src-2012-slowinski-fangraphs-war-position-players]]", "[[src-2012-slowinski-fangraphs-war-pitchers]]"]
+source_count: 5
 status: draft
 created: 2026-11-23
 updated: 2026-11-23
@@ -30,9 +30,41 @@ updated: 2026-11-23
 
 出處：[[src-2010-slowinski-fangraphs-park-factors]]。
 
-> [!info] 推論：顯示值與原始值的換算
-> $$\text{PF}_{\text{顯示}} = \frac{\text{PF}_{\text{原始}} + 100}{2}$$
-> 主場一半比賽用原始值、客場一半用 100，平均起來就是顯示值。例如原始 110 → 顯示 105。所以在 wRC+、Batting Runs 公式中直接使用顯示值，就已經考慮了「只有一半比賽在主場」。
+## 計算方法（FanGraphs）
+出處：[[src-2016-appelman-fangraphs-park-factors-5yr]]。方法源自 Craig Wright，迴歸權重來自 MGL。
+
+**步驟 1：原始球場係數。** H = 主場每場得分（兩隊合計）、R = 客場每場得分、T = 聯盟球隊數：
+
+$$
+\text{原始 PF} = \frac{H \times T}{(T-1) \times R + H}
+$$
+
+分母讓「比較基準」和聯盟一樣：$(T-1)/T$ 是其他球場，$1/T$ 是自家球場。
+
+**步驟 2：減半。** 只有一半比賽在主場，客場假設為中性：
+
+$$
+\text{iPF} = \frac{\text{原始 PF} + 1}{2}
+$$
+
+例：主場 11 分／場、客場 10 分／場 → 約 1.10 → $(1.10+1)/2 = 1.05$。
+
+**步驟 3：迴歸。** 觀察值含有隨機誤差，向 1 迴歸以免過度調整：
+
+$$
+\text{PF} = 1 - (1 - \text{iPF}) \times X, \qquad X = \begin{cases} 0.6 & \text{1 年} \\ 0.7 & \text{2 年} \\ 0.8 & \text{3 年} \\ 0.9 & \text{4 年以上} \end{cases}
+$$
+
+例：iPF = 1.25（類似 Coors）→ 1 年 1.15、2 年 1.175、3 年 1.20、4 年以上 1.225。
+
+**資料期間**：最多 5 年，理想是前兩年、當年、後兩年；新球場或大幅改建時用較短期間。
+
+**為什麼用得分係數**：衡量價值時只看得分與出局，所以用單一的得分係數；分項（各種安打）與左右打係數適合衡量能力，不適合衡量價值。
+
+> [!info] 推論：從顯示值換回原始係數
+> 顯示值經過減半與迴歸。假設用 4 年以上資料（X = 0.9）：
+> $$\text{iPF} = 1 - \frac{1 - \text{PF}}{0.9}, \qquad \text{原始 PF} = 2 \times \text{iPF} - 1$$
+> 例：顯示 95 → iPF ≈ 0.944 → 原始 ≈ 0.889，也就是主場得分約比平均少 11%。在 wRC+、Batting Runs 公式中**直接使用顯示值**即可，減半與迴歸都已經包含在內。
 
 ## 調整方式
 
@@ -68,13 +100,14 @@ FanGraphs 不計算 wOBA+，而是用 [[wrc-plus|wRC+]] 作為經球場調整的
 - 使用者提供（2026-11-23）：FanGraphs 目前只提供 **2016 年以後**的球場係數。2015 年以前的球場調整需要其他來源。
 
 ## 待補
-- 5 年迴歸球場係數的計算方法（FanGraphs〈5 Year Regressed Park Factors〉、〈The Beginner's Guide to Understanding Park Factors〉）
+- 迴歸權重 X 的統計依據；2016 年後 FanGraphs 是否調整過方法
 - 各聯盟（NPB、KBO、CPBL）的球場係數來源
 
 ## 相關頁面
 [[wrc-plus]]、[[batting-runs]]、[[war-pitchers]]、[[woba]]
 
 ## 來源
+- [[src-2016-appelman-fangraphs-park-factors-5yr]]：計算方法（原始 PF、減半、迴歸）
 - [[src-2010-slowinski-fangraphs-park-factors]]：成因、5 年迴歸、減半、限制
 - [[src-2010-slowinski-fangraphs-wrc]]：wRC+ 中的加法調整
 - [[src-2012-slowinski-fangraphs-war-position-players]]：Batting Runs 中的用法

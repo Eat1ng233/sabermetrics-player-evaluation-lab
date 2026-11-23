@@ -56,3 +56,10 @@
 - 結構：指標意義 → 推導流程圖 → 第 0～4 步 → 旁支 Batting Runs → 結論 → 實際範例（Trout 2012 wRC+、Trout 2013 wOBA）→ 限制與來源
 - 內容取自：[[woba]]、[[wraa]]、[[wrc]]、[[wrc-plus]]、[[batting-runs]]、[[run-expectancy-matrix]]、[[park-factor]]、[[ex-wrc-plus-mlb-2012-trout]]、[[ex-woba-mlb-2013-trout]]
 - 備註：使用者指定 HTML 格式，未使用 Marp
+
+## [2026-11-23] ingest | RE24、Park Factors – 5 Year Regressed
+- 模式：batch（使用者指示整理後放入簡報）
+- 改名：`RE24 _ Sabermetrics Library.pdf` → `2014-07-30_fangraphs_re24.pdf`；`Park Factors – 5 Year Regressed _ Sabermetrics Library.pdf` → `2016-05-16_fangraphs_park-factors-5-year-regressed.pdf`
+- 新建：[[src-2014-weinberg-fangraphs-re24]]、[[src-2016-appelman-fangraphs-park-factors-5yr]]、[[re24]]
+- 更新：[[run-expectancy-matrix]]（ΔRE 的直接得分項改為有來源；加入 2014 年中性矩陣；status → stable）、[[linear-weights]]、[[park-factor]]（計算方法）、[[ex-wrc-plus-mlb-2012-trout]]、[[index]]
+- 修正：先前「顯示值 95 → 原始 90」的推論忽略了迴歸；改為假設 X = 0.9 時原始 ≈ 0.889
