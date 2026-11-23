@@ -102,3 +102,11 @@
 
 ## [2026-11-23] output | war-explained：N8 審閱暫緩
 - 使用者決定先交作業，審閱與修改留待日後；待辦見 `outputs/slides/war-explained/run-log.md` 第 6 節
+
+## [2026-11-23] schema | SOP-04 改為「先交毛片、確認後才渲染」
+- 新增 N3 毛片（`draft.md`，範本 `scripts/slides/draft_template.md`）：逐頁完整內容、缺失清單、需要補充的資料、確認欄
+- 新增使用者審閱毛片的 🛑 檢查點；N1 不再中途停下，缺口一律帶進毛片
+- `spec_check.py` 新增 `--draft`（毛片涵蓋每一頁）與 `--render`（已確認、缺失皆已解決或經使用者接受）
+- `build.js`：工作資料夾的 spec.md 未設 `content_approved: true` 時拒絕建置
+- 現有簡報：woba-to-wrc-plus 設為已確認（依 v1–v3 審閱）；war-explained 設為未確認（日後先補毛片）
+- `AGENTS.md` 第 14 節同步更新

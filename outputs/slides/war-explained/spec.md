@@ -4,6 +4,8 @@ type: slide-spec
 slug: war-explained
 version: v1
 status: passed
+content_approved: false
+approval_note: 舊流程直接渲染，使用者尚未審閱內容；日後回來時先補毛片 draft.md
 updated: 2026-11-23
 ---
 

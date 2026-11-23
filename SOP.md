@@ -1,6 +1,6 @@
 # SOP — Sabermetrics Player Evaluation Lab 作業流程
 
-> 版本：v1.1（2026-11-23）
+> 版本：v1.2（2026-11-23）
 > 本文件把實際操作過的流程寫成標準步驟。**規則**以 `AGENTS.md` 為準，本文件說明**操作順序**；兩者衝突時，以 `AGENTS.md` 為準，並修正本文件。
 
 ---
@@ -45,7 +45,7 @@ flowchart TD
 | 01 匯入文章 | 使用者給網址或 PDF | `raw/articles/*.pdf`、來源頁、更新後的指標與概念頁 |
 | 02 匯入數據 | 使用者給數據檔、截圖或表格 | `raw/data/*.csv` + `.meta.md`、更新後的範例頁 |
 | 03 查詢問答 | 使用者提問 | 對話中的回答（必要時存成 wiki 頁） |
-| 04 主題 → 簡報 | 使用者輸入「做簡報：<主題>」 | `outputs/slides/<slug>.html` ＋ 工作資料夾 |
+| 04 主題 → 簡報 | 使用者輸入「做簡報：<主題>」 | 先交毛片 `draft.md`；確認後才產生 `<slug>.html` |
 | 05 Lint | 使用者要求檢查 | 檢查報告，經同意後批次修正 |
 | 06 交付 | 每個 SOP 結束時 | 檔案存回資料夾、log 紀錄、commit 指令 |
 
@@ -112,17 +112,14 @@ flowchart TD
 ## SOP-04 主題 → 教學簡報（graph）
 
 **觸發**：使用者輸入「做簡報：<主題>」或類似要求。
-**預設為快速模式**：只要 wiki 的內容足夠，就不在大綱階段停下來，直接產出 v1，再交給使用者審閱。使用者說「先給我大綱」時，才在 N2 之後加一個 🛑 檢查點。
+**核心原則：先交毛片，確認後才渲染。** 渲染前只交付「毛片」：每頁要呈現的完整內容，加上缺失清單和需要補充的資料。使用者補齊資料、確認內容後，才開始製作渲染後的簡報。這一點由程式強制：`spec.md` 的 `content_approved` 不是 `true` 時，`build.js` 會拒絕建置。
 
 ### 流程圖
 
 ```mermaid
 flowchart TD
-    IN([輸入主題]) --> N1[N1 範圍界定<br/>讀 index.md，決定主線與相關頁面]
-    N1 --> G1{wiki 內容足夠？}
-    G1 -- 缺必要來源 --> H1[🛑 回報缺失清單<br/>使用者補來源 → SOP-01]
-    H1 --> N1
-    G1 -- 足夠 --> N2a
+    IN([輸入主題]) --> N1[N1 範圍界定<br/>讀 index.md，決定主線與相關頁面<br/>初步缺口直接帶入缺失清單]
+    N1 --> N2a
 
     subgraph LOOP [N2 整理重點與驗算 loop（最多 3 輪）]
         N2a[N2a 擷取<br/>定義、公式、推導、範例 → spec.md] --> N2b[N2b 驗算<br/>verify.py 重算每個數字]
@@ -132,54 +129,69 @@ flowchart TD
         N2e --> N2a
     end
 
-    N2d -- 3 輪仍未通過 --> H2[🛑 回報必要缺失]
-    N2d -- 通過 --> N4[N4 撰寫 src.html<br/>套用 template.html 與版面規則]
-    N4 --> N5[N5 建置<br/>build.js]
-    N5 --> N6{N6 版面關卡<br/>check.py ＋ 目視截圖}
-    N6 -- 未通過（最多 3 輪）--> N4
+    N2d -- 通過，或 3 輪後仍有找不到的資料 --> N3[N3 毛片<br/>draft.md：逐頁完整內容<br/>＋缺失清單＋需要補充的資料]
+    N3 --> G3{N3 毛片關卡<br/>spec_check.py --draft}
+    G3 -- 未通過 --> N3
+    G3 -- 通過 --> H3{🛑 使用者審閱毛片}
+    H3 -- 補上資料 --> ING[SOP-01／02 匯入] --> N2a
+    H3 -- 修改內容 --> R1[R 規則回寫] --> N2e
+    H3 -- 全部補齊並確認 --> AP[設 content_approved: true<br/>缺失狀態改為已解決／接受（使用者確認）]
+    AP --> G4{N4 渲染關卡<br/>spec_check.py --render}
+    G4 -- 未通過 --> H3
+    G4 -- 通過 --> N4
+
+    subgraph RENDER [渲染 loop（最多 3 輪）]
+        N4[N4 撰寫 src.html<br/>套用 template.html 與版面規則] --> N5[N5 建置<br/>build.js]
+        N5 --> N6{N6 版面關卡<br/>check.py ＋ 目視截圖}
+        N6 -- 未通過 --> N4
+    end
+
     N6 -- 通過 --> N7[N7 交付<br/>slug.html、log、傳給使用者]
-    N7 --> N8{🛑 N8 使用者審閱}
+    N7 --> N8{🛑 N8 使用者審閱成品}
     N8 -- 滿意 --> END([結束])
-    N8 -- 有回饋 --> R[R 回饋分類與規則回寫<br/>寫進版面規則或 AGENTS.md]
-    R -- 內容問題 --> N2e
-    R -- 版面問題 --> N4
-    R -- 新疑問 --> Q[SOP-03 查詢] --> N2e
+    N8 -- 版面問題 --> R2[R 規則回寫] --> N4
+    N8 -- 內容問題 --> R1
 ```
 
 ### 節點說明
 
 | 節點 | 輸入 | 輸出（狀態） | 通過標準 | 未通過時 |
 |---|---|---|---|---|
-| **N1 範圍界定** | 主題、`wiki/index.md` | 主線、相關頁面清單（寫進 spec.md 開頭） | 主線上每一步都有 wiki 頁面 | 缺必要來源 → 🛑 回報，使用者補來源後重跑 N1 |
+| **N1 範圍界定** | 主題、`wiki/index.md` | 主線、相關頁面清單（寫進 spec.md 開頭）、初步缺口 | — | **不停下**：缺口直接帶入缺失清單，在毛片中一次告知 |
 | **N2a 擷取** | 相關 wiki 頁、`raw/data/` | `spec.md`：頁面規劃、符號表、數字表 | — | — |
 | **N2b 驗算** | 數字表 | `verify.py`：每個數字一行斷言 | `verify.py` exit 0 | 回 N2e |
 | **N2c 補齊** | spec.md | 推論清單、缺失清單、每個數字的出處代碼 | — | — |
-| **N2d 內容關卡** | spec.md、verify.py | `spec_check.py` 的 JSON 報告 | 符號都有定義與出處；數字都有出處，驗算為 ✓ 或「無法驗算（原因）」；沒有「必要、未解決」的缺失；verify.py 通過 | 回 N2e；**最多 3 輪**，仍未通過就 🛑 回報 |
-| **N2e 補強** | 關卡報告 | 修正後的 spec.md／verify.py | — | 找不到資料就寫進缺失清單 |
-| **N4 撰寫** | spec.md、`template.html` | `src.html` | 遵守下方版面規則 | — |
-| **N5 建置** | src.html | `<slug>.html`（單一檔案、可離線） | 公式錯誤 = 0、版面規則錯誤 = 0（例：禁用 `\tfrac`） | 回 N4 |
+| **N2d 內容關卡** | spec.md、verify.py | `spec_check.py` 報告 | 符號都有定義與出處；數字都有出處，驗算為 ✓ 或「無法驗算（原因）」；verify.py 通過。**允許有未解決的缺失**，會帶進毛片 | 回 N2e；**最多 3 輪**，仍找不到的資料寫進缺失清單後進 N3 |
+| **N3 毛片** | spec.md | `draft.md`（依 `scripts/slides/draft_template.md`）：逐頁完整內容、缺失清單、需要補充的資料（含取得方式）、確認欄 | `spec_check.py --draft`：頁面規劃的每一頁都有內容；缺失清單與需要補充的資料兩節都在 | 補齊毛片 |
+| **使用者審閱毛片** 🛑 | draft.md | 使用者的回饋或資料 | 使用者勾選確認欄三項 | 補資料 → SOP-01／02 → N2；改內容 → R → N2 |
+| **確認** | 使用者的確認 | `content_approved: true`；缺失狀態改為「已解決」或「接受（使用者確認）」 | — | — |
+| **N4 渲染關卡** | spec.md、draft.md | `spec_check.py --render` 報告 | 已確認；每一筆缺失都已解決或經使用者接受 | 回使用者審閱 |
+| **N4 撰寫** | 已確認的 draft.md、`template.html` | `src.html` | 內容與毛片一致；**不可新增毛片以外的數字**（要新增就回 N2，並重新確認） | — |
+| **N5 建置** | src.html | `<slug>.html`（單一檔案、可離線） | 已確認；公式錯誤 = 0；版面規則錯誤 = 0（例：禁用 `\tfrac`） | 回 N4 |
 | **N6 版面關卡** | `<slug>.html` | `check.py` 報告＋每頁截圖 | 溢出 = 0、殘留公式錯誤 = 0、像素字體中文 = 0、每頁都有標題；重點頁目視無重疊 | 回 N4；**最多 3 輪** |
 | **N7 交付** | 成品 | 存回資料夾、`log.md`、傳檔給使用者 | — | — |
-| **N8 審閱** 🛑 | 使用者回饋 | — | 使用者滿意 | 進入 R |
-| **R 規則回寫** | 回饋 | 新規則（版面規則、AGENTS.md、spec 的 Loop 紀錄） | — | 依回饋類型回到 N2e、N4 或 SOP-03 |
+| **N8 審閱成品** 🛑 | 使用者回饋 | — | 使用者滿意 | 版面問題 → R → N4；內容問題 → R → N2（需重新確認毛片） |
+| **R 規則回寫** | 回饋 | 新規則（版面規則、AGENTS.md、spec 的 Loop 紀錄） | — | 回到對應節點 |
 
 ### 為什麼這樣設計
-- **內容 loop 放在產生簡報之前**：v1 被提出的 13 點修改，大多是內容問題（定義不足、缺計算方式），不是版面。先把內容關卡過了才動手做投影片，比做完再改便宜。
-- **關卡用程式判斷**：數字對不對、符號有沒有定義、版面有沒有溢出，都有客觀標準，交給 `spec_check.py`、`verify.py`、`check.py`，不靠 agent 自己說「應該沒問題」。
-- **每個 loop 都有上限**：最多 3 輪，避免無限重試；超過就交給人判斷。
-- **人只在最後審閱**：快速模式讓主題進來就能直接出 v1；「初學者看不看得懂」這種主觀判斷，保留給人。
-- **回饋一定回寫成規則（R）**：同樣的問題下次在 N2 或 N4 就被擋下，等於把檢查往前移。
+- **內容和渲染分開確認**：過去的修改大多是內容問題（定義不足、缺計算方式、數字錯）。先用毛片把內容談定，渲染只處理版面，就不必為了改一句話重做整份簡報。
+- **缺失一次說完**：N1 和 N2 找不到的東西不中途停下來問，全部集中在毛片的缺失清單和「需要補充的資料」，連同取得方式一次交給使用者。
+- **確認由程式強制**：`content_approved` 沒有變成 `true`，`build.js` 就拒絕建置；`spec_check.py --render` 也會檢查每一筆缺失都已解決或經使用者接受。
+- **關卡用程式判斷、每個 loop 都有上限**：數字、符號、頁數、版面都有客觀標準；loop 最多 3 輪，超過就交給人。
+- **回饋一定回寫成規則（R）**：同樣的問題下次在更前面的節點就被擋下。
 
 ### 檔案與指令
 
 每份簡報一個工作資料夾：
 ```
 outputs/slides/
-├── <slug>.html          ← 成品（交付）
+├── <slug>.html          ← 成品（使用者確認毛片後才產生）
 └── <slug>/
-    ├── spec.md          ← N2 的狀態檔
+    ├── spec.md          ← N2 狀態檔（含 content_approved）
     ├── verify.py        ← N2b 數字斷言
+    ├── draft.md         ← N3 毛片（交給使用者審閱）
     ├── src.html         ← N4 原始檔
+    ├── run-log.md       ← 逐節點執行紀錄（選用）
     └── shots/           ← N6 截圖（不納入 git）
 ```
 
@@ -189,13 +201,15 @@ cd scripts/slides && npm install && cd ../..
 pip install playwright && python3 -m playwright install chromium
 ```
 
-每一輪：
+各關卡指令：
 ```bash
-python3 scripts/slides/spec_check.py outputs/slides/<slug>/                                  # N2d
+python3 scripts/slides/spec_check.py outputs/slides/<slug>/            # N2d 內容關卡
+python3 scripts/slides/spec_check.py outputs/slides/<slug>/ --draft    # N3 毛片關卡
+python3 scripts/slides/spec_check.py outputs/slides/<slug>/ --render   # N4 渲染關卡
 node    scripts/slides/build.js outputs/slides/<slug>/src.html outputs/slides/<slug>.html        # N5
 python3 scripts/slides/check.py outputs/slides/<slug>.html --shots outputs/slides/<slug>/shots   # N6
 ```
-三個指令都是**通過回傳 0、未通過回傳 1**，可以直接當作 loop 的判斷條件。
+所有指令都是**通過回傳 0、未通過回傳 1**，可以直接當作 loop 的判斷條件。
 
 ### 版面規則（累積自 v1–v3 的修改）
 - **先畫流程圖，再講細節**；流程圖的每個步驟，寫成**箭頭上的標籤節點**：第一行灰色小字寫步驟編號，下面每個運算各占一行，運算符號對齊。橫向空間不足就改成多列或直向。
@@ -211,7 +225,7 @@ python3 scripts/slides/check.py outputs/slides/<slug>.html --shots outputs/slide
 
 ### 範例
 - `outputs/slides/woba-to-wrc-plus/`：v3 的 spec.md（17 個符號、19 筆數字）、verify.py（29 項斷言全部通過）、src.html；spec_check 與 check.py 皆通過。
-- `outputs/slides/war-explained/`：第一次從主題完整跑完 graph，含逐節點的 `run-log.md`。
+- `outputs/slides/war-explained/`：第一次從主題完整跑完 graph（v1.1 流程，當時尚無毛片節點），含逐節點的 `run-log.md`；`content_approved: false`，日後回來時先補毛片。
 
 ---
 
@@ -296,5 +310,6 @@ git add -A && git commit -m "<類型>: <簡述>"
 ---
 
 ## 修訂紀錄
+- v1.2（2026-11-23）：SOP-04 改為「先交毛片、確認後才渲染」：新增 N3 毛片（draft.md）與使用者確認關卡；N1 不再中途停下；spec_check.py 新增 --draft、--render 模式；build.js 未確認時拒絕建置。
 - v1.1（2026-11-23）：SOP-04 改寫為 graph，「整理重點與驗算」獨立為 loop；建置與檢查腳本存入 `scripts/slides/`（build.js、check.py、spec_check.py、template.html）。
 - v1.0（2026-11-23）：依建立專案、匯入 wOBA 至 WAR 共 10 篇文章、Trout 數據、簡報 v1–v3 的實際流程整理。

@@ -395,9 +395,10 @@ updated: 2026-11-23
 ## 14. 輸出（簡報與圖表）
 
 - **教學簡報預設為 HTML**，依 `SOP.md` 的 **SOP-04（主題 → 教學簡報 graph）** 製作。
-  - **觸發**：使用者輸入「做簡報：<主題>」或類似要求時，直接啟動 SOP-04 的快速模式：wiki 內容足夠就一路做到 v1，不在大綱停下。
-  - **兩道程式關卡不可跳過**：內容關卡 `scripts/slides/spec_check.py`（含 `verify.py` 驗算）、版面關卡 `scripts/slides/check.py`。每個 loop 最多 3 輪，仍未通過就回報使用者。
-  - 每份簡報保留工作資料夾 `outputs/slides/<slug>/`（spec.md、verify.py、src.html），成品為 `outputs/slides/<slug>.html`。
+  - **觸發**：使用者輸入「做簡報：<主題>」或類似要求時，啟動 SOP-04。
+  - **先交毛片，確認後才渲染**：渲染前只交付 `draft.md`（每頁完整內容、缺失清單、需要補充的資料）。使用者補齊資料並確認後，才把 `spec.md` 的 `content_approved` 設為 `true`，開始製作 HTML。不可自行設為 `true`。
+  - **程式關卡不可跳過**：內容關卡 `spec_check.py`、毛片關卡 `spec_check.py --draft`、渲染關卡 `spec_check.py --render`、版面關卡 `check.py`。每個 loop 最多 3 輪，仍未通過就回報使用者。
+  - 每份簡報保留工作資料夾 `outputs/slides/<slug>/`（spec.md、verify.py、draft.md、src.html），成品為 `outputs/slides/<slug>.html`。
   - 使用者的每一則回饋，都要先寫成規則（SOP-04 版面規則或本文件），再回到對應節點修改。
 - 使用者指定 Marp 時，存放在 `outputs/slides/<主題>.md`，frontmatter 加上 `marp: true`。內容取自 wiki，並在最後一頁列出引用的 wiki 頁面。
 - 圖表存放在 `outputs/charts/`。產生圖表的程式放在 `scripts/`，以便重現。

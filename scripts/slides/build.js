@@ -15,6 +15,16 @@ let katex;
 try { katex = require(path.join(nm, 'katex')); }
 catch (e) { console.error('找不到 katex。請先在 scripts/slides 執行：npm install'); process.exit(2); }
 
+// 渲染關卡：工作資料夾裡有 spec.md 時，必須已經過使用者確認（SOP-04 N3 → N4）
+const specPath = path.join(path.dirname(path.resolve(src)), 'spec.md');
+if (fs.existsSync(specPath)) {
+  const fm = (fs.readFileSync(specPath, 'utf8').match(/^---\n([\s\S]*?)\n---/) || [, ''])[1];
+  if (!/^content_approved:\s*true\s*$/m.test(fm)) {
+    console.error('內容尚未經使用者確認：請先交付毛片（draft.md），使用者確認後把 spec.md 的 content_approved 設為 true。');
+    process.exit(1);
+  }
+}
+
 let html = fs.readFileSync(src, 'utf8');
 
 // 版面規則（由過去的目視檢查往前移到建置階段）：

@@ -4,6 +4,8 @@ type: slide-spec
 slug: woba-to-wrc-plus
 version: v3
 status: passed
+content_approved: true
+approval_note: 依 v1–v3 三輪審閱，使用者未再提出內容修改（2026-11-23）
 updated: 2026-11-23
 ---
 
