@@ -63,3 +63,21 @@
 - 新建：[[src-2014-weinberg-fangraphs-re24]]、[[src-2016-appelman-fangraphs-park-factors-5yr]]、[[re24]]
 - 更新：[[run-expectancy-matrix]]（ΔRE 的直接得分項改為有來源；加入 2014 年中性矩陣；status → stable）、[[linear-weights]]、[[park-factor]]（計算方法）、[[ex-wrc-plus-mlb-2012-trout]]、[[index]]
 - 修正：先前「顯示值 95 → 原始 90」的推論忽略了迴歸；改為假設 X = 0.9 時原始 ≈ 0.889
+
+## [2026-11-23] output | 教學投影片 v2：從 wOBA 到 wRC+
+- 檔案：`outputs/slides/woba-to-wrc-plus.html`（覆蓋 v1；20 頁）
+- 修改：大綱與限制頁改為模組面板；流程圖改為三列並把步驟運算做成箭頭上的標籤；新增 RE 定義與 ΔRE 計算（[[src-2014-weinberg-fangraphs-re24]]）、線性權重的 n_x 定義、PF 計算頁（[[src-2016-appelman-fangraphs-park-factors-5yr]]）、Trout 原始數據表與資料位置代碼；補上 lgwOBA、lgR/PA、Batting Runs 定義；wRAA vs wRC 比較表；風格改為 80 年代復古像素 × Y2K
+- 修正：顯示 PF 95 的原始值由「90」改為「約 0.889」（考慮迴歸）
+
+## [2026-11-23] query | 球場係數的計算邏輯
+- 依據：[[park-factor]]、[[src-2016-appelman-fangraphs-park-factors-5yr]]、[[src-2010-slowinski-fangraphs-park-factors]]
+- 回答於對話中，未另建頁（內容已涵蓋於 [[park-factor]]）
+
+## [2026-11-23] query | 球場係數計算的追問（客場基準、× T、減半、迴歸、X 的決定、新球場）
+- 依據：[[park-factor]]、[[src-2016-appelman-fangraphs-park-factors-5yr]]
+- 更新：[[park-factor]]（待確認現行 X 值）、[[src-2016-appelman-fangraphs-park-factors-5yr]]（標註疑似筆誤）
+
+## [2026-11-23] output | 教學投影片 v3：擴充球場係數單元
+- 檔案：`outputs/slides/woba-to-wrc-plus.html`（覆蓋 v2；23 頁）
+- 修改：原本一頁的 PF 計算擴充為 4 頁：三步驟完整數值例（H = 11、R = 10、T = 15 → 104）、為什麼用客場與乘 T、為什麼減半與迴歸、新球場時間軸與限制；大綱頁碼同步更新
+- 依據：本日對 [[park-factor]] 的連續查詢內容
