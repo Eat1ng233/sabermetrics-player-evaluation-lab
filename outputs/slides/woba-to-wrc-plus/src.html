@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>從 wOBA 到 wRC+：打擊指標的推導鏈</title>
+<style>
+/*KATEX_CSS*/
+/*PIXEL_FONTS*/
+:root{
+  --night:#130f33; --ink:#1a1638; --muted:#5b5875; --paper:#f6efdf; --panel:#fffaf0; --line:#1a1638;
+  --pink:#ff3d8b; --cyan:#00c2d1; --yellow:#ffd93b; --phos:#7dffb2;
+  --woba:#2a55c9; --wraa:#0e8a84; --wrc:#3b8a1d; --wrcp:#d45d16; --br:#8a3fb8; --re:#55566b; --war:#b3263e;
+  --woba-bg:#e3ebff; --wraa-bg:#dcf5f2; --wrc-bg:#e6f5dc; --wrcp-bg:#ffe9da; --br-bg:#f1e4fa; --re-bg:#ebebf0; --war-bg:#fde3e7;
+  --sans:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Helvetica Neue",Arial,sans-serif;
+  --pixel:"Press Start 2P",var(--sans);
+  --term:"VT323",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--sans);color:var(--ink);
+  background:radial-gradient(1200px 700px at 50% 40%,#2a2170 0%,#130f33 60%,#0a0820 100%);}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:24px 24px}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+.deck{position:relative;width:1280px;height:720px;transform-origin:center center}
+
+/* ---------- slide window ---------- */
+.slide{position:absolute;inset:0;background:var(--paper);display:none;flex-direction:column;overflow:hidden;
+  border:3px solid var(--line);box-shadow:10px 10px 0 0 var(--pink),10px 10px 0 3px var(--line)}
+.slide.active{display:flex}
+.bar{height:38px;flex:0 0 38px;display:flex;align-items:center;gap:12px;padding:0 14px;border-bottom:3px solid var(--line);
+  background:linear-gradient(90deg,#2b1d7a 0%,#5b3fd1 45%,#c84fd0 75%,#ff6fae 100%);color:#fff}
+.bar .btns{display:flex;gap:6px}
+.bar .btns i{width:14px;height:14px;border:2px solid #fff;display:block;background:rgba(255,255,255,.15)}
+.bar .fname{font-family:var(--pixel);font-size:11px;letter-spacing:.06em;text-shadow:2px 2px 0 rgba(0,0,0,.35)}
+.bar .spark{margin-left:auto;font-size:14px;color:#fff;opacity:.9}
+.bar .pg{font-family:var(--pixel);font-size:11px;background:var(--ink);padding:5px 8px;border:2px solid #fff}
+.body{flex:1;padding:26px 60px 30px;display:flex;flex-direction:column;min-height:0}
+
+.kicker{font-family:var(--pixel);font-size:11px;letter-spacing:.08em;color:var(--pink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.kicker .zh,.ptag .zh{font-family:var(--sans);font-weight:800;letter-spacing:.02em}
+.kicker .zh{font-size:15px}.ptag .zh{font-size:12px}
+.kicker::before{content:"";width:10px;height:10px;background:var(--pink);box-shadow:3px 3px 0 var(--ink)}
+h1{font-size:54px;line-height:1.2;font-weight:900}
+h2{font-size:33px;line-height:1.25;font-weight:900;margin-bottom:16px;text-shadow:3px 3px 0 #ffd3e4}
+h3{font-size:20px;font-weight:800;margin-bottom:6px}
+p{font-size:19px;line-height:1.6}
+.small{font-size:16px;line-height:1.55}
+.tiny{font-size:14px;line-height:1.5}
+.muted{color:var(--muted)}
+b{font-weight:800}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.panel{background:var(--panel);border:2px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:14px 16px;position:relative}
+.panel .ptag{position:absolute;top:-11px;left:12px;font-family:var(--pixel);font-size:9px;letter-spacing:.06em;background:var(--ink);color:#fff;padding:4px 7px}
+.panel.pad-top{padding-top:20px}
+
+.tag{display:inline-block;font-weight:900;padding:1px 9px;border:2px solid currentColor;font-size:17px;background:#fff}
+.t-woba{color:var(--woba);background:var(--woba-bg)} .t-wraa{color:var(--wraa);background:var(--wraa-bg)}
+.t-wrc{color:var(--wrc);background:var(--wrc-bg)} .t-wrcp{color:var(--wrcp);background:var(--wrcp-bg)}
+.t-br{color:var(--br);background:var(--br-bg)} .t-re{color:var(--re);background:var(--re-bg)}
+
+table{border-collapse:collapse;width:100%;font-size:17px;background:var(--panel)}
+th,td{border:2px solid var(--line);padding:7px 10px;text-align:left;vertical-align:middle}
+th{font-size:14px;font-weight:800;background:#ece3cf}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center}
+.box-table{box-shadow:4px 4px 0 var(--line)}
+
+.formula{background:#fffdf6;border:2px solid var(--line);box-shadow:4px 4px 0 var(--accent,var(--woba));padding:12px 18px;margin:8px 0 12px;font-size:20px;position:relative;overflow-x:auto}
+.formula::before{content:"f(x)";position:absolute;top:0;left:0;font-family:var(--pixel);font-size:8px;background:var(--accent,var(--woba));color:#fff;padding:3px 5px}
+.formula .katex-display{margin:.4em 0}
+.def{border-left:6px solid var(--accent,var(--woba));background:#fff;padding:8px 14px;font-size:17px;line-height:1.55;margin-top:6px}
+.def b{color:var(--accent,var(--woba))}
+
+.note{border:2px dashed #8f88a8;background:#fbf7ee;padding:9px 14px;font-size:16px;line-height:1.55;margin-top:10px}
+.why{border:2px solid var(--line);background:#e8fbff;box-shadow:4px 4px 0 var(--cyan);padding:10px 14px;font-size:18px;line-height:1.55;margin-top:10px}
+.alert{border:3px solid var(--line);background:var(--yellow);box-shadow:5px 5px 0 var(--line);padding:12px 16px;display:flex;gap:14px;align-items:center;margin-top:14px}
+.alert .badge{font-family:var(--pixel);font-size:11px;background:#e5163f;color:#fff;padding:7px 8px;border:2px solid var(--line);white-space:nowrap}
+.alert p{font-size:20px;font-weight:800;line-height:1.5}
+
+.src{font-family:var(--term);font-size:19px;line-height:1;background:var(--ink);color:var(--phos);padding:2px 6px;white-space:nowrap;display:inline-block;vertical-align:middle}
+.src.k{color:#ffd93b}
+.chip{display:inline-block;border:2px solid var(--line);background:#fff;padding:2px 9px;font-size:14px;margin:3px 4px 3px 0;box-shadow:2px 2px 0 var(--line)}
+
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.lv{font-family:var(--pixel);font-size:12px;color:#fff;padding:6px 8px;border:2px solid var(--line);box-shadow:3px 3px 0 var(--line)}
+.mini-chain{display:flex;gap:4px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.mini-chain span{font-family:var(--sans);font-weight:700;font-size:14px;padding:3px 9px;border:2px solid #b8b0c9;color:#8a85a0;background:#fff}
+.mini-chain span.on{color:#fff;border-color:var(--line);box-shadow:2px 2px 0 var(--line)}
+.mini-chain i{color:#aaa;font-style:normal;font-size:14px}
+
+.big-num{font-family:var(--term);font-size:62px;line-height:1}
+.result-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.result-row .panel{text-align:center;padding:10px}
+.result-row .lab{font-family:var(--pixel);font-size:9px;color:var(--muted);margin-bottom:6px}
+.check{color:#1f7a2a;font-weight:800;font-size:15px}
+
+/* module tiles */
+.mods{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 34px;position:relative}
+.mod{background:var(--panel);border:2px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:14px 16px;position:relative;min-height:150px}
+.mod .no{font-family:var(--pixel);font-size:16px;color:var(--pink);display:block;margin-bottom:8px}
+.mod h3{font-size:21px;margin-bottom:4px}
+.mod p{font-size:16px;line-height:1.5;color:#3a3756}
+.mod .pp{position:absolute;right:8px;top:8px;font-family:var(--term);font-size:17px;color:var(--muted)}
+.mod.arrow::after{content:"▶";position:absolute;right:-26px;top:50%;transform:translateY(-50%);color:var(--pink);font-size:16px}
+
+/* title */
+.title-slide .body{padding:34px 56px;justify-content:center;gap:0}
+.crt{background:#0b1a14;border:3px solid var(--line);box-shadow:inset 0 0 60px rgba(0,0,0,.8),6px 6px 0 var(--line);padding:38px 44px;position:relative;overflow:hidden}
+.crt::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 2px,transparent 2px 4px)}
+.crt .boot{font-family:var(--term);color:var(--phos);font-size:22px;opacity:.85}
+.crt h1{color:#eafff3;text-shadow:0 0 12px rgba(125,255,178,.6),3px 3px 0 #0f5c3a;margin:14px 0 12px;font-size:56px}
+.crt .sub{color:#bdf5d6;font-size:20px}
+.crt .cursor{display:inline-block;width:14px;height:22px;background:var(--phos);vertical-align:-3px;animation:blink 1.2s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.chainline{display:flex;gap:10px;margin-top:22px;align-items:center}
+.chainline span{font-family:var(--pixel);font-size:14px;padding:9px 12px;border:2px solid #eafff3;color:#0b1a14}
+.chainline i{color:var(--phos);font-style:normal}
+.sparkle{position:absolute;color:var(--cyan);font-size:26px}
+
+#nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center;z-index:5}
+#nav button{font-family:var(--pixel);font-size:11px;background:var(--yellow);border:3px solid var(--line);box-shadow:3px 3px 0 var(--line);color:var(--ink);cursor:pointer;padding:7px 10px}
+#nav button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
+#nav span{font-family:var(--pixel);font-size:11px;color:#fff;background:var(--ink);border:3px solid #fff;padding:6px 10px}
+#progress{position:fixed;top:0;left:0;right:0;height:8px;display:flex;gap:3px;padding:0 3px;z-index:5}
+#progress i{flex:1;background:rgba(255,255,255,.12)}
+#progress i.on{background:var(--cyan)}
+
+@media print{
+  html,body{background:#fff} body::before{display:none}
+  #nav,#progress{display:none}
+  #stage{position:static;display:block}
+  .deck{transform:none!important;width:auto;height:auto}
+  .slide{position:relative;display:flex!important;width:1280px;height:720px;page-break-after:always;box-shadow:none}
+  @page{size:1280px 720px;margin:0}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="stage"><div class="deck" id="deck">
+
+<!-- ======== 1 TITLE ======== -->
+<section class="slide title-slide" data-file="WOBA_WRC+.EXE">
+  <div class="body">
+    <div class="crt">
+      <span class="sparkle" style="right:46px;top:28px">✦</span><span class="sparkle" style="right:90px;top:70px;font-size:16px;color:#ff8fc0">✦</span>
+      <div class="boot">SABERMETRICS PLAYER EVALUATION LAB · v1.0<br>&gt; LOADING BATTING_CHAIN ... OK</div>
+      <h1>從 wOBA 到 wRC+<br>打擊指標的推導鏈</h1>
+      <p class="sub">每一步只多做一件事：得分價值 → 上壘率尺度 → 換回得分 → 加回平均 → 球場與聯盟調整</p>
+      <div class="chainline">
+        <span style="background:#9db8ff">wOBA</span><i>▶</i>
+        <span style="background:#8fe6dd">wRAA</span><i>▶</i>
+        <span style="background:#b5e89a">wRC</span><i>▶</i>
+        <span style="background:#ffb98c">wRC+</span>
+      </div>
+      <p class="boot" style="margin-top:24px;font-size:24px">PRESS ▶ OR SPACE TO START <span class="cursor"></span></p>
+    </div>
+    <p class="tiny" style="color:#5b5875;margin-top:16px">資料：FanGraphs Library（wOBA、Deriving wOBA、RE24、wRC and wRC+、Park Factors、5 Year Regressed Park Factors、WAR for Position Players）· 範例數據：Mike Trout FanGraphs 球員頁</p>
+  </div>
+</section>
+
+<!-- ======== 2 OUTLINE ======== -->
+<section class="slide" data-file="MENU.EXE">
+  <div class="body">
+    <div class="kicker">SELECT STAGE</div>
+    <h2>這份投影片的路線圖</h2>
+    <div class="panel" style="margin-bottom:22px;background:#e8fbff;box-shadow:4px 4px 0 var(--cyan)">
+      <p style="font-size:21px"><b>核心問題：</b>「這位打者比平均打者好多少？」我們依序回答：每種結果值幾分 → 怎麼變成好讀的比率 → 怎麼換回得分 → 怎麼排除球場與年代。</p>
+    </div>
+    <div class="mods">
+      <div class="mod arrow"><span class="pp">P.3</span><span class="no">01</span><h3>認識指標</h3><p>四個指標各回答什麼問題、用什麼單位</p></div>
+      <div class="mod arrow"><span class="pp">P.4</span><span class="no">02</span><h3>推導流程圖</h3><p>先看全貌：每一步做了哪些運算</p></div>
+      <div class="mod arrow"><span class="pp">P.5–7</span><span class="no">03</span><h3>得分價值</h3><p>得分期望值 → ΔRE → 線性權重</p></div>
+      <div class="mod"><span class="pp">P.8–16</span><span class="no">04</span><h3>逐步推導</h3><p>wOBA → wRAA → wRC → wRC+，含 4 頁球場係數</p></div>
+      <div class="mod arrow"><span class="pp">P.17</span><span class="no">05</span><h3>旁支</h3><p>Batting Runs：同一套調整，用相減表示</p></div>
+      <div class="mod arrow"><span class="pp">P.18</span><span class="no">06</span><h3>結論</h3><p>每一步只加入一件事；樞紐是 wOBA Scale</p></div>
+      <div class="mod arrow"><span class="pp">P.19–22</span><span class="no">07</span><h3>實際範例</h3><p>Trout 原始數據 → 2012 wRC+、2013 wOBA</p></div>
+      <div class="mod"><span class="pp">P.23</span><span class="no">08</span><h3>限制與延伸</h3><p>使用時要注意什麼、下一步讀什麼</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 3 METRICS ======== -->
+<section class="slide" data-file="METRICS.DAT">
+  <div class="body">
+    <div class="kicker">STAGE 01 · CHARACTER SELECT</div>
+    <h2>先認識指標：它們各回答什麼問題</h2>
+    <table class="box-table">
+      <thead><tr><th style="width:16%">指標</th><th style="width:36%">它在回答什麼</th><th style="width:16%">單位</th><th style="width:15%">平均值</th><th>調整</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag t-woba">wOBA</span></td><td>每個打席的進攻品質，依事件的<b>得分價值</b>加權</td><td>比率（OBP 尺度）</td><td>≈ 聯盟 OBP</td><td>無</td></tr>
+        <tr><td><span class="tag t-wraa">wRAA</span></td><td>整季比<b>平均打者</b>多創造幾分</td><td>得分（累計）</td><td>0</td><td>無</td></tr>
+        <tr><td><span class="tag t-wrc">wRC</span></td><td>整季總共替球隊<b>創造</b>幾分</td><td>得分（累計）</td><td>依打席數而定</td><td>無</td></tr>
+        <tr><td><span class="tag t-wrcp">wRC+</span></td><td>排除球場與年代後，比平均好<b>幾成</b></td><td>指數</td><td>100</td><td>球場、聯盟</td></tr>
+        <tr><td><span class="tag t-br">Batting Runs</span></td><td>排除球場與聯盟後，比平均多<b>幾分</b>（WAR 的打擊組成）</td><td>得分（累計）</td><td>0</td><td>球場、聯盟</td></tr>
+      </tbody>
+    </table>
+    <div class="grid2" style="margin-top:18px">
+      <div class="panel pad-top"><span class="ptag">RATE</span><p class="small"><b>比率指標</b>（wOBA、wRC+）回答「每個打席打得多好」，不受上場量影響。</p></div>
+      <div class="panel pad-top"><span class="ptag">COUNT</span><p class="small"><b>累計指標</b>（wRAA、wRC、Batting Runs）同時反映「打得多好」和「打了多少」。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 4 FLOWCHART ======== -->
+<section class="slide" data-file="MAP.EXE">
+  <div class="body" style="padding-top:20px">
+    <div class="kicker">STAGE 02 · WORLD MAP</div>
+    <h2 style="margin-bottom:8px">推導流程圖</h2>
+    <svg viewBox="0 0 1160 545" width="1160" height="545" style="font-family:var(--sans);overflow:visible">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1638"/></marker>
+      </defs>
+      <!-- arrows (behind labels) -->
+      <g stroke="#1a1638" stroke-width="3" fill="none" marker-end="url(#ar)">
+        <line x1="200" y1="36" x2="476" y2="36"/>
+        <line x1="676" y1="36" x2="952" y2="36"/>
+        <path d="M1056,72 L1056,166 L104,166 L104,252"/>
+        <line x1="200" y1="292" x2="476" y2="292"/>
+        <line x1="676" y1="292" x2="952" y2="292"/>
+        <line x1="104" y1="328" x2="104" y2="476"/>
+        <line x1="200" y1="512" x2="476" y2="512"/>
+      </g>
+      <!-- nodes -->
+      <g text-anchor="middle">
+        <rect x="4" y="4" width="196" height="66" fill="#ebebf0" stroke="#1a1638" stroke-width="2.5"/><rect x="8" y="70" width="196" height="4" fill="#1a1638"/>
+        <text x="102" y="33" font-size="19" font-weight="900" fill="#55566b">得分期望值</text><text x="102" y="56" font-size="13" fill="#55566b">RE24 矩陣</text>
+
+        <rect x="480" y="4" width="196" height="66" fill="#ebebf0" stroke="#1a1638" stroke-width="2.5"/><rect x="484" y="70" width="196" height="4" fill="#1a1638"/>
+        <text x="578" y="33" font-size="19" font-weight="900" fill="#55566b">線性權重</text><text x="578" y="56" font-size="13" fill="#55566b">每種事件的平均得分價值</text>
+
+        <rect x="956" y="4" width="200" height="66" fill="#e3ebff" stroke="#1a1638" stroke-width="2.5"/><rect x="960" y="70" width="200" height="4" fill="#1a1638"/>
+        <text x="1056" y="35" font-size="24" font-weight="900" fill="#2a55c9">wOBA</text><text x="1056" y="57" font-size="13" fill="#2a55c9">比率 · OBP 尺度</text>
+
+        <rect x="4" y="258" width="196" height="66" fill="#dcf5f2" stroke="#1a1638" stroke-width="2.5"/><rect x="8" y="324" width="196" height="4" fill="#1a1638"/>
+        <text x="102" y="289" font-size="24" font-weight="900" fill="#0e8a84">wRAA</text><text x="102" y="311" font-size="13" fill="#0e8a84">得分 · 平均 = 0</text>
+
+        <rect x="480" y="258" width="196" height="66" fill="#e6f5dc" stroke="#1a1638" stroke-width="2.5"/><rect x="484" y="324" width="196" height="4" fill="#1a1638"/>
+        <text x="578" y="289" font-size="24" font-weight="900" fill="#3b8a1d">wRC</text><text x="578" y="311" font-size="13" fill="#3b8a1d">得分 · 絕對值</text>
+
+        <rect x="956" y="258" width="200" height="66" fill="#ffe9da" stroke="#1a1638" stroke-width="2.5"/><rect x="960" y="324" width="200" height="4" fill="#1a1638"/>
+        <text x="1056" y="289" font-size="24" font-weight="900" fill="#d45d16">wRC+</text><text x="1056" y="311" font-size="13" fill="#d45d16">指數 · 平均 = 100</text>
+
+        <rect x="4" y="480" width="196" height="62" fill="#f1e4fa" stroke="#1a1638" stroke-width="2.5"/>
+        <text x="102" y="508" font-size="20" font-weight="900" fill="#8a3fb8">Batting Runs</text><text x="102" y="529" font-size="13" fill="#8a3fb8">得分 · 已調整</text>
+
+        <rect x="480" y="480" width="196" height="62" fill="#fde3e7" stroke="#1a1638" stroke-width="2.5"/>
+        <text x="578" y="508" font-size="22" font-weight="900" fill="#b3263e">WAR</text><text x="578" y="529" font-size="13" fill="#b3263e">勝場</text>
+      </g>
+      <!-- step labels on arrows -->
+      <foreignObject x="228" y="0" width="220" height="80"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 0 步</div><div class="ops"><span>Σ</span><span>ΔRE（同類事件）</span><span>÷</span><span>n<sub>x</sub>（事件次數）</span></div></div></foreignObject>
+      <foreignObject x="704" y="0" width="220" height="80"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 1 步</div><div class="ops"><span>−</span><span>RV<sub>out</sub>（出局 → 0）</span><span>×</span><span>wOBA Scale</span></div></div></foreignObject>
+      <foreignObject x="468" y="112" width="220" height="110"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 2 步</div><div class="ops"><span>−</span><span>聯盟 wOBA</span><span>÷</span><span>wOBA Scale</span><span>×</span><span>PA</span></div></div></foreignObject>
+      <foreignObject x="228" y="264" width="220" height="60"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 3 步</div><div class="ops"><span>+</span><span>聯盟 R/PA × PA</span></div></div></foreignObject>
+      <foreignObject x="704" y="240" width="220" height="110"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 4 步</div><div class="ops"><span>+</span><span>球場調整</span><span>÷</span><span>聯盟野手 wRC/PA</span><span>×</span><span>100</span></div></div></foreignObject>
+      <foreignObject x="20" y="352" width="190" height="110"><div xmlns="http://www.w3.org/1999/xhtml" class="flab br"><div class="fh">旁支</div><div class="ops"><span>+</span><span>球場調整</span><span>−</span><span>聯盟野手平均</span></div><div class="fn">相減，不相除</div></div></foreignObject>
+      <foreignObject x="228" y="472" width="220" height="80"><div xmlns="http://www.w3.org/1999/xhtml" class="flab br"><div class="fh">接到 WAR</div><div class="ops"><span>+</span><span>跑壘、守備、守位…</span><span>÷</span><span>RPW</span></div></div></foreignObject>
+      <!-- legend -->
+      <foreignObject x="740" y="380" width="420" height="150"><div xmlns="http://www.w3.org/1999/xhtml" class="legend">
+        <div><b style="color:#2a55c9">上排</b>：把每種事件的得分價值，做成好讀的比率</div>
+        <div><b style="color:#0e8a84">中排</b>：換回得分，再做球場與聯盟調整</div>
+        <div><b style="color:#8a3fb8">下排</b>：用得分表示的調整結果，接到 WAR</div>
+      </div></foreignObject>
+    </svg>
+  </div>
+</section>
+
+<!-- ======== 5 RE DEFINITION ======== -->
+<section class="slide" data-file="RE24.DAT" style="--accent:var(--re)">
+  <div class="body">
+    <div class="mini-chain"><span class="on" style="background:var(--re)">RE24</span><i>▶</i><span>線性權重</span><i>▶</i><span>wOBA</span><i>▶</i><span>wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span>wRC+</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--re)">LV 0</span><span class="kicker" style="margin:0"><span class="zh">第 0 步（上）</span></span></div>
+    <h2>得分期望值（RE）是什麼？</h2>
+    <div class="grid2" style="grid-template-columns:1.05fr 1fr">
+      <div>
+        <div class="def" style="margin-top:0"><b>得分期望值 RE(s)</b>：在狀態 s 下，從這一刻到<b>這局結束</b>，平均還會得幾分。</div>
+        <div class="def"><b>狀態 s</b>：出局數（0、1、2）× 跑者配置（無人、一壘……滿壘，共 8 種）＝ <b>24 種</b>。RE24 的「24」就是這樣來的。</div>
+        <h3 style="margin-top:16px">怎麼算出一格的數字</h3>
+        <div class="grid3" style="gap:10px">
+          <div class="panel pad-top"><span class="ptag">1</span><p class="tiny">找出整季（或多季）所有處於狀態 s 的時刻</p></div>
+          <div class="panel pad-top"><span class="ptag">2</span><p class="tiny">加總每一次從那一刻到局末的得分</p></div>
+          <div class="panel pad-top"><span class="ptag">3</span><p class="tiny">除以狀態 s 出現的次數 n<sub>s</sub></p></div>
+        </div>
+        <div class="formula" style="margin-top:14px">$$\text{RE}(s) = \frac{\sum \text{到局末的得分}}{n_s}$$</div>
+      </div>
+      <div>
+        <table class="box-table" style="font-size:16px">
+          <thead><tr><th>跑者</th><th class="num">0 出局</th><th class="num">1 出局</th><th class="num">2 出局</th></tr></thead>
+          <tbody>
+            <tr><td>無人</td><td class="num">0.481</td><td class="num">0.254</td><td class="num">0.098</td></tr>
+            <tr><td>一壘</td><td class="num" style="background:#ffe9da"><b>0.859</b></td><td class="num" style="background:#ffe9da"><b>0.509</b></td><td class="num">0.224</td></tr>
+            <tr><td>二壘</td><td class="num">1.100</td><td class="num">0.664</td><td class="num">0.319</td></tr>
+            <tr><td>一、二壘</td><td class="num" style="background:#ffe9da"><b>1.437</b></td><td class="num" style="background:#ffe9da"><b>0.884</b></td><td class="num">0.429</td></tr>
+            <tr><td>三壘</td><td class="num">1.350</td><td class="num">0.950</td><td class="num">0.353</td></tr>
+            <tr><td>一、三壘</td><td class="num" style="background:#ffe9da"><b>1.784</b></td><td class="num">1.130</td><td class="num">0.478</td></tr>
+            <tr><td>二、三壘</td><td class="num">1.964</td><td class="num">1.376</td><td class="num">0.580</td></tr>
+            <tr><td>滿壘</td><td class="num">2.292</td><td class="num">1.541</td><td class="num">0.752</td></tr>
+          </tbody>
+        </table>
+        <p class="tiny muted" style="margin-top:8px">MLB 2010–2015 年矩陣（Tom Tango 計算）。橘色格子是下一頁會用到的數字。例：一出局一壘有人時，到局末平均還會得 0.509 分。矩陣依得分環境而變，每個球場、每一年各有一張。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 6 DELTA RE ======== -->
+<section class="slide" data-file="RE24.DAT" style="--accent:var(--re)">
+  <div class="body">
+    <div class="mini-chain"><span class="on" style="background:var(--re)">RE24</span><i>▶</i><span>線性權重</span><i>▶</i><span>wOBA</span><i>▶</i><span>wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span>wRC+</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--re)">LV 0</span><span class="kicker" style="margin:0"><span class="zh">第 0 步（中）</span></span></div>
+    <h2>一個打席值幾分？看 RE 的變化（ΔRE）</h2>
+    <div class="formula">$$\Delta\text{RE} = \text{RE}(\text{結束狀態}) - \text{RE}(\text{開始狀態}) + \text{這次打席的得分}$$</div>
+    <div class="grid3">
+      <div class="panel pad-top"><span class="ptag">CASE A · <span class="zh">保送</span></span>
+        <p class="small">一出局一壘 → 一出局一二壘</p>
+        <div style="font-size:19px">$$0.884 - 0.509 + 0 = +0.375$$</div></div>
+      <div class="panel pad-top"><span class="ptag">CASE B · <span class="zh">一壘安打</span></span>
+        <p class="small">無人出局一壘 → 無人出局一三壘</p>
+        <div style="font-size:19px">$$1.784 - 0.859 + 0 = +0.925$$</div></div>
+      <div class="panel pad-top"><span class="ptag">CASE C · <span class="zh">安打得 1 分</span></span>
+        <p class="small">無人出局一三壘 → 無人出局一二壘</p>
+        <div style="font-size:19px">$$1.437 - 1.784 + 1 = +0.653$$</div></div>
+    </div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="why" style="margin-top:0"><b>打者與投手互為相反數：</b>打者得 +0.925，投手就記 −0.925。盜壘、暴投造成的推進算給跑者。</div>
+      <div class="why" style="margin-top:0"><b>把一整季每個打席的 ΔRE 加總</b>，就是球員的 RE24：它<b>考慮情境</b>，壘上有人時的安打得分較多。</div>
+    </div>
+    <p class="tiny muted" style="margin-top:10px">三個例子用上一頁的 2010–2015 矩陣計算。RE24 文章用的是 2014 年中性矩陣，所以 B、C 的結果是 0.967、0.575。</p>
+  </div>
+</section>
+
+<!-- ======== 7 LINEAR WEIGHTS ======== -->
+<section class="slide" data-file="LWTS.DAT" style="--accent:var(--re)">
+  <div class="body">
+    <div class="mini-chain"><span>RE24</span><i>▶</i><span class="on" style="background:var(--re)">線性權重</span><i>▶</i><span>wOBA</span><i>▶</i><span>wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span>wRC+</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--re)">LV 0</span><span class="kicker" style="margin:0"><span class="zh">第 0 步（下）</span></span></div>
+    <h2>從 ΔRE 到線性權重：同類事件取平均</h2>
+    <div class="grid2" style="grid-template-columns:1fr 1fr">
+      <div>
+        <div class="formula">$$\text{RV}_x = \frac{\sum_{i \in x} \Delta\text{RE}_i}{n_x}$$</div>
+        <div class="def"><b>x</b>：一種事件，例如非故意四壞（uBB）、一壘安打（1B）、全壘打（HR）、出局</div>
+        <div class="def"><b>ΔRE<sub>i</sub></b>：該季第 i 次發生事件 x 時的 ΔRE</div>
+        <div class="def"><b>n<sub>x</sub></b>：該季事件 x 發生的<b>總次數</b></div>
+        <div class="def"><b>RV<sub>x</sub></b>：事件 x 的平均得分價值，也就是 x 的<b>線性權重</b></div>
+      </div>
+      <div>
+        <div class="panel pad-top"><span class="ptag">EXAMPLE · x = uBB<span class="zh">（保送）</span></span>
+          <div style="font-size:18px">$$\text{RV}_{\text{BB}} = \frac{\text{2015 年所有保送的 }\Delta\text{RE 總和}}{\text{2015 年保送次數}} \approx +0.29$$</div>
+          <p class="small">這是<b>保送</b>的 RV：平均每次保送比一個普通打席多創造 0.29 分。上一頁 Case A 的 +0.375 只是其中一次。</p>
+        </div>
+        <div class="panel pad-top" style="margin-top:16px"><span class="ptag">RE24 vs <span class="zh">線性權重</span></span>
+          <p class="small">同一個 ΔRE，RE24 是<b>原樣加總</b>（保留情境）；線性權重是<b>先取平均</b>（不考慮情境）。wOBA 用的是後者，所以 wOBA 只看「做了什麼」，不看「在什麼時候做」。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 8 OUT = 0 ======== -->
+<section class="slide" data-file="WOBA.EXE" style="--accent:var(--woba)">
+  <div class="body">
+    <div class="mini-chain"><span>RE24</span><i>▶</i><span>線性權重</span><i>▶</i><span class="on" style="background:var(--woba)">wOBA</span><i>▶</i><span>wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span>wRC+</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--woba)">LV 1</span><span class="kicker" style="margin:0"><span class="zh">第 1 步（上）</span></span></div>
+    <h2>讓「出局」等於 0</h2>
+    <p>線性權重是「比<b>平均打席</b>多幾分」，出局是 −0.26。但 OBP 的尺度裡出局記為 0，所以每個值都減去出局的價值：</p>
+    <div class="formula">$$\text{RV}^{*}_{x} = \text{RV}_{x} - \text{RV}_{\text{out}} = \text{RV}_{x} - (-0.26) \qquad \text{（MLB 2015）}$$</div>
+    <table class="box-table">
+      <thead><tr><th>MLB 2015</th><th class="num">BB</th><th class="num">HBP</th><th class="num">1B</th><th class="num">2B</th><th class="num">3B</th><th class="num">HR</th><th class="num">出局</th></tr></thead>
+      <tbody>
+        <tr><td>高於平均 RV<sub>x</sub></td><td class="num">+0.29</td><td class="num">+0.31</td><td class="num">+0.44</td><td class="num">+0.74</td><td class="num">+1.01</td><td class="num">+1.39</td><td class="num">−0.26</td></tr>
+        <tr style="background:#fff7d1"><td><b>− (−0.26)</b> ↓</td><td class="num">− (−0.26)</td><td class="num">− (−0.26)</td><td class="num">− (−0.26)</td><td class="num">− (−0.26)</td><td class="num">− (−0.26)</td><td class="num">− (−0.26)</td><td class="num">− (−0.26)</td></tr>
+        <tr><td>相對出局 RV<sup>*</sup><sub>x</sub></td><td class="num"><b>0.55</b></td><td class="num"><b>0.57</b></td><td class="num"><b>0.70</b></td><td class="num"><b>1.00</b></td><td class="num"><b>1.27</b></td><td class="num"><b>1.65</b></td><td class="num"><b>0</b></td></tr>
+      </tbody>
+    </table>
+    <div class="why">平移後，「上壘本身」的價值被加了進去：保送從 +0.29 變成 0.55。每個事件都加同一個常數，所以事件之間的<b>差距不變</b>。</div>
+  </div>
+</section>
+
+<!-- ======== 9 SCALE ======== -->
+<section class="slide" data-file="WOBA.EXE" style="--accent:var(--woba)">
+  <div class="body">
+    <div class="mini-chain"><span>RE24</span><i>▶</i><span>線性權重</span><i>▶</i><span class="on" style="background:var(--woba)">wOBA</span><i>▶</i><span>wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span>wRC+</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--woba)">LV 1</span><span class="kicker" style="margin:0"><span class="zh">第 1 步（下）</span></span></div>
+    <h2>乘上 wOBA Scale，變成上壘率尺度</h2>
+    <div class="grid2">
+      <div>
+        <p class="small">用 RV<sup>*</sup> 算出全聯盟的 wOBA 是 .250，但聯盟 OBP（扣除故意四壞）是 .313。兩者的比值就是 Scale：</p>
+        <div class="formula">$$\text{wOBA Scale} = \frac{.313}{.250} \approx 1.251$$</div>
+        <div class="formula">$$w_x = \text{RV}^*_x \times \text{wOBA Scale}$$</div>
+        <p class="small">驗算：0.55 × 1.251 = 0.688（Guts 表 .687）；1.65 × 1.251 = 2.064（Guts 表 2.065）</p>
+      </div>
+      <div>
+        <div class="panel pad-top"><span class="ptag">FINAL FORMULA</span>
+          <div style="font-size:16px">$$\text{wOBA} = \frac{w_{BB}\,\text{uBB} + w_{HBP}\,\text{HBP} + w_{1B}\,\text{1B} + w_{2B}\,\text{2B} + w_{3B}\,\text{3B} + w_{HR}\,\text{HR}}{\text{AB} + \text{BB} - \text{IBB} + \text{SF} + \text{HBP}}$$</div>
+          <p class="tiny muted">權重與 Scale 每年依得分環境變動（FanGraphs Guts 頁）。縮放到 OBP 只是為了好讀，不影響事件之間的相對價值。</p>
+        </div>
+      </div>
+    </div>
+    <div class="alert"><span class="badge">SAVE POINT</span><p>記住：wOBA 的權重 = 得分價值 × Scale。下一步會把它「除回來」。</p></div>
+  </div>
+</section>
+
+<!-- ======== 10 wRAA ======== -->
+<section class="slide" data-file="WRAA.EXE" style="--accent:var(--wraa)">
+  <div class="body">
+    <div class="mini-chain"><span>RE24</span><i>▶</i><span>線性權重</span><i>▶</i><span>wOBA</span><i>▶</i><span class="on" style="background:var(--wraa)">wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span>wRC+</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--wraa)">LV 2</span><span class="kicker" style="margin:0"><span class="zh">第 2 步</span></span></div>
+    <h2>wRAA：把第 1 步倒回去，換回得分</h2>
+    <div class="formula">$$\text{wRAA} = \frac{\text{wOBA} - \text{lgwOBA}}{\text{wOBA Scale}} \times \text{PA}$$</div>
+    <div class="def"><b>lgwOBA（聯盟 wOBA）</b>：把同一球季 MLB 所有打者的數據加總後算出的 wOBA，也就是「平均打者」的 wOBA。因為 Scale 的設計，它約等於聯盟 OBP（扣除故意四壞）。MLB 2012 年 = .315、2013 年 = .314（Guts 頁）。</div>
+    <div class="grid3" style="margin-top:16px">
+      <div class="panel pad-top"><span class="ptag">− lgwOBA</span><p class="small">兩個 wOBA 相減時，「出局 = 0」那次對每個打席都一樣的平移會<b>互相抵銷</b>，剩下相對平均的差距。</p></div>
+      <div class="panel pad-top"><span class="ptag">÷ SCALE</span><p class="small">權重當初乘上了 Scale，除回去就從 OBP 尺度變回<b>每打席得分</b>。</p></div>
+      <div class="panel pad-top"><span class="ptag">× PA</span><p class="small">從「每打席」變成<b>整季累計</b>，同時反映品質與上場量。</p></div>
+    </div>
+    <p class="tiny muted" style="margin-top:10px">平均打者的 wRAA = 0。經驗法則：每 600 PA 中，20 點 wOBA ≈ 10 分（2013 年 Scale 下約 9.4 分）。「抵銷」一說是依公式推得的推論。</p>
+  </div>
+</section>
+
+<!-- ======== 11 wRC ======== -->
+<section class="slide" data-file="WRC.EXE" style="--accent:var(--wrc)">
+  <div class="body">
+    <div class="mini-chain"><span>RE24</span><i>▶</i><span>線性權重</span><i>▶</i><span>wOBA</span><i>▶</i><span>wRAA</span><i>▶</i><span class="on" style="background:var(--wrc)">wRC</span><i>▶</i><span>wRC+</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--wrc)">LV 3</span><span class="kicker" style="margin:0"><span class="zh">第 3 步</span></span></div>
+    <h2>wRC：把平均打者的得分加回去</h2>
+    <div class="formula">$$\text{wRC} = \text{wRAA} + \frac{\text{lgR}}{\text{PA}} \times \text{PA} = \left(\frac{\text{wOBA} - \text{lgwOBA}}{\text{wOBA Scale}} + \frac{\text{lgR}}{\text{PA}}\right) \times \text{PA}$$</div>
+    <div class="def"><b>lgR/PA（聯盟每打席得分）</b>：該季 MLB 總得分 ÷ MLB 總打席數，也就是平均每個打席替球隊帶來幾分。MLB 2012 年 = .114、2013 年 = .110（Guts 頁）。</div>
+    <table class="box-table" style="margin-top:14px">
+      <thead><tr><th style="width:18%"></th><th>wRAA</th><th>wRC</th></tr></thead>
+      <tbody>
+        <tr><td><b>回答的問題</b></td><td>比平均打者<b>多</b>創造幾分？</td><td>總共創造了幾分？</td></tr>
+        <tr><td><b>基準</b></td><td>聯盟平均 = 0</td><td>0 分（絕對值）</td></tr>
+        <tr><td><b>平均打者 600 PA</b></td><td>0</td><td>約 66–68 分（= R/PA × 600）</td></tr>
+        <tr><td><b>兩者關係</b></td><td colspan="2" class="c">wRC = wRAA + lgR/PA × PA，同一件事、不同基準；兩者都<b>沒有</b>球場與聯盟調整</td></tr>
+      </tbody>
+    </table>
+    <div class="alert"><span class="badge">! ATTENTION</span><p>wRC 是累計值，一定要搭配打席數看：50 PA 打出 10 wRC 很好，200 PA 打出 10 wRC 就很差。</p></div>
+  </div>
+</section>
+
+<!-- ======== 12 wRC+ ======== -->
+<section class="slide" data-file="WRCPLUS.EXE" style="--accent:var(--wrcp)">
+  <div class="body">
+    <div class="mini-chain"><span>RE24</span><i>▶</i><span>線性權重</span><i>▶</i><span>wOBA</span><i>▶</i><span>wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span class="on" style="background:var(--wrcp)">wRC+</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--wrcp)">LV 4</span><span class="kicker" style="margin:0"><span class="zh">第 4 步</span></span></div>
+    <h2>wRC+：球場與聯盟調整，再換成比例</h2>
+    <div class="formula" style="font-size:19px">$$\text{wRC+} = \frac{\overbrace{\left(\dfrac{\text{wRAA}}{\text{PA}} + \dfrac{\text{lgR}}{\text{PA}}\right)}^{\text{每打席 wRC}} + \overbrace{\dfrac{\text{lgR}}{\text{PA}}\,(1 - \text{PF})}^{\text{球場調整}}}{\underbrace{\text{wRC}_{\text{AL/NL 野手}} / \text{PA}_{\text{AL/NL 野手}}}_{\text{聯盟調整}}} \times 100$$</div>
+    <div class="grid2">
+      <div class="panel pad-top"><span class="ptag">PARK · <span class="zh">加法</span></span><p class="small">PF 用 FanGraphs 網站上的顯示值 ÷ 100（95 → 0.95）。PF &lt; 1（投手球場）加分，PF &gt; 1（打者球場）扣分。<b>PF 怎麼來的見接下來四頁。</b></p></div>
+      <div class="panel pad-top"><span class="ptag">LEAGUE · <span class="zh">相除</span></span><p class="small">除以所屬聯盟（AL 或 NL）<b>不含投手</b>的野手平均 wRC/PA，所以平均野手 = 100，每一分代表一個百分點。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== PF-1 OVERVIEW ======== -->
+<section class="slide" data-file="PARKS_01.DAT" style="--accent:var(--wrcp)">
+  <div class="body">
+    <div class="mini-chain"><span>wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span class="on" style="background:var(--wrcp)">wRC+ · 球場係數</span><span class="on" style="background:var(--ink)">1 / 4</span></div>
+    <div class="kicker">BONUS STAGE · <span class="zh">球場係數</span></div>
+    <h2>球場係數（PF）怎麼算：三步驟走一遍</h2>
+    <div class="panel" style="margin-bottom:16px;background:#e8fbff;box-shadow:4px 4px 0 var(--cyan)">
+      <p class="small"><b>範例條件（假設數字）</b>：某隊主場每場得分（兩隊合計）<b>H = 11</b>、客場每場得分 <b>R = 10</b>、聯盟 <b>T = 15</b> 隊，資料 4 年以上。</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 34px 1fr 34px 1fr 34px 0.8fr;align-items:stretch">
+      <div class="panel pad-top"><span class="ptag">STEP 1 · <span class="zh">原始 PF</span></span>
+        <div style="font-size:17px">$$\frac{H \times T}{(T-1)\,R + H}$$</div>
+        <div style="font-size:17px">$$\frac{11 \times 15}{14 \times 10 + 11} \approx 1.093$$</div>
+        <p class="tiny">主場比聯盟平均環境多 9.3% 得分</p></div>
+      <div style="display:flex;align-items:center;justify-content:center;color:var(--pink);font-size:20px">▶</div>
+      <div class="panel pad-top"><span class="ptag">STEP 2 · <span class="zh">減半</span></span>
+        <div style="font-size:17px">$$\text{iPF} = \frac{\text{原始 PF} + 1}{2}$$</div>
+        <div style="font-size:17px">$$\frac{1.093 + 1}{2} \approx 1.046$$</div>
+        <p class="tiny">只有一半比賽在主場</p></div>
+      <div style="display:flex;align-items:center;justify-content:center;color:var(--pink);font-size:20px">▶</div>
+      <div class="panel pad-top"><span class="ptag">STEP 3 · <span class="zh">迴歸</span></span>
+        <div style="font-size:17px">$$1 + (\text{iPF} - 1) \times X$$</div>
+        <div style="font-size:17px">$$1 + 0.046 \times 0.9 \approx 1.042$$</div>
+        <p class="tiny">偏離中性的部分只相信 9 成</p></div>
+      <div style="display:flex;align-items:center;justify-content:center;color:var(--pink);font-size:20px">▶</div>
+      <div class="panel" style="text-align:center;display:flex;flex-direction:column;justify-content:center;background:#ffe9da">
+        <div class="tiny" style="font-family:var(--pixel);font-size:9px;color:var(--muted)">DISPLAY</div>
+        <div class="big-num" style="color:var(--wrcp)">104</div>
+        <p class="tiny">網站顯示值<br>= PF × 100</p></div>
+    </div>
+    <div class="grid3" style="margin-top:16px">
+      <div class="def" style="--accent:var(--wrcp)"><b>H</b>：主場每場得分（兩隊合計）</div>
+      <div class="def" style="--accent:var(--wrcp)"><b>R</b>：客場每場得分（兩隊合計）</div>
+      <div class="def" style="--accent:var(--wrcp)"><b>T</b>：聯盟球隊數；<b>X</b>：迴歸係數，依資料年數查表</div>
+    </div>
+    <p class="tiny muted" style="margin-top:8px">主場原本比客場多 10% 得分，三步驟後只剩約 4%。接下來三頁說明每一步「為什麼」。出處：FanGraphs〈Park Factors – 5 Year Regressed〉。STEP 3 的寫法與 1 − (1 − iPF) × X 完全相等。</p>
+  </div>
+</section>
+
+<!-- ======== PF-2 RAW ======== -->
+<section class="slide" data-file="PARKS_02.DAT" style="--accent:var(--wrcp)">
+  <div class="body">
+    <div class="mini-chain"><span>wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span class="on" style="background:var(--wrcp)">wRC+ · 球場係數</span><span class="on" style="background:var(--ink)">2 / 4</span></div>
+    <div class="kicker">BONUS STAGE · STEP 1</div>
+    <h2>原始係數：為什麼要客場得分？為什麼要乘 T？</h2>
+    <div class="grid2" style="gap:24px">
+      <div>
+        <h3>① 客場得分是「比較基準」</h3>
+        <p class="small">主場得分同時包含<b>球場</b>與<b>球隊實力</b>（自家打線、投手）。客場比賽是同一批球員，只有球場換掉了：</p>
+        <div class="formula" style="font-size:17px">$$\frac{\text{主場}}{\text{客場}} \approx \frac{\text{球隊實力} \times \text{主場效應}}{\text{球隊實力} \times \text{其他球場平均}}$$</div>
+        <table class="box-table" style="font-size:15px">
+          <thead><tr><th>情境</th><th class="num">主場</th><th class="num">客場</th><th class="num">比值</th><th>解讀</th></tr></thead>
+          <tbody>
+            <tr><td>強打線、普通球場</td><td class="num">11</td><td class="num">11</td><td class="num">1.00</td><td>分數多是球隊強</td></tr>
+            <tr><td>普通球隊、打者球場</td><td class="num">11</td><td class="num">10</td><td class="num">1.10</td><td>是球場效應</td></tr>
+          </tbody>
+        </table>
+        <p class="tiny muted" style="margin-top:6px">「球隊實力抵銷」是推論：來源只寫用主場對比客場，未明說理由。同年的聯盟得分環境也會一起抵銷。</p>
+      </div>
+      <div>
+        <h3>② 乘 T：把「加總」換回「平均」</h3>
+        <p class="small">比較對象不是「其他球場」，而是<b>聯盟平均環境</b>：T − 1 座客場加上自家主場，各占 1/T。</p>
+        <div style="font-size:17px">
+        $$\begin{aligned}
+        \text{聯盟平均環境} &= \dfrac{(T-1)\,R + H}{T} \\[4pt]
+        \text{原始 PF} &= H \div \dfrac{(T-1)\,R + H}{T} = \dfrac{H \times T}{(T-1)\,R + H}
+        \end{aligned}$$</div>
+        <table class="box-table" style="font-size:15px;margin-top:4px">
+          <thead><tr><th>算法</th><th>計算</th><th class="num">結果</th></tr></thead>
+          <tbody>
+            <tr><td>直接 H ÷ R</td><td>11 ÷ 10</td><td class="num">1.100</td></tr>
+            <tr style="background:#e6f5dc"><td><b>正確公式</b></td><td>165 ÷ 151</td><td class="num"><b>1.093</b></td></tr>
+            <tr style="background:#fde3e7"><td>漏掉 × T</td><td>11 ÷ 151</td><td class="num">0.073 ✗</td></tr>
+          </tbody>
+        </table>
+        <p class="tiny muted" style="margin-top:6px">原文附有 2005 年 11 月的更正：公式原本漏了分子的「× T」，經讀者指出才補上。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== PF-3 HALVE + REGRESS ======== -->
+<section class="slide" data-file="PARKS_03.DAT" style="--accent:var(--wrcp)">
+  <div class="body">
+    <div class="mini-chain"><span>wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span class="on" style="background:var(--wrcp)">wRC+ · 球場係數</span><span class="on" style="background:var(--ink)">3 / 4</span></div>
+    <div class="kicker">BONUS STAGE · STEP 2 + 3</div>
+    <h2>為什麼要減半？為什麼要迴歸？</h2>
+    <div class="grid2" style="gap:24px">
+      <div>
+        <h3>② 減半：係數要套用在「整季」數據</h3>
+        <p class="small">原始 PF 只描述主場比賽；球員數據是整季，約一半在主場，客場假設中性（= 1）。</p>
+        <table class="box-table" style="font-size:15px">
+          <thead><tr><th>某打者（原始 PF 1.10）</th><th class="num">主場</th><th class="num">客場</th><th class="num">整季</th></tr></thead>
+          <tbody>
+            <tr><td>中性環境下的真實能力</td><td class="num">50</td><td class="num">50</td><td class="num"><b>100</b></td></tr>
+            <tr><td>實際打出的數字</td><td class="num">55</td><td class="num">50</td><td class="num"><b>105</b></td></tr>
+            <tr style="background:#fde3e7"><td>÷ 1.10（不減半）</td><td colspan="3" class="num">95.5　扣太多 ✗</td></tr>
+            <tr style="background:#e6f5dc"><td>÷ 1.05（減半後）</td><td colspan="3" class="num"><b>100</b>　正確 ✓</td></tr>
+          </tbody>
+        </table>
+        <p class="tiny" style="margin-top:6px">減半是把<b>超出 1 的部分</b>砍半：1.10 → 1.05、0.90 → 0.95。</p>
+      </div>
+      <div>
+        <h3>③ 迴歸：觀察值裡有運氣</h3>
+        <div class="formula" style="font-size:17px">$$\underbrace{\text{iPF} - 1}_{\text{觀察到的偏離}} = \text{真實效應} + \text{運氣}$$</div>
+        <div class="formula" style="font-size:17px">$$\text{PF} = 1 + (\text{iPF} - 1) \times X$$</div>
+        <p class="small">偏離中性的部分只相信 X 成，其餘當作雜訊。往 <b>1</b> 拉，因為 1 是聯盟平均球場。資料越多，運氣越能互相抵銷，X 越大。</p>
+        <table class="box-table" style="font-size:15px;margin-top:6px">
+          <thead><tr><th>資料年數</th><th class="c">1</th><th class="c">2</th><th class="c">3</th><th class="c">4+</th></tr></thead>
+          <tbody><tr><td>X</td><td class="c">0.6</td><td class="c">0.7</td><td class="c">0.8</td><td class="c">0.9</td></tr>
+          <tr><td>iPF 1.25 → PF</td><td class="c">1.15</td><td class="c">1.175</td><td class="c">1.20</td><td class="c">1.225</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="alert"><span class="badge">! NOTE</span><p>X 是<b>查表</b>得到的固定權重（MGL 建議），只看資料年數，不看數據本身波動；原文作者也承認權重有些任意。</p></div>
+  </div>
+</section>
+
+<!-- ======== PF-4 NEW PARK + LIMITS ======== -->
+<section class="slide" data-file="PARKS_04.DAT" style="--accent:var(--wrcp)">
+  <div class="body">
+    <div class="mini-chain"><span>wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span class="on" style="background:var(--wrcp)">wRC+ · 球場係數</span><span class="on" style="background:var(--ink)">4 / 4</span></div>
+    <div class="kicker">BONUS STAGE · <span class="zh">新球場與限制</span></div>
+    <h2>新球場怎麼算？這套方法有哪些限制？</h2>
+    <div class="grid2" style="grid-template-columns:1.15fr 1fr;gap:22px">
+      <div>
+        <h3>2000 年啟用的球場：係數逐年重算</h3>
+        <table class="box-table" style="font-size:15px">
+          <thead><tr><th>時間點</th><th>2000 年 PF 用的資料</th><th class="c">X</th><th>可算哪些年</th></tr></thead>
+          <tbody>
+            <tr><td>2000 季後</td><td>2000</td><td class="c">0.6</td><td>2000（暫定）</td></tr>
+            <tr><td>2001 季後</td><td>2000–2001</td><td class="c">0.7</td><td>2000–01（暫定）</td></tr>
+            <tr><td>2002 季後</td><td>2000–2002</td><td class="c">0.8</td><td>2000–02（暫定）</td></tr>
+            <tr><td>2003 季後</td><td>2000–2003</td><td class="c">0.9</td><td>2000–03（暫定）</td></tr>
+            <tr style="background:#e6f5dc"><td>2004 季後</td><td>2000–2004</td><td class="c">0.9</td><td>2000 年<b>定案</b></td></tr>
+          </tbody>
+        </table>
+        <div class="grid2" style="gap:10px;margin-top:22px">
+          <div class="panel pad-top"><span class="ptag">WINDOW</span><p class="tiny">最多 5 年，理想是前兩年、當年、後兩年；前面沒資料就往後補（例：響尾蛇 1998 年用 1998–2002）。</p></div>
+          <div class="panel pad-top"><span class="ptag">RESET</span><p class="tiny">新建、大幅改建、搬遷，或同年有約 10 場以上移地比賽，都視為新球場重新起算。</p></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="panel pad-top"><span class="ptag">LIMIT 1</span><p class="tiny"><b>假設主客各半、客場中性</b>：實際主客打席不一定相等；客場永遠不含自家球場，只是「接近 1」。</p></div>
+        <div class="panel pad-top"><span class="ptag">LIMIT 2</span><p class="tiny"><b>賽程不平均</b>：客場各球場的比重其實不同（例：洋基球場 10%、水手主場 4%），公式視為相同。</p></div>
+        <div class="panel pad-top"><span class="ptag">LIMIT 3</span><p class="tiny"><b>新球場影響他隊</b>：Coors Field 開幕後，各隊客場得分都上升；早期暫定係數算出的 wRC+ 也會跟著修訂。</p></div>
+        <div class="panel pad-top"><span class="ptag">TO CHECK</span><p class="tiny">FanGraphs 現行是否仍用同一組 X，目前來源無法確認（文中實例為 2000–2004 年）。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 14 placeholder removed: keep numbering via JS ======== -->
+
+<!-- ======== 15 BATTING RUNS ======== -->
+<section class="slide" data-file="BATRUNS.EXE" style="--accent:var(--br)">
+  <div class="body">
+    <div class="mini-chain"><span>wOBA</span><i>▶</i><span>wRAA</span><i>▶</i><span>wRC</span><i>▶</i><span>wRC+</span><i>｜</i><span class="on" style="background:var(--br)">Batting Runs</span></div>
+    <div class="kicker">SIDE QUEST · <span class="zh">旁支</span></div>
+    <h2>Batting Runs：同一套調整，用「相減」表示</h2>
+    <div class="def" style="margin-top:0"><b>Batting Runs（打擊得分）</b>：經過<b>球場與聯盟調整</b>後，打者比所屬聯盟的平均野手多創造的得分。平均 = 0，單位是「分」，是 WAR 的打擊組成。換句話說，它就是調整過的 wRAA。</div>
+    <div class="formula" style="font-size:18px">$$\text{Batting} = \underbrace{\text{wRAA}}_{\text{未調整}} + \underbrace{\frac{\text{lgR}}{\text{PA}}(1-\text{PF})\times\text{PA}}_{\text{球場調整}} + \underbrace{\left(\frac{\text{lgR}}{\text{PA}} - \frac{\text{wRC}_{\text{lg}}}{\text{PA}_{\text{lg}}}\right)\times\text{PA}}_{\text{聯盟調整}}$$</div>
+    <div class="grid3">
+      <div class="panel pad-top"><span class="ptag">wRC+</span><p class="small">分子 <b>÷</b> 聯盟野手 wRC/PA<br>→ 比平均好<b>幾成</b></p></div>
+      <div class="panel pad-top"><span class="ptag">BATTING RUNS</span><p class="small">分子 <b>−</b> 聯盟野手 wRC/PA，再 × PA<br>→ 比平均多<b>幾分</b> → 接到 WAR</p></div>
+      <div class="panel pad-top"><span class="ptag"><span class="zh">互相換算（推論）</span></span>
+        <div style="font-size:16px">$$\text{wRC+} = \left(1 + \frac{\text{Batting}/\text{PA}}{\text{wRC}_{\text{lg}}/\text{PA}_{\text{lg}}}\right)\times 100$$</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 16 CONCLUSION ======== -->
+<section class="slide" data-file="RESULTS.TXT">
+  <div class="body">
+    <div class="kicker">STAGE CLEAR · <span class="zh">結論</span></div>
+    <h2>每一步只加入一件事</h2>
+    <table class="box-table">
+      <thead><tr><th style="width:17%">指標</th><th style="width:40%">這一步做了什麼</th><th>為什麼</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag t-re">線性權重</span></td><td>同類事件的 ΔRE 取平均</td><td>得到每種事件不考慮情境的得分價值</td></tr>
+        <tr><td><span class="tag t-woba">wOBA</span></td><td>出局 = 0 → × Scale</td><td>讓權重反映得分，又保留熟悉的 OBP 尺度</td></tr>
+        <tr><td><span class="tag t-wraa">wRAA</span></td><td>− 聯盟 wOBA → ÷ Scale → × PA</td><td>倒回得分，並反映上場量</td></tr>
+        <tr><td><span class="tag t-wrc">wRC</span></td><td>+ 聯盟 R/PA × PA</td><td>從「相對平均」變成「絕對得分」</td></tr>
+        <tr><td><span class="tag t-wrcp">wRC+</span></td><td>+ 球場調整 → ÷ 聯盟野手 wRC/PA → × 100</td><td>排除球場與年代，可以跨隊、跨年比較</td></tr>
+        <tr><td><span class="tag t-br">Batting Runs</span></td><td>同樣的調整，改用相減</td><td>用得分表示，才能和跑壘、守備相加成 WAR</td></tr>
+      </tbody>
+    </table>
+    <div class="alert" style="background:#bff6ff"><span class="badge" style="background:var(--woba)">KEY</span><p>樞紐是 wOBA Scale：乘上它進入 OBP 尺度，除以它回到得分。看懂這一點，整條推導鏈就通了。</p></div>
+  </div>
+</section>
+
+<!-- ======== 17 RAW DATA ======== -->
+<section class="slide" data-file="TROUT.CSV">
+  <div class="body">
+    <div class="kicker">PLAYER 1 · RAW DATA</div>
+    <h2>範例資料：Mike Trout 的原始數據</h2>
+    <p class="small" style="margin-bottom:10px">後面兩個範例都從這張表取數字。每個數字會標上代碼，例如 <span class="src">STD·13·BB</span> = standard.csv 中 2013 年那一列的 BB 欄。</p>
+    <table class="box-table" style="font-size:16px">
+      <thead>
+        <tr><th rowspan="2">球季</th><th colspan="11" class="c" style="background:#d7f7e6">STD = raw/data/fangraphs_mlb_2011-2026_trout-standard.csv</th><th colspan="4" class="c" style="background:#e3ebff">ADV = …-advanced.csv</th></tr>
+        <tr><th class="num">PA</th><th class="num">AB</th><th class="num">H</th><th class="num">1B</th><th class="num">2B</th><th class="num">3B</th><th class="num">HR</th><th class="num">BB</th><th class="num">IBB</th><th class="num">HBP</th><th class="num">SF</th><th class="num">wOBA</th><th class="num">wRAA</th><th class="num">wRC</th><th class="num">wRC+</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>2012</b>（列代碼 12）</td><td class="num">639</td><td class="num">559</td><td class="num">182</td><td class="num">117</td><td class="num">27</td><td class="num">8</td><td class="num">30</td><td class="num">67</td><td class="num">4</td><td class="num">6</td><td class="num">7</td><td class="num">.409</td><td class="num">48.2</td><td class="num">121</td><td class="num">167</td></tr>
+        <tr><td><b>2013</b>（列代碼 13）</td><td class="num">716</td><td class="num">589</td><td class="num">190</td><td class="num">115</td><td class="num">39</td><td class="num">9</td><td class="num">27</td><td class="num">110</td><td class="num">10</td><td class="num">9</td><td class="num">8</td><td class="num">.423</td><td class="num">61.1</td><td class="num">140</td><td class="num">176</td></tr>
+      </tbody>
+    </table>
+    <div class="grid3" style="margin-top:16px">
+      <div class="panel pad-top"><span class="ptag">PLAYER DATA</span><p class="tiny"><span class="src">STD·…</span> <span class="src">ADV·…</span> 來自你匯出的 Trout 球員頁（FanGraphs，2026-11-23），已轉成 CSV 並交叉檢查。</p></div>
+      <div class="panel pad-top"><span class="ptag">LEAGUE CONSTANTS</span><p class="tiny"><span class="src k">GUTS</span> 聯盟 wOBA、Scale、R/PA 等每年常數，不在 Trout 的數據裡；取自 FanGraphs Guts 頁（wiki：metrics/woba）。</p></div>
+      <div class="panel pad-top"><span class="ptag">ARTICLE</span><p class="tiny"><span class="src k">ART·wRC</span> = FanGraphs〈wRC and wRC+〉文章。2012 年 PF 與美聯野手 wRC、PA 取自文中範例。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 18 EXAMPLE 2012 ======== -->
+<section class="slide" data-file="TROUT_2012.EXE">
+  <div class="body">
+    <div class="kicker">PLAYER 1 · EXAMPLE 1</div>
+    <h2>Trout 2012：從 wOBA 一路算到 wRC+</h2>
+    <div class="grid2" style="grid-template-columns:1fr 1.15fr;gap:20px">
+      <table class="box-table" style="font-size:15px">
+        <thead><tr><th>輸入</th><th class="num">數值</th><th>從哪裡找</th></tr></thead>
+        <tbody>
+          <tr><td>wOBA</td><td class="num">.409</td><td><span class="src">ADV·12·wOBA</span></td></tr>
+          <tr><td>PA</td><td class="num">639</td><td><span class="src">STD·12·PA</span></td></tr>
+          <tr><td>lgwOBA / Scale</td><td class="num">.315 / 1.245</td><td><span class="src k">GUTS 2012</span></td></tr>
+          <tr><td>lgR/PA</td><td class="num">.114</td><td><span class="src k">GUTS 2012</span></td></tr>
+          <tr><td>PF（天使主場）</td><td class="num">95 → 0.95</td><td><span class="src k">ART·wRC</span></td></tr>
+          <tr><td>美聯野手 wRC / PA</td><td class="num">10032 / 85797</td><td><span class="src k">ART·wRC</span></td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:17px">
+        $$\begin{aligned}
+        \text{wRAA} &= \dfrac{.409-.315}{1.245}\times 639 = 0.0755 \times 639 \approx 48.2 \\[2pt]
+        \text{wRC} &= 48.2 + 0.114 \times 639 \approx 121.0 \\[2pt]
+        \text{球場} &= 0.114 \times (1-0.95) = 0.0057 \\[2pt]
+        \text{wRC+} &= \dfrac{0.18943 + 0.0057}{10032/85797}\times 100 = \dfrac{0.19513}{0.11693}\times 100 \approx 167
+        \end{aligned}$$
+        <p class="tiny muted">0.18943 = 48.2 ÷ 639 + 0.114，即每打席 wRC。</p>
+      </div>
+    </div>
+    <div class="result-row" style="margin-top:12px">
+      <div class="panel"><div class="lab">wOBA</div><div class="big-num" style="color:var(--woba)">.409</div><div class="tiny">輸入值</div></div>
+      <div class="panel"><div class="lab">wRAA</div><div class="big-num" style="color:var(--wraa)">48.2</div><div class="check">✓ 與 ADV·12·wRAA 相同</div></div>
+      <div class="panel"><div class="lab">wRC</div><div class="big-num" style="color:var(--wrc)">121</div><div class="check">✓ 與 ADV·12·wRC 相同</div></div>
+      <div class="panel"><div class="lab">wRC+</div><div class="big-num" style="color:var(--wrcp)">167</div><div class="check">✓ 與 ADV·12·wRC+ 相同</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 19 PARK EFFECT ======== -->
+<section class="slide" data-file="TROUT_2012.EXE">
+  <div class="body">
+    <div class="kicker">PLAYER 1 · EXAMPLE 1<span class="zh">（續）</span></div>
+    <h2>球場調整讓 Trout 多了 5 分 wRC+</h2>
+    <div class="grid2">
+      <div>
+        <div class="panel pad-top" style="margin-bottom:16px"><span class="ptag">NO PARK ADJ.</span><div style="font-size:19px">$$\frac{0.18943}{0.11693}\times 100 \approx 162$$</div></div>
+        <div class="panel pad-top"><span class="ptag">WITH PARK ADJ.</span><div style="font-size:19px">$$\frac{0.18943 + 0.0057}{0.11693}\times 100 \approx 167$$</div></div>
+      </div>
+      <div>
+        <div class="panel pad-top"><span class="ptag"><span class="zh">顯示值 95 代表什麼（推論）</span></span>
+          <p class="small">顯示值已經過減半與迴歸。假設用 4 年以上資料（X = 0.9），倒推回去：</p>
+          <div style="font-size:17px">$$\text{iPF} = 1 - \frac{1-0.95}{0.9} \approx 0.944,\quad \text{原始 PF} = 2 \times 0.944 - 1 \approx 0.889$$</div>
+          <p class="small">也就是天使主場的得分約比平均少 11%。</p>
+        </div>
+        <div class="panel pad-top" style="margin-top:16px"><span class="ptag"><span class="zh">同年</span> BATTING RUNS</span>
+          <div style="font-size:18px">$$48.2 + 3.64 - 1.87 = 49.97$$</div>
+          <p class="tiny">FanGraphs 為 50.1（差異來自常數的四捨五入），就是 Trout 2012 年 10.1 WAR 的打擊部分。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 20 EXAMPLE 2013 ======== -->
+<section class="slide" data-file="TROUT_2013.EXE">
+  <div class="body">
+    <div class="kicker">PLAYER 1 · EXAMPLE 2</div>
+    <h2>Trout 2013：從原始數據算出 wOBA</h2>
+    <div class="grid2" style="grid-template-columns:1.1fr 1fr;gap:22px">
+      <table class="box-table" style="font-size:15px">
+        <thead><tr><th>事件</th><th>從哪裡找</th><th class="num">次數</th><th class="num">權重</th><th class="num">乘積</th></tr></thead>
+        <tbody>
+          <tr><td>uBB</td><td><span class="src">STD·13·BB</span> − <span class="src">STD·13·IBB</span></td><td class="num">110 − 10 = 100</td><td class="num">0.690</td><td class="num">69.000</td></tr>
+          <tr><td>HBP</td><td><span class="src">STD·13·HBP</span></td><td class="num">9</td><td class="num">0.722</td><td class="num">6.498</td></tr>
+          <tr><td>1B</td><td><span class="src">STD·13·1B</span></td><td class="num">115</td><td class="num">0.888</td><td class="num">102.120</td></tr>
+          <tr><td>2B</td><td><span class="src">STD·13·2B</span></td><td class="num">39</td><td class="num">1.271</td><td class="num">49.569</td></tr>
+          <tr><td>3B</td><td><span class="src">STD·13·3B</span></td><td class="num">9</td><td class="num">1.616</td><td class="num">14.544</td></tr>
+          <tr><td>HR</td><td><span class="src">STD·13·HR</span></td><td class="num">27</td><td class="num">2.101</td><td class="num">56.727</td></tr>
+          <tr style="background:#fff7d1"><td colspan="4"><b>分子</b>（權重來自 <span class="src k">GUTS 2013</span>）</td><td class="num"><b>298.458</b></td></tr>
+        </tbody>
+      </table>
+      <div>
+        <div class="panel pad-top"><span class="ptag"><span class="zh">分母</span></span>
+          <p class="tiny"><span class="src">STD·13·AB</span> + <span class="src">STD·13·BB</span> − <span class="src">STD·13·IBB</span> + <span class="src">STD·13·SF</span> + <span class="src">STD·13·HBP</span></p>
+          <div style="font-size:18px">$$589 + 110 - 10 + 8 + 9 = 706$$</div></div>
+        <div style="font-size:17px;margin-top:8px">
+          $$\begin{aligned}
+          \text{wOBA} &= 298.458 / 706 = .423 \\
+          \text{wRAA} &= \dfrac{.423-.314}{1.277}\times 716 \approx 61.1 \\
+          \text{wRC} &= 61.1 + 0.110\times 716 \approx 140
+          \end{aligned}$$
+        </div>
+        <p class="tiny">PA 716 = <span class="src">STD·13·PA</span>；.314、1.277、.110 = <span class="src k">GUTS 2013</span>。結果與 <span class="src">ADV·13·wOBA</span> <span class="src">ADV·13·wRAA</span> <span class="src">ADV·13·wRC</span> 一致。2013 年 wRC+ 176 缺球場係數（FanGraphs 只提供 2016 年後），無法驗算。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== 21 LIMITS ======== -->
+<section class="slide" data-file="README.TXT">
+  <div class="body">
+    <div class="kicker">GAME OVER? · <span class="zh">限制與延伸</span></div>
+    <h2>使用時要注意的六件事</h2>
+    <div class="grid3" style="gap:16px 18px">
+      <div class="panel pad-top"><span class="ptag">CONTEXT</span><h3>不考慮情境</h3><p class="tiny">滿壘安打與壘上無人安打權重相同。想看情境價值，用 RE24。</p></div>
+      <div class="panel pad-top"><span class="ptag">BASERUNNING</span><h3>不含跑壘</h3><p class="tiny">盜壘與其他跑壘價值在 BsR（UBR + wSB + wGDP）。</p></div>
+      <div class="panel pad-top"><span class="ptag">PARK</span><h3>前三個指標沒有球場調整</h3><p class="tiny">wOBA、wRAA、wRC 跨隊比較時，改用 wRC+ 或 Batting Runs。</p></div>
+      <div class="panel pad-top"><span class="ptag">POSITION</span><h3>wRC+ 沒有守位調整</h3><p class="tiny">120 的捕手和 120 的一壘手價值不同，要看 WAR。</p></div>
+      <div class="panel pad-top"><span class="ptag">PF LIMIT</span><h3>球場係數是單一數字</h3><p class="tiny">無法反映左右打、擊球型態的差異；迴歸權重也帶有主觀成分。</p></div>
+      <div class="panel pad-top"><span class="ptag">LEAGUE</span><h3>常數依聯盟與年份而變</h3><p class="tiny">權重、Scale、R/PA 每年都不同；NPB、KBO、CPBL 必須各自推導。</p></div>
+    </div>
+    <div class="grid2" style="margin-top:16px;grid-template-columns:1fr 1.25fr">
+      <div class="panel pad-top"><span class="ptag">WIKI PAGES</span>
+        <span class="chip">woba</span><span class="chip">wraa</span><span class="chip">wrc</span><span class="chip">wrc-plus</span><span class="chip">batting-runs</span><span class="chip">re24</span><span class="chip">run-expectancy-matrix</span><span class="chip">linear-weights</span><span class="chip">park-factor</span></div>
+      <div class="panel pad-top"><span class="ptag">SOURCES · FANGRAPHS LIBRARY</span>
+        <p class="tiny">Slowinski〈wOBA〉2010 · Weinberg〈Deriving wOBA〉2016 · Weinberg〈RE24〉2014 · Slowinski〈wRC and wRC+〉2010 · Slowinski〈Park Factors〉2010 · Appelman〈Park Factors – 5 Year Regressed〉2016 · Slowinski〈WAR for Position Players〉2012</p></div>
+    </div>
+  </div>
+</section>
+
+</div></div>
+
+<div id="nav"><button id="prev" aria-label="上一頁">◀ PREV</button><span id="count"></span><button id="next" aria-label="下一頁">NEXT ▶</button></div>
+
+<style>
+.flab{background:#fffdf6;border:2.5px solid #1a1638;box-shadow:3px 3px 0 #1a1638;padding:5px 10px 6px;font-family:var(--sans)}
+.flab .fh{font-size:12px;color:#77738f;font-weight:700;margin-bottom:2px}
+.flab .ops{display:grid;grid-template-columns:16px 1fr;column-gap:4px;row-gap:1px;font-size:15px;line-height:1.35;color:#1a1638}
+.flab .ops span:nth-child(odd){font-weight:900;text-align:center;color:#d45d16}
+.flab.br .ops span:nth-child(odd){color:#8a3fb8}
+.flab .fn{font-size:12px;color:#8a3fb8;margin-top:2px;padding-left:20px}
+.legend{background:#fffaf0;border:2px dashed #8f88a8;padding:10px 14px;font-size:15px;line-height:1.7;color:#1a1638}
+</style>
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=0, deck=document.getElementById('deck'), N=slides.length;
+  var prog=document.getElementById('progress');
+  slides.forEach(function(s,k){
+    var bar=document.createElement('div');bar.className='bar';
+    var no=String(k+1).padStart(2,'0'), tot=String(N).padStart(2,'0');
+    bar.innerHTML='<span class="btns"><i></i><i></i><i></i></span><span class="fname">'+(s.getAttribute('data-file')||'SLIDE')+'</span><span class="spark">✦ ✧ ✦</span><span class="pg">'+no+'/'+tot+'</span>';
+    s.insertBefore(bar,s.firstChild);
+    var seg=document.createElement('i');prog.appendChild(seg);
+  });
+  function fit(){var s=Math.min(window.innerWidth/1310,(window.innerHeight-70)/745);deck.style.transform='scale('+s+')'}
+  function show(n){i=Math.max(0,Math.min(N-1,n));slides.forEach(function(s,k){s.classList.toggle('active',k===i)});
+    document.getElementById('count').textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+    [].forEach.call(prog.children,function(e,k){e.classList.toggle('on',k<=i)});
+    try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+  window.__show=show;
+  document.getElementById('prev').onclick=function(){show(i-1)};
+  document.getElementById('next').onclick=function(){show(i+1)};
+  document.addEventListener('keydown',function(e){
+    if(['ArrowRight','PageDown',' ','Enter'].indexOf(e.key)>=0){e.preventDefault();show(i+1)}
+    else if(['ArrowLeft','PageUp','Backspace'].indexOf(e.key)>=0){e.preventDefault();show(i-1)}
+    else if(e.key==='Home')show(0); else if(e.key==='End')show(N-1);
+  });
+  var x0=null;document.addEventListener('touchstart',function(e){x0=e.touches[0].clientX});
+  document.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)show(i+(dx<0?1:-1));x0=null});
+  window.addEventListener('resize',fit);fit();
+  var h=parseInt((location.hash||'#1').slice(1),10);show(isNaN(h)?0:h-1);
+})();
+</script>
+</body>
+</html>

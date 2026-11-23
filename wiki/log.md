@@ -81,3 +81,15 @@
 - 檔案：`outputs/slides/woba-to-wrc-plus.html`（覆蓋 v2；23 頁）
 - 修改：原本一頁的 PF 計算擴充為 4 頁：三步驟完整數值例（H = 11、R = 10、T = 15 → 104）、為什麼用客場與乘 T、為什麼減半與迴歸、新球場時間軸與限制；大綱頁碼同步更新
 - 依據：本日對 [[park-factor]] 的連續查詢內容
+
+## [2026-11-23] schema | 新增 SOP.md
+- 新建專案根目錄 `SOP.md`：SOP-01 匯入文章、02 匯入數據、03 查詢問答、04 教學簡報、05 Lint、06 交付與版本控制，含報告模板、命名速查、常見狀況
+- `AGENTS.md` 開頭加上 SOP 連結
+- TODO：簡報建置與檢查腳本尚未存入 `scripts/slides/`
+
+## [2026-11-23] schema | SOP-04 改為 graph，「整理重點與驗算」獨立為 loop
+- `SOP.md` v1.1：SOP-04 改寫為「主題 → 教學簡報」graph（N1 範圍界定 → N2 內容 loop → N4–N6 產生與版面 loop → N7 交付 → N8 審閱 → R 規則回寫），附節點表、通過標準、指令
+- 新增 `scripts/slides/`：`build.js`（建置）、`check.py`（版面關卡）、`spec_check.py`（內容關卡）、`template.html`、`package.json`
+- 新增 `outputs/slides/woba-to-wrc-plus/`：spec.md、verify.py（29 項斷言通過）、src.html，作為第一個實際範例
+- `AGENTS.md` 第 14 節：教學簡報預設 HTML，輸入「做簡報：<主題>」即啟動 SOP-04
+- 測試：check.py 能抓到溢出、像素字體中文；build.js 能抓到公式錯誤；spec_check.py 能抓到驗算不符與必要缺失未解決

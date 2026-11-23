@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>【簡報標題】</title>
+<style>
+/*KATEX_CSS*/
+/*PIXEL_FONTS*/
+:root{
+  --night:#130f33; --ink:#1a1638; --muted:#5b5875; --paper:#f6efdf; --panel:#fffaf0; --line:#1a1638;
+  --pink:#ff3d8b; --cyan:#00c2d1; --yellow:#ffd93b; --phos:#7dffb2;
+  --woba:#2a55c9; --wraa:#0e8a84; --wrc:#3b8a1d; --wrcp:#d45d16; --br:#8a3fb8; --re:#55566b; --war:#b3263e;
+  --woba-bg:#e3ebff; --wraa-bg:#dcf5f2; --wrc-bg:#e6f5dc; --wrcp-bg:#ffe9da; --br-bg:#f1e4fa; --re-bg:#ebebf0; --war-bg:#fde3e7;
+  --sans:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Helvetica Neue",Arial,sans-serif;
+  --pixel:"Press Start 2P",var(--sans);
+  --term:"VT323",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--sans);color:var(--ink);
+  background:radial-gradient(1200px 700px at 50% 40%,#2a2170 0%,#130f33 60%,#0a0820 100%);}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:24px 24px}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+.deck{position:relative;width:1280px;height:720px;transform-origin:center center}
+
+/* ---------- slide window ---------- */
+.slide{position:absolute;inset:0;background:var(--paper);display:none;flex-direction:column;overflow:hidden;
+  border:3px solid var(--line);box-shadow:10px 10px 0 0 var(--pink),10px 10px 0 3px var(--line)}
+.slide.active{display:flex}
+.bar{height:38px;flex:0 0 38px;display:flex;align-items:center;gap:12px;padding:0 14px;border-bottom:3px solid var(--line);
+  background:linear-gradient(90deg,#2b1d7a 0%,#5b3fd1 45%,#c84fd0 75%,#ff6fae 100%);color:#fff}
+.bar .btns{display:flex;gap:6px}
+.bar .btns i{width:14px;height:14px;border:2px solid #fff;display:block;background:rgba(255,255,255,.15)}
+.bar .fname{font-family:var(--pixel);font-size:11px;letter-spacing:.06em;text-shadow:2px 2px 0 rgba(0,0,0,.35)}
+.bar .spark{margin-left:auto;font-size:14px;color:#fff;opacity:.9}
+.bar .pg{font-family:var(--pixel);font-size:11px;background:var(--ink);padding:5px 8px;border:2px solid #fff}
+.body{flex:1;padding:26px 60px 30px;display:flex;flex-direction:column;min-height:0}
+
+.kicker{font-family:var(--pixel);font-size:11px;letter-spacing:.08em;color:var(--pink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.kicker .zh,.ptag .zh{font-family:var(--sans);font-weight:800;letter-spacing:.02em}
+.kicker .zh{font-size:15px}.ptag .zh{font-size:12px}
+.kicker::before{content:"";width:10px;height:10px;background:var(--pink);box-shadow:3px 3px 0 var(--ink)}
+h1{font-size:54px;line-height:1.2;font-weight:900}
+h2{font-size:33px;line-height:1.25;font-weight:900;margin-bottom:16px;text-shadow:3px 3px 0 #ffd3e4}
+h3{font-size:20px;font-weight:800;margin-bottom:6px}
+p{font-size:19px;line-height:1.6}
+.small{font-size:16px;line-height:1.55}
+.tiny{font-size:14px;line-height:1.5}
+.muted{color:var(--muted)}
+b{font-weight:800}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.panel{background:var(--panel);border:2px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:14px 16px;position:relative}
+.panel .ptag{position:absolute;top:-11px;left:12px;font-family:var(--pixel);font-size:9px;letter-spacing:.06em;background:var(--ink);color:#fff;padding:4px 7px}
+.panel.pad-top{padding-top:20px}
+
+.tag{display:inline-block;font-weight:900;padding:1px 9px;border:2px solid currentColor;font-size:17px;background:#fff}
+.t-woba{color:var(--woba);background:var(--woba-bg)} .t-wraa{color:var(--wraa);background:var(--wraa-bg)}
+.t-wrc{color:var(--wrc);background:var(--wrc-bg)} .t-wrcp{color:var(--wrcp);background:var(--wrcp-bg)}
+.t-br{color:var(--br);background:var(--br-bg)} .t-re{color:var(--re);background:var(--re-bg)}
+
+table{border-collapse:collapse;width:100%;font-size:17px;background:var(--panel)}
+th,td{border:2px solid var(--line);padding:7px 10px;text-align:left;vertical-align:middle}
+th{font-size:14px;font-weight:800;background:#ece3cf}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center}
+.box-table{box-shadow:4px 4px 0 var(--line)}
+
+.formula{background:#fffdf6;border:2px solid var(--line);box-shadow:4px 4px 0 var(--accent,var(--woba));padding:12px 18px;margin:8px 0 12px;font-size:20px;position:relative;overflow-x:auto}
+.formula::before{content:"f(x)";position:absolute;top:0;left:0;font-family:var(--pixel);font-size:8px;background:var(--accent,var(--woba));color:#fff;padding:3px 5px}
+.formula .katex-display{margin:.4em 0}
+.def{border-left:6px solid var(--accent,var(--woba));background:#fff;padding:8px 14px;font-size:17px;line-height:1.55;margin-top:6px}
+.def b{color:var(--accent,var(--woba))}
+
+.note{border:2px dashed #8f88a8;background:#fbf7ee;padding:9px 14px;font-size:16px;line-height:1.55;margin-top:10px}
+.why{border:2px solid var(--line);background:#e8fbff;box-shadow:4px 4px 0 var(--cyan);padding:10px 14px;font-size:18px;line-height:1.55;margin-top:10px}
+.alert{border:3px solid var(--line);background:var(--yellow);box-shadow:5px 5px 0 var(--line);padding:12px 16px;display:flex;gap:14px;align-items:center;margin-top:14px}
+.alert .badge{font-family:var(--pixel);font-size:11px;background:#e5163f;color:#fff;padding:7px 8px;border:2px solid var(--line);white-space:nowrap}
+.alert p{font-size:20px;font-weight:800;line-height:1.5}
+
+.src{font-family:var(--term);font-size:19px;line-height:1;background:var(--ink);color:var(--phos);padding:2px 6px;white-space:nowrap;display:inline-block;vertical-align:middle}
+.src.k{color:#ffd93b}
+.chip{display:inline-block;border:2px solid var(--line);background:#fff;padding:2px 9px;font-size:14px;margin:3px 4px 3px 0;box-shadow:2px 2px 0 var(--line)}
+
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.lv{font-family:var(--pixel);font-size:12px;color:#fff;padding:6px 8px;border:2px solid var(--line);box-shadow:3px 3px 0 var(--line)}
+.mini-chain{display:flex;gap:4px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.mini-chain span{font-family:var(--sans);font-weight:700;font-size:14px;padding:3px 9px;border:2px solid #b8b0c9;color:#8a85a0;background:#fff}
+.mini-chain span.on{color:#fff;border-color:var(--line);box-shadow:2px 2px 0 var(--line)}
+.mini-chain i{color:#aaa;font-style:normal;font-size:14px}
+
+.big-num{font-family:var(--term);font-size:62px;line-height:1}
+.result-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.result-row .panel{text-align:center;padding:10px}
+.result-row .lab{font-family:var(--pixel);font-size:9px;color:var(--muted);margin-bottom:6px}
+.check{color:#1f7a2a;font-weight:800;font-size:15px}
+
+/* module tiles */
+.mods{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 34px;position:relative}
+.mod{background:var(--panel);border:2px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:14px 16px;position:relative;min-height:150px}
+.mod .no{font-family:var(--pixel);font-size:16px;color:var(--pink);display:block;margin-bottom:8px}
+.mod h3{font-size:21px;margin-bottom:4px}
+.mod p{font-size:16px;line-height:1.5;color:#3a3756}
+.mod .pp{position:absolute;right:8px;top:8px;font-family:var(--term);font-size:17px;color:var(--muted)}
+.mod.arrow::after{content:"▶";position:absolute;right:-26px;top:50%;transform:translateY(-50%);color:var(--pink);font-size:16px}
+
+/* title */
+.title-slide .body{padding:34px 56px;justify-content:center;gap:0}
+.crt{background:#0b1a14;border:3px solid var(--line);box-shadow:inset 0 0 60px rgba(0,0,0,.8),6px 6px 0 var(--line);padding:38px 44px;position:relative;overflow:hidden}
+.crt::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 2px,transparent 2px 4px)}
+.crt .boot{font-family:var(--term);color:var(--phos);font-size:22px;opacity:.85}
+.crt h1{color:#eafff3;text-shadow:0 0 12px rgba(125,255,178,.6),3px 3px 0 #0f5c3a;margin:14px 0 12px;font-size:56px}
+.crt .sub{color:#bdf5d6;font-size:20px}
+.crt .cursor{display:inline-block;width:14px;height:22px;background:var(--phos);vertical-align:-3px;animation:blink 1.2s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.chainline{display:flex;gap:10px;margin-top:22px;align-items:center}
+.chainline span{font-family:var(--pixel);font-size:14px;padding:9px 12px;border:2px solid #eafff3;color:#0b1a14}
+.chainline i{color:var(--phos);font-style:normal}
+.sparkle{position:absolute;color:var(--cyan);font-size:26px}
+
+#nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center;z-index:5}
+#nav button{font-family:var(--pixel);font-size:11px;background:var(--yellow);border:3px solid var(--line);box-shadow:3px 3px 0 var(--line);color:var(--ink);cursor:pointer;padding:7px 10px}
+#nav button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
+#nav span{font-family:var(--pixel);font-size:11px;color:#fff;background:var(--ink);border:3px solid #fff;padding:6px 10px}
+#progress{position:fixed;top:0;left:0;right:0;height:8px;display:flex;gap:3px;padding:0 3px;z-index:5}
+#progress i{flex:1;background:rgba(255,255,255,.12)}
+#progress i.on{background:var(--cyan)}
+
+@media print{
+  html,body{background:#fff} body::before{display:none}
+  #nav,#progress{display:none}
+  #stage{position:static;display:block}
+  .deck{transform:none!important;width:auto;height:auto}
+  .slide{position:relative;display:flex!important;width:1280px;height:720px;page-break-after:always;box-shadow:none}
+  @page{size:1280px 720px;margin:0}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="stage"><div class="deck" id="deck">
+<!--
+  ===== SOP-04 簡報範本 =====
+  每個 <section class="slide"> 是一頁；data-file 是視窗標題列顯示的檔名（英文大寫）。
+  公式：區塊 $$…$$、行內 \(…\)，由 build.js 預先轉譯。
+  版面規則見 SOP.md 的 SOP-04。以下每頁示範一種元件，複製後替換【】中的內容。
+-->
+
+<!-- [T1] 封面 -->
+<section class="slide title-slide" data-file="DECK.EXE">
+  <div class="body">
+    <div class="crt">
+      <span class="sparkle" style="right:46px;top:28px">✦</span>
+      <div class="boot">SABERMETRICS PLAYER EVALUATION LAB<br>&gt; LOADING ... OK</div>
+      <h1>【主標題】<br>【副標題】</h1>
+      <p class="sub">【一句話說明這份簡報的主線】</p>
+      <div class="chainline"><span style="background:#9db8ff">METRIC_A</span><i>▶</i><span style="background:#ffb98c">METRIC_B</span></div>
+      <p class="boot" style="margin-top:24px;font-size:24px">PRESS ▶ OR SPACE TO START <span class="cursor"></span></p>
+    </div>
+    <p class="tiny" style="color:#5b5875;margin-top:16px">資料：【來源清單】</p>
+  </div>
+</section>
+
+<!-- [T2] 路線圖：模組面板，不用列點 -->
+<section class="slide" data-file="MENU.EXE">
+  <div class="body">
+    <div class="kicker">SELECT STAGE</div>
+    <h2>這份投影片的路線圖</h2>
+    <div class="mods">
+      <div class="mod arrow"><span class="pp">P.3</span><span class="no">01</span><h3>【模組】</h3><p>【一句話】</p></div>
+      <div class="mod"><span class="pp">P.4</span><span class="no">02</span><h3>【模組】</h3><p>【一句話】</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- [T3] 流程圖：步驟運算寫在箭頭上的標籤（.flab）；運算符號一格、內容一格 -->
+<section class="slide" data-file="MAP.EXE">
+  <div class="body">
+    <div class="kicker">WORLD MAP</div>
+    <h2>推導流程圖</h2>
+    <svg viewBox="0 0 1160 120" width="1160" height="120" style="font-family:var(--sans);overflow:visible">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1638"/></marker></defs>
+      <g stroke="#1a1638" stroke-width="3" fill="none" marker-end="url(#ar)"><line x1="200" y1="36" x2="476" y2="36"/></g>
+      <g text-anchor="middle">
+        <rect x="4" y="4" width="196" height="66" fill="#e3ebff" stroke="#1a1638" stroke-width="2.5"/><text x="102" y="44" font-size="22" font-weight="900" fill="#2a55c9">【A】</text>
+        <rect x="480" y="4" width="196" height="66" fill="#ffe9da" stroke="#1a1638" stroke-width="2.5"/><text x="578" y="44" font-size="22" font-weight="900" fill="#d45d16">【B】</text>
+      </g>
+      <foreignObject x="228" y="0" width="220" height="80"><div xmlns="http://www.w3.org/1999/xhtml" class="flab"><div class="fh">第 1 步</div><div class="ops"><span>−</span><span>【運算】</span><span>÷</span><span>【運算】</span></div></div></foreignObject>
+    </svg>
+  </div>
+</section>
+
+<!-- [T4] 推導步驟頁：進度鏈 + 公式 + 定義框 + 說明面板 + 醒目提醒 -->
+<section class="slide" data-file="STEP1.EXE" style="--accent:var(--woba)">
+  <div class="body">
+    <div class="mini-chain"><span class="on" style="background:var(--woba)">【A】</span><i>▶</i><span>【B】</span></div>
+    <div class="step-head"><span class="lv" style="background:var(--woba)">LV 1</span><span class="kicker" style="margin:0"><span class="zh">第 1 步</span></span></div>
+    <h2>【這一步在做什麼】</h2>
+    <div class="formula">$$\text{【指標】} = \frac{a}{b}$$</div>
+    <div class="def"><b>【符號】</b>：【第一次出現的符號，一定要在這裡定義】</div>
+    <div class="grid3" style="margin-top:14px">
+      <div class="panel pad-top"><span class="ptag">WHY</span><p class="small">【為什麼要這樣做】</p></div>
+      <div class="panel pad-top"><span class="ptag">HOW</span><p class="small">【怎麼做】</p></div>
+      <div class="panel pad-top"><span class="ptag"><span class="zh">推論</span></span><p class="small">【推論要標示】</p></div>
+    </div>
+    <div class="alert"><span class="badge">! ATTENTION</span><p>【讀者一定要注意的事】</p></div>
+  </div>
+</section>
+
+<!-- [T5] 原始數據表：每個數字標資料位置代碼 -->
+<section class="slide" data-file="DATA.CSV">
+  <div class="body">
+    <div class="kicker">RAW DATA</div>
+    <h2>範例資料：【球員】的原始數據</h2>
+    <p class="small">代碼 <span class="src">STD·13·BB</span> = standard.csv 中 2013 年那一列的 BB 欄；聯盟常數標 <span class="src k">GUTS</span>，文章數字標 <span class="src k">ART·xxx</span>。</p>
+    <table class="box-table"><thead><tr><th>球季</th><th class="num">PA</th></tr></thead><tbody><tr><td>【年】</td><td class="num">【數】</td></tr></tbody></table>
+  </div>
+</section>
+
+<!-- [T6] 範例頁：輸入表（含出處代碼）+ 計算 + 結果卡 -->
+<section class="slide" data-file="EXAMPLE.EXE">
+  <div class="body">
+    <div class="kicker">EXAMPLE</div>
+    <h2>【範例標題】</h2>
+    <div class="grid2">
+      <table class="box-table" style="font-size:15px"><thead><tr><th>輸入</th><th class="num">數值</th><th>從哪裡找</th></tr></thead>
+        <tbody><tr><td>【項目】</td><td class="num">【數】</td><td><span class="src">STD·13·PA</span></td></tr></tbody></table>
+      <div style="font-size:17px">$$\begin{aligned} x &= 1 + 1 \\ &= 2 \end{aligned}$$</div>
+    </div>
+    <div class="result-row" style="margin-top:12px">
+      <div class="panel"><div class="lab">RESULT</div><div class="big-num" style="color:var(--woba)">0.000</div><div class="check">✓ 與 ADV·13·xxx 相同</div></div>
+    </div>
+  </div>
+</section>
+</div></div>
+
+<div id="nav"><button id="prev" aria-label="上一頁">◀ PREV</button><span id="count"></span><button id="next" aria-label="下一頁">NEXT ▶</button></div>
+
+<style>
+.flab{background:#fffdf6;border:2.5px solid #1a1638;box-shadow:3px 3px 0 #1a1638;padding:5px 10px 6px;font-family:var(--sans)}
+.flab .fh{font-size:12px;color:#77738f;font-weight:700;margin-bottom:2px}
+.flab .ops{display:grid;grid-template-columns:16px 1fr;column-gap:4px;row-gap:1px;font-size:15px;line-height:1.35;color:#1a1638}
+.flab .ops span:nth-child(odd){font-weight:900;text-align:center;color:#d45d16}
+.flab.br .ops span:nth-child(odd){color:#8a3fb8}
+.flab .fn{font-size:12px;color:#8a3fb8;margin-top:2px;padding-left:20px}
+.legend{background:#fffaf0;border:2px dashed #8f88a8;padding:10px 14px;font-size:15px;line-height:1.7;color:#1a1638}
+</style>
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=0, deck=document.getElementById('deck'), N=slides.length;
+  var prog=document.getElementById('progress');
+  slides.forEach(function(s,k){
+    var bar=document.createElement('div');bar.className='bar';
+    var no=String(k+1).padStart(2,'0'), tot=String(N).padStart(2,'0');
+    bar.innerHTML='<span class="btns"><i></i><i></i><i></i></span><span class="fname">'+(s.getAttribute('data-file')||'SLIDE')+'</span><span class="spark">✦ ✧ ✦</span><span class="pg">'+no+'/'+tot+'</span>';
+    s.insertBefore(bar,s.firstChild);
+    var seg=document.createElement('i');prog.appendChild(seg);
+  });
+  function fit(){var s=Math.min(window.innerWidth/1310,(window.innerHeight-70)/745);deck.style.transform='scale('+s+')'}
+  function show(n){i=Math.max(0,Math.min(N-1,n));slides.forEach(function(s,k){s.classList.toggle('active',k===i)});
+    document.getElementById('count').textContent=String(i+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+    [].forEach.call(prog.children,function(e,k){e.classList.toggle('on',k<=i)});
+    try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+  window.__show=show;
+  document.getElementById('prev').onclick=function(){show(i-1)};
+  document.getElementById('next').onclick=function(){show(i+1)};
+  document.addEventListener('keydown',function(e){
+    if(['ArrowRight','PageDown',' ','Enter'].indexOf(e.key)>=0){e.preventDefault();show(i+1)}
+    else if(['ArrowLeft','PageUp','Backspace'].indexOf(e.key)>=0){e.preventDefault();show(i-1)}
+    else if(e.key==='Home')show(0); else if(e.key==='End')show(N-1);
+  });
+  var x0=null;document.addEventListener('touchstart',function(e){x0=e.touches[0].clientX});
+  document.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)show(i+(dx<0?1:-1));x0=null});
+  window.addEventListener('resize',fit);fit();
+  var h=parseInt((location.hash||'#1').slice(1),10);show(isNaN(h)?0:h-1);
+})();
+</script>
+</body>
+</html>

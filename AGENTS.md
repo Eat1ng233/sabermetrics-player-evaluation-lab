@@ -1,6 +1,6 @@
 # AGENTS.md — Sabermetrics Player Evaluation Lab
 
-本文件是這個知識庫的 schema（規則文件）。任何 LLM agent（Claude Code、Codex 等）在這個資料夾工作前，必須先完整讀過本文件，並遵守其中的結構、格式與工作流程。本文件由使用者與 LLM 共同維護，規則有變動時直接修改本文件，並在 `wiki/log.md` 記錄。
+本文件是這個知識庫的 schema（規則文件）。操作步驟另見 `SOP.md`（匯入、數據、查詢、簡報、Lint、交付的標準流程）。任何 LLM agent（Claude Code、Codex 等）在這個資料夾工作前，必須先完整讀過本文件，並遵守其中的結構、格式與工作流程。本文件由使用者與 LLM 共同維護，規則有變動時直接修改本文件，並在 `wiki/log.md` 記錄。
 
 ---
 
@@ -392,9 +392,14 @@ updated: 2026-11-23
 
 ---
 
-## 14. 輸出（Marp 簡報與圖表）
+## 14. 輸出（簡報與圖表）
 
-- Marp 簡報存放在 `outputs/slides/<主題>.md`，frontmatter 加上 `marp: true`。內容取自 wiki，並在最後一頁列出引用的 wiki 頁面。
+- **教學簡報預設為 HTML**，依 `SOP.md` 的 **SOP-04（主題 → 教學簡報 graph）** 製作。
+  - **觸發**：使用者輸入「做簡報：<主題>」或類似要求時，直接啟動 SOP-04 的快速模式：wiki 內容足夠就一路做到 v1，不在大綱停下。
+  - **兩道程式關卡不可跳過**：內容關卡 `scripts/slides/spec_check.py`（含 `verify.py` 驗算）、版面關卡 `scripts/slides/check.py`。每個 loop 最多 3 輪，仍未通過就回報使用者。
+  - 每份簡報保留工作資料夾 `outputs/slides/<slug>/`（spec.md、verify.py、src.html），成品為 `outputs/slides/<slug>.html`。
+  - 使用者的每一則回饋，都要先寫成規則（SOP-04 版面規則或本文件），再回到對應節點修改。
+- 使用者指定 Marp 時，存放在 `outputs/slides/<主題>.md`，frontmatter 加上 `marp: true`。內容取自 wiki，並在最後一頁列出引用的 wiki 頁面。
 - 圖表存放在 `outputs/charts/`。產生圖表的程式放在 `scripts/`，以便重現。
 - 輸出內容只是 wiki 的衍生品；有新的發現時，要回寫到 wiki 對應頁面。
 
